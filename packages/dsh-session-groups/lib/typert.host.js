@@ -33,7 +33,7 @@ export const TYPERT = {
         typeSymbol: 'dsh-session-groups/types#SessionGroupSnapshot',
         schema: dsh_session_groups_sessionGroups_list_result$schema,
       },
-      sourceLocation: {"file":"packages/dsh-session-groups/src/index.ts","line":76,"column":3},
+      sourceLocation: {"file":"packages/dsh-session-groups/src/index.ts","line":77,"column":3},
     },
   ],
   model: {
@@ -50,22 +50,22 @@ export const TYPERT = {
             "kind": "method",
             "name": "assign",
             "signature": "async assign(sessionId: SessionId, descriptor: SessionGroupDescriptor): Promise<void>",
-            "summary": "Assign one Session to a provider-owned virtual group.",
-            "jsDoc": "/**\n * Assign one Session to a provider-owned virtual group. Identical assignments\n * are no-ops; a changed title replaces the whole descriptor durably.\n */"
+            "summary": "Attach one provider-owned communication origin to a Session.",
+            "jsDoc": "/**\n * Attach one provider-owned communication origin to a Session. The legacy\n * sessionGroups name stays compatible and does not replace Workspace membership.\n * Identical assignments are no-ops; a changed title replaces the descriptor durably.\n */"
           },
           {
             "kind": "method",
             "name": "unassign",
             "signature": "async unassign(sessionId: SessionId): Promise<void>",
-            "summary": "Remove one Session's virtual assignment; absence is already successful.",
-            "jsDoc": "/** Remove one Session's virtual assignment; absence is already successful. */"
+            "summary": "Remove one Session's communication-origin assignment; absence is already successful.",
+            "jsDoc": "/** Remove one Session's communication-origin assignment; absence is already successful. */"
           },
           {
             "kind": "method",
             "name": "list",
             "signature": "@Remote('list') list(): SessionGroupSnapshot",
-            "summary": "Return the complete immutable assignment snapshot for the browser.",
-            "jsDoc": "/** Return the complete immutable assignment snapshot for the browser. */"
+            "summary": "Return the complete immutable source-assignment snapshot for the browser.",
+            "jsDoc": "/** Return the complete immutable source-assignment snapshot for the browser. */"
           }
         ],
         "types": [

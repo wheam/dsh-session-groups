@@ -58,7 +58,7 @@ const SOURCE_ALIASES: ReadonlyArray<readonly [SourceIconKey, readonly string[]]>
   ['x', ['x', 'twitter']],
 ]
 
-function normalizeSource(source: string): string {
+export function normalizeSource(source: string): string {
   return source.trim().toLocaleLowerCase().replace(/[\s_./:]+/g, '-').replace(/-+/g, '-')
 }
 
@@ -74,4 +74,52 @@ export function resolveSourceIconKey(source: string): SourceIconKey | undefined 
     }
   }
   return undefined
+}
+
+const SOURCE_TITLES: Readonly<Record<SourceIconKey, string>> = {
+  dingtalk: '钉钉',
+  discord: 'Discord',
+  facebook: 'Facebook',
+  feishu: '飞书 / Lark',
+  gmail: 'Gmail',
+  googlechat: 'Google Chat',
+  imessage: 'iMessage',
+  instagram: 'Instagram',
+  kakaotalk: 'KakaoTalk',
+  line: 'LINE',
+  mastodon: 'Mastodon',
+  matrix: 'Matrix',
+  mattermost: 'Mattermost',
+  messenger: 'Messenger',
+  qq: 'Tencent QQ',
+  reddit: 'Reddit',
+  rocketchat: 'Rocket.Chat',
+  signal: 'Signal',
+  slack: 'Slack',
+  teams: 'Microsoft Teams',
+  telegram: 'Telegram',
+  viber: 'Viber',
+  wechat: '微信',
+  whatsapp: 'WhatsApp',
+  x: 'X',
+  zoom: 'Zoom',
+  zulip: 'Zulip',
+}
+
+export interface SourceFamily {
+  readonly key: string
+  readonly title: string
+  readonly iconSource: string
+}
+
+/** Collapse known aliases for browsing without changing the provider's stored source identity. */
+export function resolveSourceFamily(source: string): SourceFamily {
+  const iconKey = resolveSourceIconKey(source)
+  if (iconKey !== undefined) return { key: iconKey, title: SOURCE_TITLES[iconKey], iconSource: iconKey }
+  const normalized = normalizeSource(source)
+  return {
+    key: normalized === '' ? 'unknown' : normalized,
+    title: source.trim() === '' ? '未知来源' : source.trim(),
+    iconSource: source,
+  }
 }

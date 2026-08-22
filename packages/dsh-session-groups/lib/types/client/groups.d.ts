@@ -1,17 +1,67 @@
-/** Pure browser grouping: virtual assignments take precedence over real Workspace accounting. */
-import type { SessionId, SessionListState, SessionSummary, WorkspaceId, WorkspaceView } from '@deepseek-ai/dsh-client-runtime/client';
+/** Pure browser projections: project context and provider source stay independent. */
+import type { JobView, SessionId, SessionListState, SessionSummary, WorkspaceId, WorkspaceView } from '@deepseek-ai/dsh-client-runtime/client';
 import type { SessionGroupAssignment } from '../types.js';
-/** One rendered sidebar group. */
+export type BrowseMode = 'project' | 'source';
+export type SessionAttention = 'waiting' | 'failed' | 'running' | 'completed' | 'idle';
+export interface ProjectContext {
+    readonly key: string;
+    readonly kind: 'workspace' | 'directory' | 'none';
+    readonly title: string;
+    readonly path?: string;
+    readonly workspaceId?: WorkspaceId;
+}
+export interface SourceContext {
+    readonly familyKey: string;
+    readonly familyTitle: string;
+    readonly iconSource?: string;
+    readonly chatKey: string;
+    readonly rawSource?: string;
+    readonly chatId?: string;
+    readonly chatTitle?: string;
+    readonly kind?: string;
+}
+export interface BrowserSession {
+    readonly summary: SessionSummary;
+    readonly project: ProjectContext;
+    readonly source: SourceContext;
+    readonly attention: SessionAttention;
+    readonly jobs: readonly JobView[];
+    readonly archived: boolean;
+}
+export interface StatusCounts {
+    readonly waiting: number;
+    readonly failed: number;
+    readonly running: number;
+    readonly completed: number;
+    readonly idle: number;
+}
+export type BrowserGroupType = 'project' | 'source' | 'chat' | 'activity';
+/** One rendered sidebar level. Source mode uses source groups containing chat children. */
 export interface BrowserGroup {
     readonly key: string;
+    readonly type: BrowserGroupType;
     readonly title: string;
     readonly source?: string;
-    readonly kind?: string;
+    readonly providerKind?: string;
     readonly workspaceId?: WorkspaceId;
-    readonly sessions: readonly SessionSummary[];
+    readonly path?: string;
+    readonly sessions: readonly BrowserSession[];
+    readonly children?: readonly BrowserGroup[];
+    readonly counts: StatusCounts;
 }
-/**
- * Build native Workspace, provider-defined virtual, and final ungrouped rows.
- * A virtual assignment wins even if the Session is also accounted by a real Workspace.
- */
-export declare function deriveBrowserGroups(list: SessionListState, workspaces: readonly WorkspaceView[], archivedSessionIds: readonly SessionId[], assignments: readonly SessionGroupAssignment[]): BrowserGroup[];
+/** Human-facing badges for group-like provider categories. Private titles stay provider-owned. */
+export declare function sessionGroupKindLabel(kind: string | undefined): string | undefined;
+export declare function newestFirst(left: BrowserSession, right: BrowserSession): number;
+/** Portable normalization used only for browser grouping keys and boundary-safe comparisons. */
+export declare function normalizePathForGrouping(path: string): string;
+/** True for the same path or a descendant, never for a shared string prefix such as bar/bar2. */
+export declare function isPathWithin(path: string, parent: string): boolean;
+/** Resolve explicit Workspace accounting first, then the most specific path, then a read-only cwd group. */
+export declare function resolveProjectContext(session: SessionSummary, workspaces: readonly WorkspaceView[], explicitWorkspace?: WorkspaceView): ProjectContext;
+export declare function deriveSessionAttention(session: SessionSummary, jobs: readonly JobView[]): SessionAttention;
+/** Derive all root-session rows once; every view is a non-mutating projection over these entries. */
+export declare function deriveBrowserSessions(list: SessionListState, workspaces: readonly WorkspaceView[], archivedSessionIds: readonly SessionId[], assignments: readonly SessionGroupAssignment[]): BrowserSession[];
+export declare function countStatuses(sessions: readonly BrowserSession[]): StatusCounts;
+export declare function groupBrowserSessions(entries: readonly BrowserSession[], workspaces: readonly WorkspaceView[], mode: BrowseMode): BrowserGroup[];
+/** Build either project-first or source-first groups without changing either underlying identity. */
+export declare function deriveBrowserGroups(list: SessionListState, workspaces: readonly WorkspaceView[], archivedSessionIds: readonly SessionId[], assignments: readonly SessionGroupAssignment[], mode?: BrowseMode, includeArchived?: boolean): BrowserGroup[];

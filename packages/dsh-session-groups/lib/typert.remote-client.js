@@ -30,7 +30,7 @@ export const TYPERT_REMOTE = {
         typeSymbol: 'dsh-session-groups/types#SessionGroupSnapshot',
         schema: dsh_session_groups_sessionGroups_list_result$schema,
       },
-      sourceLocation: {"file":"packages/dsh-session-groups/src/index.ts","line":76,"column":3},
+      sourceLocation: {"file":"packages/dsh-session-groups/src/index.ts","line":77,"column":3},
     },
   ],
 }

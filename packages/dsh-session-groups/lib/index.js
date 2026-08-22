@@ -102,8 +102,9 @@ var SessionGroupsService = class extends (_b = TypertRemoteService) {
     this.table = domain.table("sessions");
   }
   /**
-   * Assign one Session to a provider-owned virtual group. Identical assignments
-   * are no-ops; a changed title replaces the whole descriptor durably.
+   * Attach one provider-owned communication origin to a Session. The legacy
+   * sessionGroups name stays compatible and does not replace Workspace membership.
+   * Identical assignments are no-ops; a changed title replaces the descriptor durably.
    */
   async assign(sessionId, descriptor) {
     const group = snapshotDescriptor(sessionGroupDescriptorSchema.parse(descriptor));
@@ -112,7 +113,7 @@ var SessionGroupsService = class extends (_b = TypertRemoteService) {
     if (current !== void 0 && sameDescriptor(current.group, group)) return;
     await table.put(sessionId, Object.freeze({ group, updatedAt: Date.now() }));
   }
-  /** Remove one Session's virtual assignment; absence is already successful. */
+  /** Remove one Session's communication-origin assignment; absence is already successful. */
   async unassign(sessionId) {
     await this.requireTable().delete(sessionId);
   }

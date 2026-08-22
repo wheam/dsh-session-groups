@@ -1,4 +1,4 @@
-/** Remote-backed observable supplying virtual assignments to one sidebar registrant. */
+/** Remote-backed observable supplying communication-origin assignments to one sidebar registrant. */
 import type { HostObservable } from '@deepseek-ai/dsh-client-ui-slots'
 import type { SessionGroupSnapshot } from '../types.js'
 

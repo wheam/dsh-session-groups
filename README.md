@@ -6,18 +6,24 @@
 [![CI](https://github.com/wheam/dsh-session-groups/actions/workflows/ci.yml/badge.svg)](https://github.com/wheam/dsh-session-groups/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](packages/dsh-session-groups/LICENSE)
 
-Provider-owned virtual session groups for the [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web sidebar.
+Project/source task navigation for the [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web sidebar.
 
-Channel plugins can group sessions by a stable identity such as a Feishu chat, Slack channel, or Telegram conversation. `dsh-session-groups` renders those virtual groups next to real DSH Workspaces without changing session working directories, Workspace records, or conversation logs.
+Channel plugins attach a stable communication origin such as a Feishu chat, Slack channel, or Telegram conversation. `dsh-session-groups` keeps that origin independent from the Session's Workspace or working directory, so a Feishu-created task still appears under its real project by default and can be reorganized by source when needed.
 
-> Installing this plugin adds the grouping service and sidebar UI. A channel/provider plugin must call the [Provider API](#provider-api) before virtual groups appear.
+> Installing this plugin adds the origin service and sidebar UI. A channel/provider plugin must call the [Provider API](#provider-api) before external source metadata appears.
 
 ## Features
 
-- Durable, provider-neutral assignments keyed by `source + id`.
-- Real Workspaces, virtual groups, and ungrouped sessions in one sidebar.
+- Independent project and communication-source contexts for every Session.
+- Project-first browsing by real Workspace, inferred directory project, or "No project"; source-first browsing by app and concrete chat.
+- Durable, provider-neutral source assignments keyed by exact `source + id`, with presentation-only alias families such as Feishu/Lark.
 - Built-in source icons for Feishu/Lark, Slack, Teams, DingTalk, Telegram, Discord, WeChat, WhatsApp, Google Chat, Mattermost, Matrix, Signal, LINE, Messenger, iMessage, KakaoTalk, Viber, Rocket.Chat, Zulip, QQ, Gmail, Zoom, and common aliases.
-- Existing session and Workspace actions: open, create, rename, fork, archive, add, and delete.
+- Waiting-user, failed-job, running, recently-completed, and idle status with group aggregation, quick filters, source/chat/date filters, and an Activity inbox.
+- Unified title/metadata and DSH conversation-content search with snippets, cancellation, and `Cmd/Ctrl+K` focus.
+- Relative update times, project/source metadata, Workspace folder opening, pinning, four sort modes, and drag ordering.
+- Archived-session browser, multi-select archive, Job/Subagent details, and keyboard up/down navigation.
+- Existing Session and Workspace actions: open, create, rename, fork, archive, add, reorder, and delete registration.
+- Browser preferences persist locally and degrade safely if storage is unavailable or corrupt.
 - Local DSH storage only; no external network requests, credentials, model tools, or prompt changes.
 
 ## Install
@@ -51,7 +57,7 @@ Restart `dsh web` after either command.
 
 ## Provider API
 
-Provider plugins assign a DSH Session to a virtual group through `ctx.sessionGroups`:
+Provider plugins attach one DSH Session to a communication source through the backwards-compatible `ctx.sessionGroups` API:
 
 ```ts
 await ctx.sessionGroups.assign(sessionId, {
@@ -62,7 +68,7 @@ await ctx.sessionGroups.assign(sessionId, {
 })
 ```
 
-Sessions with the same `source + id` are rendered together. The newest assignment controls the displayed title. If a provider reserves an assignment but fails to create the Session, it can clean up with:
+The assignment describes where the Session was initiated; it does not replace Workspace membership or `cwd`. Sessions with the same exact `source + id` are rendered under the same chat in source view. The newest assignment controls that chat's displayed title and kind. If a provider reserves an assignment but fails to create the Session, it can clean up with:
 
 ```ts
 await ctx.sessionGroups.unassign(sessionId)
@@ -77,14 +83,14 @@ flowchart LR
     P[Channel / provider plugin] -->|assign / unassign| S[sessionGroups service]
     S --> D[(storage-domain sidecar)]
     S --> R[Typert Remote]
-    R --> B[Web sidebar groups]
-    W[DSH Workspaces and Sessions] --> B
+    R --> B[Web project/source browser]
+    W[DSH Workspaces, Sessions, status and search] --> B
 ```
 
 - **Host:** a Cordis `TypertRemoteService` owns the provider-facing API.
-- **Data:** assignments live in the `session_groups` storage-domain sidecar.
-- **Client:** a Typert Remote snapshot feeds the Web sidebar; refreshes are coalesced and failures retain the last successful snapshot.
-- **UI:** the plugin uses the official `sidebar.workspaces` slot priority mechanism to render a combined browser.
+- **Data:** communication-source assignments live in the `session_groups` storage-domain sidecar; project context remains owned by DSH Workspace and Session data.
+- **Client:** a Typert Remote snapshot feeds source metadata into the Web sidebar; refreshes are coalesced and failures retain the last successful snapshot.
+- **UI:** the plugin uses the official `sidebar.workspaces` slot priority mechanism to render project, source, Activity, and archive surfaces.
 
 ## Compatibility and limitations
 
@@ -96,13 +102,16 @@ flowchart LR
 | Model experience | Unchanged |
 | License | MIT |
 
-DeepSeek Harness is in developer preview, so compatibility may break between release candidates. This version owns the complete `sidebar.workspaces` surface and reimplements the standard Workspace/Session list. It preserves the common actions and title search, but does not currently reproduce full conversation-content search or drag sorting from the stock browser.
+DeepSeek Harness is in developer preview, so compatibility may break between release candidates. This version owns the complete `sidebar.workspaces` surface and reimplements the standard Workspace/Session list.
+
+The verified DSH Runtime supports archiving but does not yet expose safe unarchive or permanent Session-delete APIs. Archived Sessions can be viewed, searched, and opened; restore and permanent deletion remain unavailable until those Runtime capabilities exist. Scheduled-task creation and cross-device preference sync are also outside this plugin's current scope.
 
 ## Data and permissions
 
-- Writes only virtual-group assignments to DSH's local `session_groups` storage domain.
-- Reads the local Session and Workspace projections needed to render the sidebar.
-- Does not read or modify prompts, model messages, Session logs, Workspace paths, credentials, or external services.
+- Writes only communication-source assignments to DSH's local `session_groups` storage domain and non-sensitive browser preferences to local storage.
+- Reads local Session, Workspace, Job, Subagent, and Host search projections needed to render the sidebar.
+- Conversation search uses DSH's existing local index and stores no second copy of message content.
+- Does not modify prompts, model messages, Session logs, working directories, credentials, or external services.
 - Makes no network requests of its own.
 
 As with every in-process DSH plugin, the code runs with the permissions of the DSH process. Review third-party plugin source before installation.

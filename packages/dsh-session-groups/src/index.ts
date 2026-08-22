@@ -1,4 +1,4 @@
-/** Generic durable virtual-group service and Host Remote for DSH Sessions. */
+/** Durable provider-origin service and Host Remote for DSH Sessions. */
 import { Context, Service } from '@deepseek-ai/cordis'
 import type { SessionId } from '@deepseek-ai/dsh-session/types'
 import type { KvTable } from '@deepseek-ai/dsh-storage-domain'
@@ -55,8 +55,9 @@ export class SessionGroupsService extends TypertRemoteService {
   }
 
   /**
-   * Assign one Session to a provider-owned virtual group. Identical assignments
-   * are no-ops; a changed title replaces the whole descriptor durably.
+   * Attach one provider-owned communication origin to a Session. The legacy
+   * sessionGroups name stays compatible and does not replace Workspace membership.
+   * Identical assignments are no-ops; a changed title replaces the descriptor durably.
    */
   async assign(sessionId: SessionId, descriptor: SessionGroupDescriptor): Promise<void> {
     const group = snapshotDescriptor(sessionGroupDescriptorSchema.parse(descriptor))
@@ -66,12 +67,12 @@ export class SessionGroupsService extends TypertRemoteService {
     await table.put(sessionId, Object.freeze({ group, updatedAt: Date.now() }))
   }
 
-  /** Remove one Session's virtual assignment; absence is already successful. */
+  /** Remove one Session's communication-origin assignment; absence is already successful. */
   async unassign(sessionId: SessionId): Promise<void> {
     await this.requireTable().delete(sessionId)
   }
 
-  /** Return the complete immutable assignment snapshot for the browser. */
+  /** Return the complete immutable source-assignment snapshot for the browser. */
   @Remote('list')
   list(): SessionGroupSnapshot {
     const assignments: SessionGroupAssignment[] = [...this.requireTable().entries()]

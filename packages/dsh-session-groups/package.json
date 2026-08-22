@@ -1,7 +1,7 @@
 {
   "name": "dsh-session-groups",
   "version": "0.1.0",
-  "description": "Generic virtual session groups for the DeepSeek Harness sidebar, backed by a durable provider-facing sidecar service.",
+  "description": "Project/source task navigation for the DeepSeek Harness sidebar with durable provider-origin metadata.",
   "license": "MIT",
   "keywords": [
     "deepseek-harness",

@@ -28,11 +28,20 @@ export async function apply(ctx: ClientContext): Promise<() => Promise<void>> {
     hooks: { sessionGroups: controller.source },
     refresh: () => controller.refresh(),
     open: sessionId => { ctx.sessions.open(sessionId) },
+    openSubagent: address => { ctx.sessions.openSubagent(address) },
+    refreshSubagents: sessionId => ctx.sessions.refreshSubagents(sessionId),
+    setSubagentCatalogOpen: (sessionId, open) => { ctx.sessions.setSubagentCatalogOpen(sessionId, open) },
+    searchContent: async (query, signal) => {
+      const result = await ctx.sessions.search(query, signal)
+      if (!result.ok) throw new Error(result.error.message)
+      return result.value
+    },
     startSession: workspaceId => { ctx.workspaces.startSession(workspaceId) },
     addWorkspace: async () => {
       const path = await ctx.workspaces.pickDirectory()
       if (path !== null) await ctx.workspaces.create({ path })
     },
+    openPath: path => ctx.workspaces.openPath(path),
     renameSession: async (sessionId: SessionId, currentTitle: string) => {
       const title = window.prompt('新的会话名称', currentTitle)?.trim()
       if (title === undefined || title === '') return
@@ -46,6 +55,10 @@ export async function apply(ctx: ClientContext): Promise<() => Promise<void>> {
       ctx.sessions.open(child)
     },
     archiveSession: async (sessionId: SessionId) => { await ctx.workspaces.archiveSession(sessionId) },
+    moveWorkspace: (workspaceId, beforeWorkspaceId) => ctx.workspaces.insertBefore(workspaceId, beforeWorkspaceId),
+    moveSession: async (workspaceId, sessionId, beforeSessionId) => {
+      await ctx.workspaces.insertSessionBefore(workspaceId, sessionId, beforeSessionId)
+    },
     renameWorkspace: async (workspaceId: WorkspaceId, currentTitle: string) => {
       const title = window.prompt('新的 Workspace 名称', currentTitle)?.trim()
       if (title !== undefined && title !== '') await ctx.workspaces.rename(workspaceId, title)

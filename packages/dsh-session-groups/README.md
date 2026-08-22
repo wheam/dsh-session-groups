@@ -1,8 +1,8 @@
 # dsh-session-groups
 
-Provider-owned virtual session groups for the [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web sidebar.
+Project/source task navigation for the [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web sidebar.
 
-Channel plugins can group Sessions by a stable provider identity while leaving Session working directories, Workspace records, and conversation logs unchanged. Real Workspaces, virtual groups, and remaining ungrouped Sessions are rendered in one sidebar.
+Channel plugins attach a stable communication origin while project membership remains owned by DSH Workspace and `cwd` data. The sidebar can switch between project and source views and includes status filters, conversation search, Activity, archive browsing, pinning, sorting, drag ordering, Job/Subagent details, and batch archive.
 
 Full documentation: [github.com/wheam/dsh-session-groups](https://github.com/wheam/dsh-session-groups#readme)
 
@@ -33,18 +33,19 @@ await ctx.sessionGroups.assign(sessionId, {
 })
 ```
 
-The same `source + id` identifies one group. The newest assignment controls its title. Providers can remove an assignment with `await ctx.sessionGroups.unassign(sessionId)`.
+The same exact `source + id` identifies one communication source. The newest assignment controls its chat title and kind without replacing Workspace membership. Providers can remove an assignment with `await ctx.sessionGroups.unassign(sessionId)`.
 
-Installing this package adds the service and sidebar UI; virtual groups appear after a provider uses this API.
+Installing this package adds the service and sidebar UI; external source metadata appears after a provider uses this API.
 
 ## Data and compatibility
 
-- Stores assignments in the local DSH `session_groups` storage-domain sidecar.
+- Stores source assignments in the local DSH `session_groups` storage-domain sidecar and non-sensitive browser preferences in local storage.
 - Makes no external network requests and reads no credentials.
-- Does not change model input, tools, prompts, or Session logs.
+- Uses DSH's local search API and does not keep a second conversation-content index.
+- Does not change model input, tools, prompts, Session logs, or working directories.
 - Verified with DSH `0.1.1-rc.2` on the Web client.
 
-This release shadows the complete `sidebar.workspaces` surface. It preserves common Workspace and Session actions and title search, but does not reproduce full conversation-content search or drag sorting from the stock browser.
+This release shadows the complete `sidebar.workspaces` surface. DSH `0.1.1-rc.2` exposes archive but not safe unarchive or permanent Session deletion, so archived Sessions can be viewed, searched, and opened but not restored or permanently deleted from this UI.
 
 ## License
 

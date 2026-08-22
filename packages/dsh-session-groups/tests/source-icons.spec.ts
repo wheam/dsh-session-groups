@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { resolveSourceIconKey } from '../src/client/source-icon-key.js'
+import { resolveSourceFamily, resolveSourceIconKey } from '../src/client/source-icon-key.js'
 
 describe('resolveSourceIconKey', () => {
   it('recognizes provider names and their common aliases', () => {
@@ -20,5 +20,16 @@ describe('resolveSourceIconKey', () => {
   it('falls back for unknown and empty providers', () => {
     expect(resolveSourceIconKey('custom-provider')).toBeUndefined()
     expect(resolveSourceIconKey('')).toBeUndefined()
+  })
+})
+
+describe('resolveSourceFamily', () => {
+  it('merges known aliases only at the presentation-family level', () => {
+    expect(resolveSourceFamily('feishu')).toEqual({ key: 'feishu', title: '飞书 / Lark', iconSource: 'feishu' })
+    expect(resolveSourceFamily('lark-suite')).toEqual({ key: 'feishu', title: '飞书 / Lark', iconSource: 'feishu' })
+  })
+
+  it('keeps an unknown provider readable and stable', () => {
+    expect(resolveSourceFamily('Acme Chat')).toEqual({ key: 'acme-chat', title: 'Acme Chat', iconSource: 'Acme Chat' })
   })
 })

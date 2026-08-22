@@ -1,4 +1,4 @@
-/** Generic durable virtual-group service and Host Remote for DSH Sessions. */
+/** Durable provider-origin service and Host Remote for DSH Sessions. */
 import { Context, Service } from '@deepseek-ai/cordis';
 import type { SessionId } from '@deepseek-ai/dsh-session/types';
 import { TypertRemoteService } from '@deepseek-ai/dsh-typert-protocol';
@@ -19,13 +19,14 @@ export declare class SessionGroupsService extends TypertRemoteService {
     /** Open and own the sidecar storage domain. */
     protected [Service.init](): Promise<void>;
     /**
-     * Assign one Session to a provider-owned virtual group. Identical assignments
-     * are no-ops; a changed title replaces the whole descriptor durably.
+     * Attach one provider-owned communication origin to a Session. The legacy
+     * sessionGroups name stays compatible and does not replace Workspace membership.
+     * Identical assignments are no-ops; a changed title replaces the descriptor durably.
      */
     assign(sessionId: SessionId, descriptor: SessionGroupDescriptor): Promise<void>;
-    /** Remove one Session's virtual assignment; absence is already successful. */
+    /** Remove one Session's communication-origin assignment; absence is already successful. */
     unassign(sessionId: SessionId): Promise<void>;
-    /** Return the complete immutable assignment snapshot for the browser. */
+    /** Return the complete immutable source-assignment snapshot for the browser. */
     list(): SessionGroupSnapshot;
     private requireTable;
 }
