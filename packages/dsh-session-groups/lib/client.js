@@ -16443,13 +16443,11 @@ var styles = `
 .sg_rail{display:flex;justify-content:center;padding-top:8px}.sg_railButton{display:inline-flex;width:36px;height:36px;align-items:center;justify-content:center;border:0;border-radius:8px;background:transparent;color:var(--dsw-alias-label-primary);cursor:pointer;padding:0}.sg_railButton svg{display:block;flex:none}.sg_railButton:hover{background:var(--dsw-alias-interactive-bg-hover)}
 `;
 function installStyles() {
-  const id = "dsh-session-groups/styles";
-  const existing = document.querySelector(`style[data-plugin-css="${id}"]`);
   const element = document.createElement("style");
-  element.dataset.pluginCss = id;
+  element.dataset.plugin = "dsh-session-groups";
+  element.dataset.pluginCss = "dsh-session-groups/styles";
   element.textContent = styles;
-  if (existing === null) document.head.appendChild(element);
-  else existing.replaceWith(element);
+  document.head.appendChild(element);
   return () => {
     element.remove();
   };
@@ -16465,7 +16463,7 @@ async function apply(ctx) {
     throw new Error("dsh-session-groups: the sessionGroups Remote namespace did not mount");
   }
   const controller = new SessionGroupsController(remote);
-  const disposeStyles = installStyles();
+  ctx.effect(installStyles, "dsh-session-groups: stylesheet");
   const injected = () => ({
     hooks: { sessionGroups: controller.source },
     refresh: () => controller.refresh(),
@@ -16533,7 +16531,6 @@ async function apply(ctx) {
   }, 15e3);
   return async () => {
     window.clearInterval(timer);
-    disposeStyles();
     await disposeRemote();
   };
 }

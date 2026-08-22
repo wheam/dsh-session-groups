@@ -22,7 +22,7 @@ export async function apply(ctx: ClientContext): Promise<() => Promise<void>> {
     throw new Error('dsh-session-groups: the sessionGroups Remote namespace did not mount')
   }
   const controller = new SessionGroupsController(remote)
-  const disposeStyles = installStyles()
+  ctx.effect(installStyles, 'dsh-session-groups: stylesheet')
 
   const injected = (): SessionGroupsBrowserInjected => ({
     hooks: { sessionGroups: controller.source },
@@ -83,7 +83,6 @@ export async function apply(ctx: ClientContext): Promise<() => Promise<void>> {
   const timer = window.setInterval(() => { void controller.refresh() }, 15_000)
   return async () => {
     window.clearInterval(timer)
-    disposeStyles()
     await disposeRemote()
   }
 }

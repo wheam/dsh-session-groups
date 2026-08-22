@@ -23,14 +23,12 @@ export const styles = `
 .sg_rail{display:flex;justify-content:center;padding-top:8px}.sg_railButton{display:inline-flex;width:36px;height:36px;align-items:center;justify-content:center;border:0;border-radius:8px;background:transparent;color:var(--dsw-alias-label-primary);cursor:pointer;padding:0}.sg_railButton svg{display:block;flex:none}.sg_railButton:hover{background:var(--dsw-alias-interactive-bg-hover)}
 `
 
-/** Install or refresh this package's stylesheet and retain it across live reloads. */
+/** Install one stylesheet owned by the current Cordis fiber. */
 export function installStyles(): () => void {
-  const id = 'dsh-session-groups/styles'
-  const existing = document.querySelector<HTMLStyleElement>(`style[data-plugin-css="${id}"]`)
   const element = document.createElement('style')
-  element.dataset.pluginCss = id
+  element.dataset.plugin = 'dsh-session-groups'
+  element.dataset.pluginCss = 'dsh-session-groups/styles'
   element.textContent = styles
-  if (existing === null) document.head.appendChild(element)
-  else existing.replaceWith(element)
+  document.head.appendChild(element)
   return () => { element.remove() }
 }
