@@ -3,6 +3,22 @@
   "version": "0.1.0",
   "description": "Generic virtual session groups for the DeepSeek Harness sidebar, backed by a durable provider-facing sidecar service.",
   "license": "MIT",
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "session-management",
+    "sidebar"
+  ],
+  "homepage": "https://github.com/wheam/dsh-session-groups#readme",
+  "bugs": {
+    "url": "https://github.com/wheam/dsh-session-groups/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wheam/dsh-session-groups.git",
+    "directory": "packages/dsh-session-groups"
+  },
   "type": "module",
   "main": "lib/index.js",
   "types": "lib/types/index.d.ts",

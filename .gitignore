@@ -1,6 +1,4 @@
 node_modules/
-lib/
-packages/*/lib/
+/lib/
 coverage/
 *.tgz
-
