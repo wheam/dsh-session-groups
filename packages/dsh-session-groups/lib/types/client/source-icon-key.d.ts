@@ -1,5 +1,5 @@
 /** Icon identities understood by the sidebar, independent of their rendering assets. */
-export type SourceIconKey = 'dingtalk' | 'discord' | 'facebook' | 'feishu' | 'gmail' | 'googlechat' | 'imessage' | 'instagram' | 'kakaotalk' | 'line' | 'mastodon' | 'matrix' | 'mattermost' | 'messenger' | 'qq' | 'reddit' | 'rocketchat' | 'signal' | 'slack' | 'teams' | 'telegram' | 'viber' | 'wechat' | 'whatsapp' | 'x' | 'zoom' | 'zulip';
+export type SourceIconKey = 'aider' | 'amazonq' | 'claudecode' | 'cline' | 'codeium' | 'codex' | 'continue' | 'cody' | 'cursor' | 'dingtalk' | 'discord' | 'facebook' | 'feishu' | 'geminicli' | 'gmail' | 'githubcopilot' | 'googlechat' | 'imessage' | 'instagram' | 'kakaotalk' | 'kimicode' | 'line' | 'mastodon' | 'matrix' | 'mattermost' | 'messenger' | 'opencode' | 'qq' | 'reddit' | 'replitagent' | 'rocketchat' | 'roocode' | 'signal' | 'slack' | 'tabnine' | 'teams' | 'telegram' | 'viber' | 'wechat' | 'whatsapp' | 'windsurf' | 'x' | 'zed' | 'zoom' | 'zulip';
 export declare function normalizeSource(source: string): string;
 /** Resolve provider namespaces and common bridge/plugin suffixes to a known icon. */
 export declare function resolveSourceIconKey(source: string): SourceIconKey | undefined;

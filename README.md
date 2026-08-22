@@ -16,11 +16,12 @@ Channel plugins attach a stable communication origin such as a Feishu chat, Slac
 
 - Independent project and communication-source contexts for every Session.
 - Project-first browsing by real Workspace, inferred directory project, or "No project"; source-first browsing by app and concrete chat.
+- Project rows show origin metadata only for explicit channels; missing assignments stay quiet there and collect under "Unattributed" in source view.
 - Durable, provider-neutral source assignments keyed by exact `source + id`, with presentation-only alias families such as Feishu/Lark.
-- Built-in source icons for Feishu/Lark, Slack, Teams, DingTalk, Telegram, Discord, WeChat, WhatsApp, Google Chat, Mattermost, Matrix, Signal, LINE, Messenger, iMessage, KakaoTalk, Viber, Rocket.Chat, Zulip, QQ, Gmail, Zoom, and common aliases.
+- Built-in source icons and aliases for messaging channels plus coding agents including Claude Code, Codex, Cursor, GitHub Copilot, Gemini CLI, OpenCode, Windsurf, Cline, Continue, Aider, Kimi Code, Replit Agent, Amazon Q Developer, Tabnine, Cody, Roo Code, and Zed Agent.
 - Waiting-user, failed-job, running, recently-completed, and idle status with group aggregation, quick filters, source/chat/date filters, and an Activity inbox.
 - Unified title/metadata and DSH conversation-content search with snippets, cancellation, and `Cmd/Ctrl+K` focus.
-- Relative update times, project/source metadata, Workspace folder opening, pinning, four sort modes, and drag ordering.
+- Exact update metadata in tooltips, project/source metadata, Workspace folder opening, pinning, four sort modes, and drag ordering.
 - Archived-session browser, multi-select archive, Job/Subagent details, and keyboard up/down navigation.
 - Existing Session and Workspace actions: open, create, rename, fork, archive, add, reorder, and delete registration.
 - Browser preferences persist locally and degrade safely if storage is unavailable or corrupt.

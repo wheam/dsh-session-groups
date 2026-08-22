@@ -1,12 +1,12 @@
 /** Provider-aware group icons with a folder fallback for native and unknown sources. */
-import {
-  IconFolderClose16,
-  IconFolderOpen16,
-} from '@deepseek-ai/dsh-client-ui-primitives'
+import claudeSvg from 'simple-icons/icons/claude.svg'
+import codeiumSvg from 'simple-icons/icons/codeium.svg'
 import discordSvg from 'simple-icons/icons/discord.svg'
 import facebookSvg from 'simple-icons/icons/facebook.svg'
 import gmailSvg from 'simple-icons/icons/gmail.svg'
 import googleChatSvg from 'simple-icons/icons/googlechat.svg'
+import googleGeminiSvg from 'simple-icons/icons/googlegemini.svg'
+import githubCopilotSvg from 'simple-icons/icons/githubcopilot.svg'
 import imessageSvg from 'simple-icons/icons/imessage.svg'
 import instagramSvg from 'simple-icons/icons/instagram.svg'
 import kakaoTalkSvg from 'simple-icons/icons/kakaotalk.svg'
@@ -15,7 +15,9 @@ import mastodonSvg from 'simple-icons/icons/mastodon.svg'
 import matrixSvg from 'simple-icons/icons/matrix.svg'
 import mattermostSvg from 'simple-icons/icons/mattermost.svg'
 import messengerSvg from 'simple-icons/icons/messenger.svg'
+import openAiSvg from 'simple-icons/icons/openai.svg'
 import redditSvg from 'simple-icons/icons/reddit.svg'
+import replitSvg from 'simple-icons/icons/replit.svg'
 import rocketChatSvg from 'simple-icons/icons/rocketdotchat.svg'
 import signalSvg from 'simple-icons/icons/signal.svg'
 import slackSvg from 'simple-icons/icons/slack.svg'
@@ -25,6 +27,7 @@ import viberSvg from 'simple-icons/icons/viber.svg'
 import wechatSvg from 'simple-icons/icons/wechat.svg'
 import whatsappSvg from 'simple-icons/icons/whatsapp.svg'
 import xSvg from 'simple-icons/icons/x.svg'
+import zedSvg from 'simple-icons/icons/zedindustries.svg'
 import zoomSvg from 'simple-icons/icons/zoom.svg'
 import zulipSvg from 'simple-icons/icons/zulip.svg'
 import { resolveSourceIconKey, type SourceIconKey } from './source-icon-key.js'
@@ -46,7 +49,13 @@ type SvgSourceIcon = {
   readonly hex: string
 }
 
-type SourceIcon = VectorSourceIcon | BitmapSourceIcon | SvgSourceIcon
+type BadgeSourceIcon = {
+  readonly title: string
+  readonly label: string
+  readonly hex: string
+}
+
+type SourceIcon = VectorSourceIcon | BitmapSourceIcon | SvgSourceIcon | BadgeSourceIcon
 
 // The official Feishu favicon is intentionally embedded so the installed client
 // remains self-contained and does not make a network request while rendering.
@@ -60,43 +69,113 @@ const TEAMS_ICON: VectorSourceIcon = {
 }
 
 const SOURCE_ICONS = {
+  aider: { title: 'Aider', label: 'A', hex: '3A4856' },
+  amazonq: { title: 'Amazon Q Developer', label: 'Q', hex: 'FF9900' },
+  claudecode: { title: 'Claude Code', svg: claudeSvg, hex: 'D97757' },
+  cline: { title: 'Cline', label: 'CL', hex: '6C5CE7' },
+  codeium: { title: 'Codeium', svg: codeiumSvg, hex: '09B6A2' },
+  codex: { title: 'Codex', svg: openAiSvg, hex: '412991' },
+  continue: { title: 'Continue', label: 'CT', hex: '242424' },
+  cody: { title: 'Sourcegraph Cody', label: 'C', hex: 'A112FF' },
+  cursor: { title: 'Cursor', label: 'C', hex: '171717' },
   dingtalk: { title: '钉钉', dataUri: DINGTALK_ICON },
   discord: { title: 'Discord', svg: discordSvg, hex: '5865F2' },
   facebook: { title: 'Facebook', svg: facebookSvg, hex: '0866FF' },
   feishu: { title: '飞书 / Lark', dataUri: FEISHU_ICON },
+  geminicli: { title: 'Gemini CLI', svg: googleGeminiSvg, hex: '8E75B2' },
   gmail: { title: 'Gmail', svg: gmailSvg, hex: 'EA4335' },
+  githubcopilot: { title: 'GitHub Copilot', svg: githubCopilotSvg, hex: '000000' },
   googlechat: { title: 'Google Chat', svg: googleChatSvg, hex: '34A853' },
   imessage: { title: 'iMessage', svg: imessageSvg, hex: '34DA50' },
   instagram: { title: 'Instagram', svg: instagramSvg, hex: 'FF0069' },
   kakaotalk: { title: 'KakaoTalk', svg: kakaoTalkSvg, hex: 'FFCD00' },
+  kimicode: { title: 'Kimi Code', label: 'K', hex: '1677FF' },
   line: { title: 'LINE', svg: lineSvg, hex: '00C300' },
   mastodon: { title: 'Mastodon', svg: mastodonSvg, hex: '6364FF' },
   matrix: { title: 'Matrix', svg: matrixSvg, hex: '000000' },
   mattermost: { title: 'Mattermost', svg: mattermostSvg, hex: '0058CC' },
   messenger: { title: 'Messenger', svg: messengerSvg, hex: '00B2FF' },
+  opencode: { title: 'OpenCode', label: 'OC', hex: '111111' },
   qq: { title: 'Tencent QQ', svg: tencentQqSvg, hex: '1EBAFC' },
   reddit: { title: 'Reddit', svg: redditSvg, hex: 'FF4500' },
+  replitagent: { title: 'Replit Agent', svg: replitSvg, hex: 'F26207' },
   rocketchat: { title: 'Rocket.Chat', svg: rocketChatSvg, hex: 'F5455C' },
+  roocode: { title: 'Roo Code', label: 'R', hex: '00A6A6' },
   signal: { title: 'Signal', svg: signalSvg, hex: '3B45FD' },
   slack: { title: 'Slack', svg: slackSvg, hex: '4A154B' },
+  tabnine: { title: 'Tabnine', label: '9', hex: '7B42BC' },
   teams: TEAMS_ICON,
   telegram: { title: 'Telegram', svg: telegramSvg, hex: '26A5E4' },
   viber: { title: 'Viber', svg: viberSvg, hex: '7360F2' },
   wechat: { title: 'WeChat', svg: wechatSvg, hex: '07C160' },
   whatsapp: { title: 'WhatsApp', svg: whatsappSvg, hex: '25D366' },
+  windsurf: { title: 'Windsurf', svg: codeiumSvg, hex: '09B6A2' },
   x: { title: 'X', svg: xSvg, hex: '000000' },
+  zed: { title: 'Zed Agent', svg: zedSvg, hex: '084CCF' },
   zoom: { title: 'Zoom', svg: zoomSvg, hex: '0B5CFF' },
   zulip: { title: 'Zulip', svg: zulipSvg, hex: '6492FE' },
 } satisfies Record<string, SourceIcon>
 
+/** A lighter, stroke-based folder that stays legible at sidebar size. */
+function FolderGroupIcon({ folded }: { folded: boolean }) {
+  return folded ? (
+    <svg className="sg_folderIcon" viewBox="0 0 20 20" fill="none" focusable="false">
+      <path
+        d="M2.75 6.25v-.6a2.15 2.15 0 0 1 2.15-2.15h2.34c.54 0 1.06.22 1.44.6l1.18 1.18c.28.28.66.44 1.06.44h4.18a2.15 2.15 0 0 1 2.15 2.15v6.48a2.15 2.15 0 0 1-2.15 2.15H4.9a2.15 2.15 0 0 1-2.15-2.15v-8.1Z"
+        stroke="currentColor"
+        strokeWidth="1.45"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  ) : (
+    <svg className="sg_folderIcon" viewBox="0 0 20 20" fill="none" focusable="false">
+      <path
+        d="M2.75 9.1V5.65A2.15 2.15 0 0 1 4.9 3.5h2.34c.54 0 1.06.22 1.44.6l1.18 1.18c.28.28.66.44 1.06.44h4.18a2.15 2.15 0 0 1 2.15 2.15v.27"
+        stroke="currentColor"
+        strokeWidth="1.45"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M5.72 8.14h11.05a1.55 1.55 0 0 1 1.43 2.15l-2.06 4.95a2.05 2.05 0 0 1-1.89 1.26H3.78a1.55 1.55 0 0 1-1.43-2.15L4.3 9.4a1.55 1.55 0 0 1 1.43-1.26Z"
+        stroke="currentColor"
+        strokeWidth="1.45"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 /** Render a stable brand mark when known; preserve the current open/closed folder otherwise. */
 export function SessionGroupIcon({ source, folded }: { source?: string, folded: boolean }) {
   const key = source === undefined ? undefined : resolveSourceIconKey(source)
-  if (key === undefined) return folded ? <IconFolderClose16 /> : <IconFolderOpen16 />
+  if (key === undefined) return <FolderGroupIcon folded={folded} />
 
   const icon = SOURCE_ICONS[key]
   if ('dataUri' in icon) {
     return <img className="sg_brandIcon" src={icon.dataUri} alt="" title={icon.title} />
+  }
+  if ('label' in icon) {
+    return (
+      <span
+        className="sg_brandIcon"
+        title={icon.title}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: 4,
+          background: `#${icon.hex}`,
+          color: '#fff',
+          fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+          fontSize: icon.label.length > 1 ? 7 : 9,
+          fontWeight: 700,
+          lineHeight: 1,
+        }}
+      >{icon.label}</span>
+    )
   }
   const color = icon.hex === '000000' || icon.hex === '4A154B'
     ? 'var(--dsw-alias-label-secondary)'

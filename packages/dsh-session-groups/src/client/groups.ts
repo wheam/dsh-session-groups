@@ -67,7 +67,7 @@ export interface BrowserGroup {
 
 const UNATTRIBUTED_SOURCE: SourceContext = Object.freeze({
   familyKey: 'source:unattributed',
-  familyTitle: '本地或未标注来源',
+  familyTitle: '未标注来源',
   chatKey: 'chat:unattributed',
 })
 

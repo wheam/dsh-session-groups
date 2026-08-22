@@ -1,34 +1,70 @@
 /** Icon identities understood by the sidebar, independent of their rendering assets. */
 export type SourceIconKey =
+  | 'aider'
+  | 'amazonq'
+  | 'claudecode'
+  | 'cline'
+  | 'codeium'
+  | 'codex'
+  | 'continue'
+  | 'cody'
+  | 'cursor'
   | 'dingtalk'
   | 'discord'
   | 'facebook'
   | 'feishu'
+  | 'geminicli'
   | 'gmail'
+  | 'githubcopilot'
   | 'googlechat'
   | 'imessage'
   | 'instagram'
   | 'kakaotalk'
+  | 'kimicode'
   | 'line'
   | 'mastodon'
   | 'matrix'
   | 'mattermost'
   | 'messenger'
+  | 'opencode'
   | 'qq'
   | 'reddit'
+  | 'replitagent'
   | 'rocketchat'
+  | 'roocode'
   | 'signal'
   | 'slack'
+  | 'tabnine'
   | 'teams'
   | 'telegram'
   | 'viber'
   | 'wechat'
   | 'whatsapp'
+  | 'windsurf'
   | 'x'
+  | 'zed'
   | 'zoom'
   | 'zulip'
 
 const SOURCE_ALIASES: ReadonlyArray<readonly [SourceIconKey, readonly string[]]> = [
+  ['claudecode', ['claude-code', 'claudecode', 'claude-cli', 'claude-agent', 'claude']],
+  ['codex', ['codex', 'codex-cli', 'openai-codex', 'codex-app']],
+  ['cursor', ['cursor', 'cursor-agent', 'cursor-cli']],
+  ['githubcopilot', ['github-copilot', 'githubcopilot', 'copilot-cli', 'copilot-agent', 'copilot']],
+  ['geminicli', ['gemini-cli', 'google-gemini-cli', 'gemini-agent', 'gemini']],
+  ['opencode', ['opencode', 'open-code', 'opencode-cli']],
+  ['windsurf', ['windsurf', 'windsurf-agent']],
+  ['codeium', ['codeium', 'codeium-agent']],
+  ['roocode', ['roo-code', 'roocode', 'roo-cline']],
+  ['cline', ['cline', 'cline-agent']],
+  ['continue', ['continue-dev', 'continue-agent', 'continue']],
+  ['aider', ['aider', 'aider-chat']],
+  ['kimicode', ['kimi-code', 'kimicode', 'kimi-cli', 'kimi-agent']],
+  ['replitagent', ['replit-agent', 'replitagent', 'replit']],
+  ['amazonq', ['amazon-q-developer', 'amazon-q', 'amazonq', 'q-developer']],
+  ['tabnine', ['tabnine', 'tabnine-agent']],
+  ['cody', ['sourcegraph-cody', 'cody-agent', 'cody']],
+  ['zed', ['zed-agent', 'zed-ai', 'zed']],
   ['feishu', ['feishu', 'lark', 'larksuite', 'lark-suite', '飞书']],
   ['slack', ['slack']],
   ['teams', ['teams', 'msteams', 'ms-teams', 'microsoftteams', 'microsoft-teams']],
@@ -77,31 +113,49 @@ export function resolveSourceIconKey(source: string): SourceIconKey | undefined 
 }
 
 const SOURCE_TITLES: Readonly<Record<SourceIconKey, string>> = {
+  aider: 'Aider',
+  amazonq: 'Amazon Q Developer',
+  claudecode: 'Claude Code',
+  cline: 'Cline',
+  codeium: 'Codeium',
+  codex: 'Codex',
+  continue: 'Continue',
+  cody: 'Sourcegraph Cody',
+  cursor: 'Cursor',
   dingtalk: '钉钉',
   discord: 'Discord',
   facebook: 'Facebook',
   feishu: '飞书 / Lark',
+  geminicli: 'Gemini CLI',
   gmail: 'Gmail',
+  githubcopilot: 'GitHub Copilot',
   googlechat: 'Google Chat',
   imessage: 'iMessage',
   instagram: 'Instagram',
   kakaotalk: 'KakaoTalk',
+  kimicode: 'Kimi Code',
   line: 'LINE',
   mastodon: 'Mastodon',
   matrix: 'Matrix',
   mattermost: 'Mattermost',
   messenger: 'Messenger',
+  opencode: 'OpenCode',
   qq: 'Tencent QQ',
   reddit: 'Reddit',
+  replitagent: 'Replit Agent',
   rocketchat: 'Rocket.Chat',
+  roocode: 'Roo Code',
   signal: 'Signal',
   slack: 'Slack',
+  tabnine: 'Tabnine',
   teams: 'Microsoft Teams',
   telegram: 'Telegram',
   viber: 'Viber',
   wechat: '微信',
   whatsapp: 'WhatsApp',
+  windsurf: 'Windsurf',
   x: 'X',
+  zed: 'Zed Agent',
   zoom: 'Zoom',
   zulip: 'Zulip',
 }

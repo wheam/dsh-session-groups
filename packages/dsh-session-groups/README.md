@@ -4,6 +4,8 @@ Project/source task navigation for the [DeepSeek Harness](https://github.com/dee
 
 Channel plugins attach a stable communication origin while project membership remains owned by DSH Workspace and `cwd` data. The sidebar can switch between project and source views and includes status filters, conversation search, Activity, archive browsing, pinning, sorting, drag ordering, Job/Subagent details, and batch archive.
 
+Project rows show origin metadata only for explicit channels. Sessions without assignments remain compact there and appear under "Unattributed" in source view.
+
 Full documentation: [github.com/wheam/dsh-session-groups](https://github.com/wheam/dsh-session-groups#readme)
 
 ## Install

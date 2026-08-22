@@ -14579,7 +14579,7 @@ var typert_remote_client_default = TYPERT_REMOTE;
 
 // packages/dsh-session-groups/src/client/browser.tsx
 var import_react = require("react");
-var import_dsh_client_ui_primitives2 = require("@deepseek-ai/dsh-client-ui-primitives");
+var import_dsh_client_ui_primitives = require("@deepseek-ai/dsh-client-ui-primitives");
 
 // packages/dsh-session-groups/src/client/controller.ts
 var BACKEND_DISCONNECTED = /(?:load failed|failed to fetch|network(?:error| request failed)|econnrefused|connection (?:lost|closed|refused)|no active connection)/i;
@@ -14635,6 +14635,24 @@ var SessionGroupsController = class {
 
 // packages/dsh-session-groups/src/client/source-icon-key.ts
 var SOURCE_ALIASES = [
+  ["claudecode", ["claude-code", "claudecode", "claude-cli", "claude-agent", "claude"]],
+  ["codex", ["codex", "codex-cli", "openai-codex", "codex-app"]],
+  ["cursor", ["cursor", "cursor-agent", "cursor-cli"]],
+  ["githubcopilot", ["github-copilot", "githubcopilot", "copilot-cli", "copilot-agent", "copilot"]],
+  ["geminicli", ["gemini-cli", "google-gemini-cli", "gemini-agent", "gemini"]],
+  ["opencode", ["opencode", "open-code", "opencode-cli"]],
+  ["windsurf", ["windsurf", "windsurf-agent"]],
+  ["codeium", ["codeium", "codeium-agent"]],
+  ["roocode", ["roo-code", "roocode", "roo-cline"]],
+  ["cline", ["cline", "cline-agent"]],
+  ["continue", ["continue-dev", "continue-agent", "continue"]],
+  ["aider", ["aider", "aider-chat"]],
+  ["kimicode", ["kimi-code", "kimicode", "kimi-cli", "kimi-agent"]],
+  ["replitagent", ["replit-agent", "replitagent", "replit"]],
+  ["amazonq", ["amazon-q-developer", "amazon-q", "amazonq", "q-developer"]],
+  ["tabnine", ["tabnine", "tabnine-agent"]],
+  ["cody", ["sourcegraph-cody", "cody-agent", "cody"]],
+  ["zed", ["zed-agent", "zed-ai", "zed"]],
   ["feishu", ["feishu", "lark", "larksuite", "lark-suite", "\u98DE\u4E66"]],
   ["slack", ["slack"]],
   ["teams", ["teams", "msteams", "ms-teams", "microsoftteams", "microsoft-teams"]],
@@ -14676,31 +14694,49 @@ function resolveSourceIconKey(source) {
   return void 0;
 }
 var SOURCE_TITLES = {
+  aider: "Aider",
+  amazonq: "Amazon Q Developer",
+  claudecode: "Claude Code",
+  cline: "Cline",
+  codeium: "Codeium",
+  codex: "Codex",
+  continue: "Continue",
+  cody: "Sourcegraph Cody",
+  cursor: "Cursor",
   dingtalk: "\u9489\u9489",
   discord: "Discord",
   facebook: "Facebook",
   feishu: "\u98DE\u4E66 / Lark",
+  geminicli: "Gemini CLI",
   gmail: "Gmail",
+  githubcopilot: "GitHub Copilot",
   googlechat: "Google Chat",
   imessage: "iMessage",
   instagram: "Instagram",
   kakaotalk: "KakaoTalk",
+  kimicode: "Kimi Code",
   line: "LINE",
   mastodon: "Mastodon",
   matrix: "Matrix",
   mattermost: "Mattermost",
   messenger: "Messenger",
+  opencode: "OpenCode",
   qq: "Tencent QQ",
   reddit: "Reddit",
+  replitagent: "Replit Agent",
   rocketchat: "Rocket.Chat",
+  roocode: "Roo Code",
   signal: "Signal",
   slack: "Slack",
+  tabnine: "Tabnine",
   teams: "Microsoft Teams",
   telegram: "Telegram",
   viber: "Viber",
   wechat: "\u5FAE\u4FE1",
   whatsapp: "WhatsApp",
+  windsurf: "Windsurf",
   x: "X",
+  zed: "Zed Agent",
   zoom: "Zoom",
   zulip: "Zulip"
 };
@@ -14718,7 +14754,7 @@ function resolveSourceFamily(source) {
 // packages/dsh-session-groups/src/client/groups.ts
 var UNATTRIBUTED_SOURCE = Object.freeze({
   familyKey: "source:unattributed",
-  familyTitle: "\u672C\u5730\u6216\u672A\u6807\u6CE8\u6765\u6E90",
+  familyTitle: "\u672A\u6807\u6CE8\u6765\u6E90",
   chatKey: "chat:unattributed"
 });
 function sessionGroupKindLabel(kind) {
@@ -15083,8 +15119,11 @@ function orderByKeys(items, keys, keyOf) {
   });
 }
 
-// packages/dsh-session-groups/src/client/source-icons.tsx
-var import_dsh_client_ui_primitives = require("@deepseek-ai/dsh-client-ui-primitives");
+// node_modules/.pnpm/simple-icons@13.21.0/node_modules/simple-icons/icons/claude.svg
+var claude_default = '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Claude</title><path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"/></svg>';
+
+// node_modules/.pnpm/simple-icons@13.21.0/node_modules/simple-icons/icons/codeium.svg
+var codeium_default = '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Codeium</title><path d="M1 0a1 1 0 0 0-1 1v22c0 .063.007.124.018.184L0 23.199l.025.026c.103.443.5.775.975.775h22a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1H1zm.707 1h20.582l-2 2H3.707l-2-2zM23 1.705v20.588l-2-2V3.705l2-2zM1 1.707l2 2v16.492l-2 2V1.707zM4 4h16v16H4V4zm3.537 3c-1.006 0-1.51.535-1.51 1.605v2.297c0 .4-.184.6-.554.6a.47.47 0 0 0-.344.139.512.512 0 0 0-.129.365.49.49 0 0 0 .129.353.47.47 0 0 0 .344.139c.37 0 .554.2.554.6v2.297c0 1.07.504 1.605 1.51 1.605.136 0 .248-.05.334-.148A.494.494 0 0 0 8 16.498a.512.512 0 0 0-.129-.365.439.439 0 0 0-.334-.139c-.376 0-.564-.199-.564-.6v-2.296c0-.46-.1-.823-.297-1.092.099-.138.173-.3.222-.485.05-.183.075-.389.075-.619V8.605c0-.4.188-.6.564-.6a.439.439 0 0 0 .334-.138A.499.499 0 0 0 8 7.512a.53.53 0 0 0-.129-.364A.425.425 0 0 0 7.537 7zm8.926 0a.425.425 0 0 0-.334.148.53.53 0 0 0-.129.364.5.5 0 0 0 .129.355.439.439 0 0 0 .334.139c.376 0 .564.199.564.6v2.296c0 .23.025.436.075.62.049.183.123.346.222.484-.197.27-.297.632-.297 1.092v2.297c0 .4-.188.6-.564.6a.439.439 0 0 0-.334.138.512.512 0 0 0-.129.365c0 .145.043.262.129.354a.425.425 0 0 0 .334.148c1.006 0 1.51-.535 1.51-1.605v-2.297c0-.4.184-.6.554-.6a.439.439 0 0 0 .334-.139.475.475 0 0 0 .139-.353.492.492 0 0 0-.139-.365.439.439 0 0 0-.334-.139c-.37 0-.554-.2-.554-.6V8.605c0-1.07-.504-1.605-1.51-1.605zm-7.25 6a.737.737 0 0 0-.496.227.717.717 0 0 0-.217.529.74.74 0 0 0 .75.744.74.74 0 0 0 .75-.744.717.717 0 0 0-.217-.53A.71.71 0 0 0 9.25 13h-.037zm2.75 0a.737.737 0 0 0-.496.227.717.717 0 0 0-.217.529.74.74 0 0 0 .217.53c.152.143.33.214.533.214a.74.74 0 0 0 .75-.744.717.717 0 0 0-.217-.53A.71.71 0 0 0 12 13h-.037zm2.75 0a.737.737 0 0 0-.496.227.717.717 0 0 0-.217.529.74.74 0 0 0 .217.53c.152.143.33.214.533.214a.74.74 0 0 0 .75-.744.717.717 0 0 0-.217-.53.71.71 0 0 0-.533-.226h-.037zm-11.1 8h16.68l2 2H1.613l2-2z"/></svg>';
 
 // node_modules/.pnpm/simple-icons@13.21.0/node_modules/simple-icons/icons/discord.svg
 var discord_default = '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Discord</title><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg>';
@@ -15097,6 +15136,12 @@ var gmail_default = '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.or
 
 // node_modules/.pnpm/simple-icons@13.21.0/node_modules/simple-icons/icons/googlechat.svg
 var googlechat_default = '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Google Chat</title><path d="M1.637 0C.733 0 0 .733 0 1.637v16.5c0 .904.733 1.636 1.637 1.636h3.955v3.323c0 .804.97 1.207 1.539.638l3.963-3.96h11.27c.903 0 1.636-.733 1.636-1.637V5.592L18.408 0Zm3.955 5.592h12.816v8.59H8.455l-2.863 2.863Z"/></svg>';
+
+// node_modules/.pnpm/simple-icons@13.21.0/node_modules/simple-icons/icons/googlegemini.svg
+var googlegemini_default = '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Google Gemini</title><path d="M11.04 19.32Q12 21.51 12 24q0-2.49.93-4.68.96-2.19 2.58-3.81t3.81-2.55Q21.51 12 24 12q-2.49 0-4.68-.93a12.3 12.3 0 0 1-3.81-2.58 12.3 12.3 0 0 1-2.58-3.81Q12 2.49 12 0q0 2.49-.96 4.68-.93 2.19-2.55 3.81a12.3 12.3 0 0 1-3.81 2.58Q2.49 12 0 12q2.49 0 4.68.96 2.19.93 3.81 2.55t2.55 3.81"/></svg>';
+
+// node_modules/.pnpm/simple-icons@13.21.0/node_modules/simple-icons/icons/githubcopilot.svg
+var githubcopilot_default = '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub Copilot</title><path d="M23.922 16.997C23.061 18.492 18.063 22.02 12 22.02 5.937 22.02.939 18.492.078 16.997A.641.641 0 0 1 0 16.741v-2.869a.883.883 0 0 1 .053-.22c.372-.935 1.347-2.292 2.605-2.656.167-.429.414-1.055.644-1.517a10.098 10.098 0 0 1-.052-1.086c0-1.331.282-2.499 1.132-3.368.397-.406.89-.717 1.474-.952C7.255 2.937 9.248 1.98 11.978 1.98c2.731 0 4.767.957 6.166 2.093.584.235 1.077.546 1.474.952.85.869 1.132 2.037 1.132 3.368 0 .368-.014.733-.052 1.086.23.462.477 1.088.644 1.517 1.258.364 2.233 1.721 2.605 2.656a.841.841 0 0 1 .053.22v2.869a.641.641 0 0 1-.078.256Zm-11.75-5.992h-.344a4.359 4.359 0 0 1-.355.508c-.77.947-1.918 1.492-3.508 1.492-1.725 0-2.989-.359-3.782-1.259a2.137 2.137 0 0 1-.085-.104L4 11.746v6.585c1.435.779 4.514 2.179 8 2.179 3.486 0 6.565-1.4 8-2.179v-6.585l-.098-.104s-.033.045-.085.104c-.793.9-2.057 1.259-3.782 1.259-1.59 0-2.738-.545-3.508-1.492a4.359 4.359 0 0 1-.355-.508Zm2.328 3.25c.549 0 1 .451 1 1v2c0 .549-.451 1-1 1-.549 0-1-.451-1-1v-2c0-.549.451-1 1-1Zm-5 0c.549 0 1 .451 1 1v2c0 .549-.451 1-1 1-.549 0-1-.451-1-1v-2c0-.549.451-1 1-1Zm3.313-6.185c.136 1.057.403 1.913.878 2.497.442.544 1.134.938 2.344.938 1.573 0 2.292-.337 2.657-.751.384-.435.558-1.15.558-2.361 0-1.14-.243-1.847-.705-2.319-.477-.488-1.319-.862-2.824-1.025-1.487-.161-2.192.138-2.533.529-.269.307-.437.808-.438 1.578v.021c0 .265.021.562.063.893Zm-1.626 0c.042-.331.063-.628.063-.894v-.02c-.001-.77-.169-1.271-.438-1.578-.341-.391-1.046-.69-2.533-.529-1.505.163-2.347.537-2.824 1.025-.462.472-.705 1.179-.705 2.319 0 1.211.175 1.926.558 2.361.365.414 1.084.751 2.657.751 1.21 0 1.902-.394 2.344-.938.475-.584.742-1.44.878-2.497Z"/></svg>';
 
 // node_modules/.pnpm/simple-icons@13.21.0/node_modules/simple-icons/icons/imessage.svg
 var imessage_default = '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>iMessage</title><path d="M5.285 0A5.273 5.273 0 0 0 0 5.285v13.43A5.273 5.273 0 0 0 5.285 24h13.43A5.273 5.273 0 0 0 24 18.715V5.285A5.273 5.273 0 0 0 18.715 0ZM12 4.154a8.809 7.337 0 0 1 8.809 7.338A8.809 7.337 0 0 1 12 18.828a8.809 7.337 0 0 1-2.492-.303A8.656 7.337 0 0 1 5.93 19.93a9.929 7.337 0 0 0 1.54-2.155 8.809 7.337 0 0 1-4.279-6.283A8.809 7.337 0 0 1 12 4.154"/></svg>';
@@ -15122,8 +15167,14 @@ var mattermost_default = '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.
 // node_modules/.pnpm/simple-icons@13.21.0/node_modules/simple-icons/icons/messenger.svg
 var messenger_default = '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Messenger</title><path d="M.001 11.639C.001 4.949 5.241 0 12.001 0S24 4.95 24 11.639c0 6.689-5.24 11.638-12 11.638-1.21 0-2.38-.16-3.47-.46a.96.96 0 00-.64.05l-2.39 1.05a.96.96 0 01-1.35-.85l-.07-2.14a.97.97 0 00-.32-.68A11.39 11.389 0 01.002 11.64zm8.32-2.19l-3.52 5.6c-.35.53.32 1.139.82.75l3.79-2.87c.26-.2.6-.2.87 0l2.8 2.1c.84.63 2.04.4 2.6-.48l3.52-5.6c.35-.53-.32-1.13-.82-.75l-3.79 2.87c-.25.2-.6.2-.86 0l-2.8-2.1a1.8 1.8 0 00-2.61.48z"/></svg>';
 
+// node_modules/.pnpm/simple-icons@13.21.0/node_modules/simple-icons/icons/openai.svg
+var openai_default = '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>OpenAI</title><path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z"/></svg>';
+
 // node_modules/.pnpm/simple-icons@13.21.0/node_modules/simple-icons/icons/reddit.svg
 var reddit_default = '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Reddit</title><path d="M12 0C5.373 0 0 5.373 0 12c0 3.314 1.343 6.314 3.515 8.485l-2.286 2.286C.775 23.225 1.097 24 1.738 24H12c6.627 0 12-5.373 12-12S18.627 0 12 0Zm4.388 3.199c1.104 0 1.999.895 1.999 1.999 0 1.105-.895 2-1.999 2-.946 0-1.739-.657-1.947-1.539v.002c-1.147.162-2.032 1.15-2.032 2.341v.007c1.776.067 3.4.567 4.686 1.363.473-.363 1.064-.58 1.707-.58 1.547 0 2.802 1.254 2.802 2.802 0 1.117-.655 2.081-1.601 2.531-.088 3.256-3.637 5.876-7.997 5.876-4.361 0-7.905-2.617-7.998-5.87-.954-.447-1.614-1.415-1.614-2.538 0-1.548 1.255-2.802 2.803-2.802.645 0 1.239.218 1.712.585 1.275-.79 2.881-1.291 4.64-1.365v-.01c0-1.663 1.263-3.034 2.88-3.207.188-.911.993-1.595 1.959-1.595Zm-8.085 8.376c-.784 0-1.459.78-1.506 1.797-.047 1.016.64 1.429 1.426 1.429.786 0 1.371-.369 1.418-1.385.047-1.017-.553-1.841-1.338-1.841Zm7.406 0c-.786 0-1.385.824-1.338 1.841.047 1.017.634 1.385 1.418 1.385.785 0 1.473-.413 1.426-1.429-.046-1.017-.721-1.797-1.506-1.797Zm-3.703 4.013c-.974 0-1.907.048-2.77.135-.147.015-.241.168-.183.305.483 1.154 1.622 1.964 2.953 1.964 1.33 0 2.47-.81 2.953-1.964.057-.137-.037-.29-.184-.305-.863-.087-1.795-.135-2.769-.135Z"/></svg>';
+
+// node_modules/.pnpm/simple-icons@13.21.0/node_modules/simple-icons/icons/replit.svg
+var replit_default = '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Replit</title><path d="M2 1.5A1.5 1.5 0 0 1 3.5 0h7A1.5 1.5 0 0 1 12 1.5V8H3.5A1.5 1.5 0 0 1 2 6.5ZM12 8h8.5A1.5 1.5 0 0 1 22 9.5v5a1.5 1.5 0 0 1-1.5 1.5H12ZM2 17.5A1.5 1.5 0 0 1 3.5 16H12v6.5a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 2 22.5Z"/></svg>';
 
 // node_modules/.pnpm/simple-icons@13.21.0/node_modules/simple-icons/icons/rocketdotchat.svg
 var rocketdotchat_default = '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Rocket.Chat</title><path d="M22.909 8.381c-.651-1.01-1.564-1.905-2.71-2.66-2.215-1.457-5.127-2.259-8.197-2.259-1.027 0-2.038.09-3.018.266a9.978 9.978 0 0 0-2.075-1.53C4.11.803 1.646 1.323.4 1.77a.598.598 0 0 0-.233.977c.879.907 2.332 2.698 1.974 4.327C.753 8.493 0 10.203 0 11.982c0 1.815.752 3.524 2.142 4.942.357 1.63-1.096 3.421-1.975 4.328a.597.597 0 0 0 .233.977c1.245.448 3.71.968 6.508-.427a10.031 10.031 0 0 0 2.075-1.53 17.06 17.06 0 0 0 3.018.265c3.071 0 5.983-.801 8.197-2.257 1.147-.755 2.06-1.65 2.71-2.661C23.633 14.493 24 13.28 24 12.017c.001-1.297-.366-2.508-1.091-3.636zM11.875 18.437c-1.328 0-2.594-.171-3.748-.48l-.844.81a7.716 7.716 0 0 1-1.556 1.154 6.118 6.118 0 0 1-2.2.621c.042-.074.079-.149.119-.224.844-1.553 1.073-2.948.683-4.186-1.382-1.086-2.212-2.476-2.212-3.99 0-3.476 4.369-6.294 9.757-6.294s9.757 2.818 9.757 6.294c.001 3.477-4.367 6.295-9.756 6.295zm-3.229-6.315c0 .788-.644 1.427-1.438 1.427a1.433 1.433 0 0 1-1.438-1.427c0-.788.644-1.426 1.438-1.426.794 0 1.438.638 1.438 1.426zm4.627 0c0 .788-.644 1.427-1.438 1.427a1.433 1.433 0 0 1-1.438-1.427c0-.788.644-1.426 1.438-1.426.794 0 1.438.638 1.438 1.426zm4.63 0c0 .788-.645 1.427-1.439 1.427a1.433 1.433 0 0 1-1.438-1.427c0-.788.644-1.426 1.438-1.426.794 0 1.438.638 1.438 1.426z"/></svg>';
@@ -15152,6 +15203,9 @@ var whatsapp_default = '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3
 // node_modules/.pnpm/simple-icons@13.21.0/node_modules/simple-icons/icons/x.svg
 var x_default = '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>X</title><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>';
 
+// node_modules/.pnpm/simple-icons@13.21.0/node_modules/simple-icons/icons/zedindustries.svg
+var zedindustries_default = '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Zed Industries</title><path d="M2.25 1.5a.75.75 0 0 0-.75.75v16.5H0V2.25A2.25 2.25 0 0 1 2.25 0h20.095c1.002 0 1.504 1.212.795 1.92L10.764 14.298h3.486V12.75h1.5v1.922a1.125 1.125 0 0 1-1.125 1.125H9.264l-2.578 2.578h11.689V9h1.5v9.375a1.5 1.5 0 0 1-1.5 1.5H5.185L2.562 22.5H21.75a.75.75 0 0 0 .75-.75V5.25H24v16.5A2.25 2.25 0 0 1 21.75 24H1.655C.653 24 .151 22.788.86 22.08L13.19 9.75H9.75v1.5h-1.5V9.375A1.125 1.125 0 0 1 9.375 8.25h5.314l2.625-2.625H5.625V15h-1.5V5.625a1.5 1.5 0 0 1 1.5-1.5h13.19L21.438 1.5z"/></svg>';
+
 // node_modules/.pnpm/simple-icons@13.21.0/node_modules/simple-icons/icons/zoom.svg
 var zoom_default = '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Zoom</title><path d="M5.033 14.649H.743a.74.74 0 0 1-.686-.458.74.74 0 0 1 .16-.808L3.19 10.41H1.06A1.06 1.06 0 0 1 0 9.35h3.957c.301 0 .57.18.686.458a.74.74 0 0 1-.161.808L1.51 13.59h2.464c.585 0 1.06.475 1.06 1.06zM24 11.338c0-1.14-.927-2.066-2.066-2.066-.61 0-1.158.265-1.537.686a2.061 2.061 0 0 0-1.536-.686c-1.14 0-2.066.926-2.066 2.066v3.311a1.06 1.06 0 0 0 1.06-1.06v-2.251a1.004 1.004 0 0 1 2.013 0v2.251c0 .586.474 1.06 1.06 1.06v-3.311a1.004 1.004 0 0 1 2.012 0v2.251c0 .586.475 1.06 1.06 1.06zM16.265 12a2.728 2.728 0 1 1-5.457 0 2.728 2.728 0 0 1 5.457 0zm-1.06 0a1.669 1.669 0 1 0-3.338 0 1.669 1.669 0 0 0 3.338 0zm-4.82 0a2.728 2.728 0 1 1-5.458 0 2.728 2.728 0 0 1 5.457 0zm-1.06 0a1.669 1.669 0 1 0-3.338 0 1.669 1.669 0 0 0 3.338 0z"/></svg>';
 
@@ -15168,40 +15222,113 @@ var TEAMS_ICON = {
   path: "M20.625 8.127q-.55 0-1.025-.205-.475-.205-.832-.563-.358-.357-.563-.832Q18 6.053 18 5.502q0-.54.205-1.02t.563-.837q.357-.358.832-.563.474-.205 1.025-.205.54 0 1.02.205t.837.563q.358.357.563.837.205.48.205 1.02 0 .55-.205 1.025-.205.475-.563.832-.357.358-.837.563-.48.205-1.02.205zm0-3.75q-.469 0-.797.328-.328.328-.328.797 0 .469.328.797.328.328.797.328.469 0 .797-.328.328-.328.328-.797 0-.469-.328-.797-.328-.328-.797-.328zM24 10.002v5.578q0 .774-.293 1.46-.293.685-.803 1.194-.51.51-1.195.803-.686.293-1.459.293-.445 0-.908-.105-.463-.106-.85-.329-.293.95-.855 1.729-.563.78-1.319 1.336-.756.557-1.67.861-.914.305-1.898.305-1.148 0-2.162-.398-1.014-.399-1.805-1.102-.79-.703-1.312-1.664t-.674-2.086h-5.8q-.411 0-.704-.293T0 16.881V6.873q0-.41.293-.703t.703-.293h8.59q-.34-.715-.34-1.5 0-.727.275-1.365.276-.639.75-1.114.475-.474 1.114-.75.638-.275 1.365-.275t1.365.275q.639.276 1.114.75.474.475.75 1.114.275.638.275 1.365t-.275 1.365q-.276.639-.75 1.113-.475.475-1.114.75-.638.276-1.365.276-.188 0-.375-.024-.188-.023-.375-.058v1.078h10.875q.469 0 .797.328.328.328.328.797zM12.75 2.373q-.41 0-.78.158-.368.158-.638.434-.27.275-.428.639-.158.363-.158.773 0 .41.158.78.159.368.428.638.27.27.639.428.369.158.779.158.41 0 .773-.158.364-.159.64-.428.274-.27.433-.639.158-.369.158-.779 0-.41-.158-.773-.159-.364-.434-.64-.275-.275-.639-.433-.363-.158-.773-.158zM6.937 9.814h2.25V7.94H2.814v1.875h2.25v6h1.875zm10.313 7.313v-6.75H12v6.504q0 .41-.293.703t-.703.293H8.309q.152.809.556 1.5.405.691.985 1.19.58.497 1.318.779.738.281 1.582.281.926 0 1.746-.352.82-.351 1.436-.966.615-.616.966-1.43.352-.815.352-1.752zm5.25-1.547v-5.203h-3.75v6.855q.305.305.691.452.387.146.809.146.469 0 .879-.176.41-.175.715-.48.304-.305.48-.715t.176-.879Z"
 };
 var SOURCE_ICONS = {
+  aider: { title: "Aider", label: "A", hex: "3A4856" },
+  amazonq: { title: "Amazon Q Developer", label: "Q", hex: "FF9900" },
+  claudecode: { title: "Claude Code", svg: claude_default, hex: "D97757" },
+  cline: { title: "Cline", label: "CL", hex: "6C5CE7" },
+  codeium: { title: "Codeium", svg: codeium_default, hex: "09B6A2" },
+  codex: { title: "Codex", svg: openai_default, hex: "412991" },
+  continue: { title: "Continue", label: "CT", hex: "242424" },
+  cody: { title: "Sourcegraph Cody", label: "C", hex: "A112FF" },
+  cursor: { title: "Cursor", label: "C", hex: "171717" },
   dingtalk: { title: "\u9489\u9489", dataUri: DINGTALK_ICON },
   discord: { title: "Discord", svg: discord_default, hex: "5865F2" },
   facebook: { title: "Facebook", svg: facebook_default, hex: "0866FF" },
   feishu: { title: "\u98DE\u4E66 / Lark", dataUri: FEISHU_ICON },
+  geminicli: { title: "Gemini CLI", svg: googlegemini_default, hex: "8E75B2" },
   gmail: { title: "Gmail", svg: gmail_default, hex: "EA4335" },
+  githubcopilot: { title: "GitHub Copilot", svg: githubcopilot_default, hex: "000000" },
   googlechat: { title: "Google Chat", svg: googlechat_default, hex: "34A853" },
   imessage: { title: "iMessage", svg: imessage_default, hex: "34DA50" },
   instagram: { title: "Instagram", svg: instagram_default, hex: "FF0069" },
   kakaotalk: { title: "KakaoTalk", svg: kakaotalk_default, hex: "FFCD00" },
+  kimicode: { title: "Kimi Code", label: "K", hex: "1677FF" },
   line: { title: "LINE", svg: line_default, hex: "00C300" },
   mastodon: { title: "Mastodon", svg: mastodon_default, hex: "6364FF" },
   matrix: { title: "Matrix", svg: matrix_default, hex: "000000" },
   mattermost: { title: "Mattermost", svg: mattermost_default, hex: "0058CC" },
   messenger: { title: "Messenger", svg: messenger_default, hex: "00B2FF" },
+  opencode: { title: "OpenCode", label: "OC", hex: "111111" },
   qq: { title: "Tencent QQ", svg: tencentqq_default, hex: "1EBAFC" },
   reddit: { title: "Reddit", svg: reddit_default, hex: "FF4500" },
+  replitagent: { title: "Replit Agent", svg: replit_default, hex: "F26207" },
   rocketchat: { title: "Rocket.Chat", svg: rocketdotchat_default, hex: "F5455C" },
+  roocode: { title: "Roo Code", label: "R", hex: "00A6A6" },
   signal: { title: "Signal", svg: signal_default, hex: "3B45FD" },
   slack: { title: "Slack", svg: slack_default, hex: "4A154B" },
+  tabnine: { title: "Tabnine", label: "9", hex: "7B42BC" },
   teams: TEAMS_ICON,
   telegram: { title: "Telegram", svg: telegram_default, hex: "26A5E4" },
   viber: { title: "Viber", svg: viber_default, hex: "7360F2" },
   wechat: { title: "WeChat", svg: wechat_default, hex: "07C160" },
   whatsapp: { title: "WhatsApp", svg: whatsapp_default, hex: "25D366" },
+  windsurf: { title: "Windsurf", svg: codeium_default, hex: "09B6A2" },
   x: { title: "X", svg: x_default, hex: "000000" },
+  zed: { title: "Zed Agent", svg: zedindustries_default, hex: "084CCF" },
   zoom: { title: "Zoom", svg: zoom_default, hex: "0B5CFF" },
   zulip: { title: "Zulip", svg: zulip_default, hex: "6492FE" }
 };
+function FolderGroupIcon({ folded }) {
+  return folded ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("svg", { className: "sg_folderIcon", viewBox: "0 0 20 20", fill: "none", focusable: "false", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+    "path",
+    {
+      d: "M2.75 6.25v-.6a2.15 2.15 0 0 1 2.15-2.15h2.34c.54 0 1.06.22 1.44.6l1.18 1.18c.28.28.66.44 1.06.44h4.18a2.15 2.15 0 0 1 2.15 2.15v6.48a2.15 2.15 0 0 1-2.15 2.15H4.9a2.15 2.15 0 0 1-2.15-2.15v-8.1Z",
+      stroke: "currentColor",
+      strokeWidth: "1.45",
+      strokeLinecap: "round",
+      strokeLinejoin: "round"
+    }
+  ) }) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("svg", { className: "sg_folderIcon", viewBox: "0 0 20 20", fill: "none", focusable: "false", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      "path",
+      {
+        d: "M2.75 9.1V5.65A2.15 2.15 0 0 1 4.9 3.5h2.34c.54 0 1.06.22 1.44.6l1.18 1.18c.28.28.66.44 1.06.44h4.18a2.15 2.15 0 0 1 2.15 2.15v.27",
+        stroke: "currentColor",
+        strokeWidth: "1.45",
+        strokeLinecap: "round",
+        strokeLinejoin: "round"
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      "path",
+      {
+        d: "M5.72 8.14h11.05a1.55 1.55 0 0 1 1.43 2.15l-2.06 4.95a2.05 2.05 0 0 1-1.89 1.26H3.78a1.55 1.55 0 0 1-1.43-2.15L4.3 9.4a1.55 1.55 0 0 1 1.43-1.26Z",
+        stroke: "currentColor",
+        strokeWidth: "1.45",
+        strokeLinecap: "round",
+        strokeLinejoin: "round"
+      }
+    )
+  ] });
+}
 function SessionGroupIcon({ source, folded }) {
   const key = source === void 0 ? void 0 : resolveSourceIconKey(source);
-  if (key === void 0) return folded ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_dsh_client_ui_primitives.IconFolderClose16, {}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_dsh_client_ui_primitives.IconFolderOpen16, {});
+  if (key === void 0) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FolderGroupIcon, { folded });
   const icon = SOURCE_ICONS[key];
   if ("dataUri" in icon) {
     return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", { className: "sg_brandIcon", src: icon.dataUri, alt: "", title: icon.title });
+  }
+  if ("label" in icon) {
+    return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      "span",
+      {
+        className: "sg_brandIcon",
+        title: icon.title,
+        style: {
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: 4,
+          background: `#${icon.hex}`,
+          color: "#fff",
+          fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+          fontSize: icon.label.length > 1 ? 7 : 9,
+          fontWeight: 700,
+          lineHeight: 1
+        },
+        children: icon.label
+      }
+    );
   }
   const color = icon.hex === "000000" || icon.hex === "4A154B" ? "var(--dsw-alias-label-secondary)" : `#${icon.hex}`;
   if ("svg" in icon) {
@@ -15267,17 +15394,6 @@ function pendingLabel(entry) {
       return ATTENTION_COPY[entry.attention].label;
   }
 }
-function relativeTime(timestamp, now) {
-  const seconds = Math.max(0, Math.floor((now - timestamp) / 1e3));
-  if (seconds < 60) return "\u521A\u521A";
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes} \u5206\u949F\u524D`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} \u5C0F\u65F6\u524D`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days} \u5929\u524D`;
-  return new Date(timestamp).toLocaleDateString();
-}
 function duration3(startedAt, finishedAt, now) {
   const seconds = Math.max(0, Math.floor(((finishedAt ?? now) - startedAt) / 1e3));
   if (seconds < 60) return `${seconds} \u79D2`;
@@ -15288,6 +15404,9 @@ function duration3(startedAt, finishedAt, now) {
 function sourceLabel(entry) {
   if (entry.source.rawSource === void 0) return entry.source.familyTitle;
   return entry.source.chatTitle === void 0 ? entry.source.familyTitle : `${entry.source.familyTitle} \xB7 ${entry.source.chatTitle}`;
+}
+function explicitSourceLabel(entry) {
+  return entry.source.rawSource === void 0 ? void 0 : sourceLabel(entry);
 }
 function metadata(entry) {
   const parts = [
@@ -15788,6 +15907,34 @@ function SessionGroupsBrowser({
     event.preventDefault();
     rows[nextIndex]?.focus();
   };
+  const blurClosedMenuOnLeave = (event) => {
+    const active = document.activeElement;
+    if (!(active instanceof HTMLElement) || active.tagName !== "SUMMARY" || !event.currentTarget.contains(active)) return;
+    const menu = active.closest("details");
+    if (menu?.open !== true) active.blur();
+  };
+  const placeMenuWithinScroller = (event) => {
+    const menu = event.currentTarget;
+    if (!menu.open) {
+      delete menu.dataset.placement;
+      menu.style.removeProperty("--sg-menu-max-height");
+      return;
+    }
+    const panel = menu.querySelector(".sg_menuPanel");
+    const scroller = menu.closest(".sg_groups");
+    if (panel === null || scroller === null) return;
+    delete menu.dataset.placement;
+    menu.style.removeProperty("--sg-menu-max-height");
+    const anchorRect = menu.getBoundingClientRect();
+    const scrollerRect = scroller.getBoundingClientRect();
+    const naturalHeight = panel.scrollHeight + 10;
+    const spaceBelow = Math.max(0, scrollerRect.bottom - anchorRect.bottom - 4);
+    const spaceAbove = Math.max(0, anchorRect.top - scrollerRect.top - 4);
+    const opensUp = naturalHeight > spaceBelow && spaceAbove > spaceBelow;
+    const available = opensUp ? spaceAbove : spaceBelow;
+    menu.dataset.placement = opensUp ? "up" : "down";
+    menu.style.setProperty("--sg-menu-max-height", `${Math.max(40, available)}px`);
+  };
   const renderActivityDetails = (entry) => {
     const catalog = sessions.subagentsByParent[entry.summary.id];
     return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_activityDetails", children: [
@@ -15795,7 +15942,7 @@ function SessionGroupsBrowser({
         /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("strong", { children: "\u540E\u53F0\u6D3B\u52A8" }),
         /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", title: "\u5237\u65B0 Subagent", onClick: () => {
           run(refreshSubagents(entry.summary.id));
-        }, children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives2.IconRefreshOutline14, {}) })
+        }, children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconRefreshOutline14, {}) })
       ] }),
       entry.jobs.map((job) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_job", title: job.detail, children: [
         /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: `sg_jobStatus sg_jobStatus-${job.status}`, children: job.status }),
@@ -15832,13 +15979,20 @@ function SessionGroupsBrowser({
     const current = entry.summary.id === sessions.current;
     const expanded = expandedActivity.has(entry.summary.id);
     const snippet = contentHits.get(entry.summary.id);
-    const counterpart = surface === "activity" || surface === "archive" ? `${entry.project.title} \xB7 ${sourceLabel(entry)}` : preferences.browseMode === "project" ? sourceLabel(entry) : entry.project.title;
+    const explicitSource = explicitSourceLabel(entry);
+    const counterpart = surface === "activity" || surface === "archive" ? explicitSource === void 0 ? entry.project.title : `${entry.project.title} \xB7 ${explicitSource}` : preferences.browseMode === "project" ? explicitSource : entry.project.title;
     const pinned = preferences.pinnedSessions.includes(String(entry.summary.id));
     const sessionDraggable = canDragSession(entry, group);
+    const compact = counterpart === void 0 && snippet === void 0;
+    const wrapClassName = [
+      "sg_sessionWrap",
+      current ? "sg_sessionCurrent" : "",
+      compact ? "sg_sessionCompact" : ""
+    ].filter(Boolean).join(" ");
     return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
       "div",
       {
-        className: current ? "sg_sessionWrap sg_sessionCurrent" : "sg_sessionWrap",
+        className: wrapClassName,
         draggable: sessionDraggable,
         onDragStart: () => {
           setDragged({ type: "session", entry, groupKey: group.key });
@@ -15849,6 +16003,7 @@ function SessionGroupsBrowser({
         onDrop: (event) => {
           dropSession(event, entry, group);
         },
+        onMouseLeave: blurClosedMenuOnLeave,
         children: [
           /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_session", children: [
             manageMode ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
@@ -15866,49 +16021,63 @@ function SessionGroupsBrowser({
             /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { className: "sg_sessionOpen", type: "button", title: metadata(entry), "aria-current": current ? "page" : void 0, onClick: () => {
               open(entry.summary.id);
             }, children: [
-              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_statusSlot", children: entry.attention === "idle" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: `sg_dot sg_dot-${entry.attention}`, role: "img", title: pendingLabel(entry), "aria-label": pendingLabel(entry) }) }),
               pinned ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_pinMark", "aria-label": "\u5DF2\u7F6E\u9876", children: "\u2605" }) : null,
               /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "sg_sessionText", children: [
                 /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_sessionTitle", children: entry.summary.blank ? "\u65B0\u4F1A\u8BDD" : entry.summary.displayTitle }),
-                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_sessionMeta", children: counterpart }),
+                counterpart === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_sessionMeta", children: counterpart }),
                 snippet === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_snippet", children: snippet })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_time", children: relativeTime(entry.summary.updatedAt, now) })
+              entry.attention === "idle" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_statusSlot", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: `sg_dot sg_dot-${entry.attention}`, role: "img", title: pendingLabel(entry), "aria-label": pendingLabel(entry) }) })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("details", { className: "sg_menu", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("summary", { title: "\u4F1A\u8BDD\u64CD\u4F5C", "aria-label": "\u4F1A\u8BDD\u64CD\u4F5C", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives2.IconEllipsisOutline16, {}) }),
-              /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_menuPanel", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                  togglePinnedSession(entry.summary.id);
-                }, children: pinned ? "\u53D6\u6D88\u7F6E\u9876" : "\u7F6E\u9876" }),
-                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                  toggleSessionActivity(entry);
-                }, children: expanded ? "\u6536\u8D77\u6D3B\u52A8" : "\u67E5\u770B Job \u4E0E Subagent" }),
-                entry.project.path === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                  run(openPath(entry.project.path));
-                }, children: "\u6253\u5F00\u9879\u76EE\u6587\u4EF6\u5939" }),
-                entry.source.rawSource === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                  setSurface("browse");
-                  setQuery("");
-                  patchPreferences({ browseMode: "source", attentionFilter: "all", sourceFilter: entry.source.familyKey, chatFilter: "", updatedRange: "any" });
-                }, children: "\u67E5\u770B\u6B64\u6765\u6E90\u7684\u5168\u90E8\u4F1A\u8BDD" }),
-                entry.source.chatTitle === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                  setSurface("browse");
-                  setQuery("");
-                  patchPreferences({ browseMode: "source", attentionFilter: "all", sourceFilter: entry.source.familyKey, chatFilter: entry.source.chatKey, updatedRange: "any" });
-                }, children: "\u67E5\u770B\u6B64\u804A\u5929\u7684\u5168\u90E8\u4F1A\u8BDD" }),
-                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                  setBrowseMode("project");
-                }, children: "\u6309\u9879\u76EE\u67E5\u770B" }),
-                surface === "archive" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                  run(renameSession(entry.summary.id, entry.summary.displayTitle));
-                }, children: "\u91CD\u547D\u540D" }),
-                surface === "archive" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                  run(forkSession(entry.summary.id));
-                }, children: "\u5206\u53C9\u4F1A\u8BDD" }),
-                surface === "archive" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                  run(archiveSession(entry.summary.id));
-                }, children: "\u5F52\u6863" })
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_sessionHoverActions", children: [
+              surface === "archive" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+                "button",
+                {
+                  className: "sg_quickArchive",
+                  type: "button",
+                  title: "\u5F52\u6863",
+                  "aria-label": `\u5F52\u6863 ${entry.summary.displayTitle}`,
+                  onClick: () => {
+                    run(archiveSession(entry.summary.id));
+                  },
+                  children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconArchiveOutline20, { size: 16 })
+                }
+              ),
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("details", { className: "sg_menu", onToggle: placeMenuWithinScroller, children: [
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("summary", { title: "\u66F4\u591A\u4F1A\u8BDD\u64CD\u4F5C", "aria-label": "\u66F4\u591A\u4F1A\u8BDD\u64CD\u4F5C", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconEllipsisOutline16, {}) }),
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_menuPanel", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
+                    togglePinnedSession(entry.summary.id);
+                  }, children: pinned ? "\u53D6\u6D88\u7F6E\u9876" : "\u7F6E\u9876" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
+                    toggleSessionActivity(entry);
+                  }, children: expanded ? "\u6536\u8D77\u6D3B\u52A8" : "\u67E5\u770B Job \u4E0E Subagent" }),
+                  entry.project.path === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
+                    run(openPath(entry.project.path));
+                  }, children: "\u6253\u5F00\u9879\u76EE\u6587\u4EF6\u5939" }),
+                  entry.source.rawSource === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
+                    setSurface("browse");
+                    setQuery("");
+                    patchPreferences({ browseMode: "source", attentionFilter: "all", sourceFilter: entry.source.familyKey, chatFilter: "", updatedRange: "any" });
+                  }, children: "\u67E5\u770B\u6B64\u6765\u6E90\u7684\u5168\u90E8\u4F1A\u8BDD" }),
+                  entry.source.chatTitle === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
+                    setSurface("browse");
+                    setQuery("");
+                    patchPreferences({ browseMode: "source", attentionFilter: "all", sourceFilter: entry.source.familyKey, chatFilter: entry.source.chatKey, updatedRange: "any" });
+                  }, children: "\u67E5\u770B\u6B64\u804A\u5929\u7684\u5168\u90E8\u4F1A\u8BDD" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
+                    setBrowseMode("project");
+                  }, children: "\u6309\u9879\u76EE\u67E5\u770B" }),
+                  surface === "archive" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
+                    run(renameSession(entry.summary.id, entry.summary.displayTitle));
+                  }, children: "\u91CD\u547D\u540D" }),
+                  surface === "archive" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
+                    run(forkSession(entry.summary.id));
+                  }, children: "\u5206\u53C9\u4F1A\u8BDD" }),
+                  surface === "archive" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
+                    run(archiveSession(entry.summary.id));
+                  }, children: "\u5F52\u6863" })
+                ] })
               ] })
             ] })
           ] }),
@@ -15926,6 +16095,7 @@ function SessionGroupsBrowser({
     const total = fullGroup === void 0 ? groupSize(group) : groupSize(fullGroup);
     const visible2 = groupSize(group);
     const counts = fullGroup?.counts ?? group.counts;
+    const hasContent = group.sessions.length > 0 || (group.children?.length ?? 0) > 0;
     return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("section", { className: `sg_group sg_groupDepth-${Math.min(depth, 2)}`, children: [
       /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
         "div",
@@ -15941,34 +16111,45 @@ function SessionGroupsBrowser({
           onDrop: (event) => {
             dropGroup(event, group, siblings.map((item) => item.key), parentKey);
           },
+          onMouseLeave: blurClosedMenuOnLeave,
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { className: "sg_groupToggle", type: "button", "aria-expanded": !folded, title: folded ? "\u5C55\u5F00\u5206\u7EC4" : "\u6536\u8D77\u5206\u7EC4", onClick: () => {
-              toggleCollapsed(group.key);
-            }, children: [
-              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_groupIcon", "aria-hidden": true, children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(SessionGroupIcon, { source: group.source, folded }) }),
-              pinned ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_pinMark", "aria-label": "\u5DF2\u7F6E\u9876", children: "\u2605" }) : null,
-              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_groupTitle", title: group.title, children: group.title }),
-              kindLabel === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_kind", children: kindLabel }),
-              counts.waiting > 0 ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "sg_attentionCount sg_attentionCount-waiting", children: [
-                "\u5F85 ",
-                counts.waiting
-              ] }) : null,
-              counts.failed > 0 ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "sg_attentionCount sg_attentionCount-failed", children: [
-                "\u5931\u8D25 ",
-                counts.failed
-              ] }) : null,
-              counts.running > 0 ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "sg_attentionCount sg_attentionCount-running", children: [
-                "\u8FD0\u884C ",
-                counts.running
-              ] }) : null,
-              counts.completed > 0 ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "sg_attentionCount sg_attentionCount-completed", children: [
-                "\u5B8C\u6210 ",
-                counts.completed
-              ] }) : null,
-              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_count", title: hasActiveFilters ? `${visible2} \u4E2A\u7B5B\u9009\u547D\u4E2D\uFF0C\u5171 ${total} \u4E2A\u4F1A\u8BDD` : void 0, children: hasActiveFilters ? `${visible2}/${total}` : total })
-            ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("details", { className: "sg_menu sg_groupMenu", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("summary", { title: "\u5206\u7EC4\u64CD\u4F5C", "aria-label": "\u5206\u7EC4\u64CD\u4F5C", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives2.IconEllipsisOutline16, {}) }),
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
+              "button",
+              {
+                className: hasContent ? "sg_groupToggle" : "sg_groupToggle sg_groupToggleEmpty",
+                type: "button",
+                "aria-expanded": hasContent ? !folded : void 0,
+                title: hasContent ? folded ? "\u5C55\u5F00\u5206\u7EC4" : "\u6536\u8D77\u5206\u7EC4" : "\u7A7A\u5206\u7EC4",
+                onClick: () => {
+                  if (hasContent) toggleCollapsed(group.key);
+                },
+                children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_groupIcon", "aria-hidden": true, children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(SessionGroupIcon, { source: group.source, folded }) }),
+                  pinned ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_pinMark", "aria-label": "\u5DF2\u7F6E\u9876", children: "\u2605" }) : null,
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_groupTitle", title: group.title, children: group.title }),
+                  kindLabel === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_kind", children: kindLabel }),
+                  counts.waiting > 0 ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "sg_attentionCount sg_attentionCount-waiting", children: [
+                    "\u5F85 ",
+                    counts.waiting
+                  ] }) : null,
+                  counts.failed > 0 ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "sg_attentionCount sg_attentionCount-failed", children: [
+                    "\u5931\u8D25 ",
+                    counts.failed
+                  ] }) : null,
+                  counts.running > 0 ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "sg_attentionCount sg_attentionCount-running", children: [
+                    "\u8FD0\u884C ",
+                    counts.running
+                  ] }) : null,
+                  counts.completed > 0 ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "sg_attentionCount sg_attentionCount-completed", children: [
+                    "\u5B8C\u6210 ",
+                    counts.completed
+                  ] }) : null,
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_count", title: hasActiveFilters ? `${visible2} \u4E2A\u7B5B\u9009\u547D\u4E2D\uFF0C\u5171 ${total} \u4E2A\u4F1A\u8BDD` : void 0, children: hasActiveFilters ? `${visible2}/${total}` : total })
+                ]
+              }
+            ),
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("details", { className: "sg_menu sg_groupMenu", onToggle: placeMenuWithinScroller, children: [
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("summary", { title: "\u5206\u7EC4\u64CD\u4F5C", "aria-label": "\u5206\u7EC4\u64CD\u4F5C", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconEllipsisOutline16, {}) }),
               /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_menuPanel", children: [
                 surface === "activity" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
                   togglePinnedGroup(group.key);
@@ -15976,25 +16157,25 @@ function SessionGroupsBrowser({
                 group.path === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { type: "button", onClick: () => {
                   run(openPath(group.path));
                 }, children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives2.IconFolderOpenOutline16, {}),
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconFolderOpenOutline16, {}),
                   "\u6253\u5F00\u6587\u4EF6\u5939"
                 ] }),
                 group.workspaceId === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { type: "button", onClick: () => {
                   startSession(group.workspaceId);
                 }, children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives2.IconPlusOutline16, {}),
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconPlusOutline16, {}),
                   "\u65B0\u5EFA\u4F1A\u8BDD"
                 ] }),
                 group.workspaceId === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { type: "button", onClick: () => {
                   run(renameWorkspace(group.workspaceId, group.title));
                 }, children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives2.IconEditOutline16, {}),
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconEditOutline16, {}),
                   "\u91CD\u547D\u540D Workspace"
                 ] }),
                 group.workspaceId === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { type: "button", onClick: () => {
                   run(deleteWorkspace(group.workspaceId, group.title));
                 }, children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives2.IconTrashOutline16, {}),
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconTrashOutline16, {}),
                   "\u5220\u9664 Workspace \u6CE8\u518C"
                 ] })
               ] })
@@ -16002,7 +16183,7 @@ function SessionGroupsBrowser({
           ]
         }
       ),
-      folded ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_groupBody", children: [
+      folded || !hasContent ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_groupBody", children: [
         group.sessions.map((entry) => renderSession(entry, group)),
         canDrag && group.sessions.some((entry) => canDragSession(entry, group)) ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "sg_dropEnd", onDragOver: (event) => {
           if (dragged?.type === "session" && dragged.groupKey === group.key) event.preventDefault();
@@ -16014,14 +16195,13 @@ function SessionGroupsBrowser({
           event.preventDefault();
         }, onDrop: (event) => {
           dropGroupAtEnd(event, group.children, group.key);
-        } }) : null,
-        group.sessions.length === 0 && group.children === void 0 ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "sg_empty", children: "\u6682\u65E0\u4F1A\u8BDD" }) : null
+        } }) : null
       ] })
     ] }, group.key);
   };
   const visibleIds = renderedSessionIds(groups, collapsed);
   const allVisibleSelected = visibleIds.length > 0 && visibleIds.every((id) => selected.has(id));
-  return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("section", { className: "sg_root", "aria-label": "\u4EFB\u52A1\u6D4F\u89C8\u5668", onKeyDown: focusAdjacentSession, children: [
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("section", { className: dragged === void 0 ? "sg_root" : "sg_root sg_dragging", "aria-label": "\u4EFB\u52A1\u6D4F\u89C8\u5668", onKeyDown: focusAdjacentSession, children: [
     /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("header", { className: "sg_header", children: [
       /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("strong", { children: "\u4F1A\u8BDD" }),
       /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_headerActions", children: [
@@ -16031,7 +16211,7 @@ function SessionGroupsBrowser({
         }, children: "\u7BA1\u7406" }),
         /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { className: "sg_iconButton", type: "button", title: "\u6DFB\u52A0 Workspace", "aria-label": "\u6DFB\u52A0 Workspace", onClick: () => {
           run(addWorkspace());
-        }, children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives2.IconPlusOutline16, {}) })
+        }, children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconPlusOutline16, {}) })
       ] })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("nav", { className: "sg_views", "aria-label": "\u6D4F\u89C8\u65B9\u5F0F", children: [
@@ -16066,12 +16246,13 @@ function SessionGroupsBrowser({
         setFiltersOpen((value) => !value);
       }, children: "\u7B5B\u9009" })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "sg_quickFilters", "aria-label": "\u4EFB\u52A1\u72B6\u6001\u7B5B\u9009", children: [
+    statusCounts.waiting + statusCounts.failed + statusCounts.running + statusCounts.completed > 0 || preferences.attentionFilter !== "all" ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "sg_quickFilters", "aria-label": "\u4EFB\u52A1\u72B6\u6001\u7B5B\u9009", children: [
       ["all", "\u5168\u90E8", quickEntries.length],
       ["waiting", "\u5F85\u6211\u5904\u7406", statusCounts.waiting],
+      ["failed", "\u5931\u8D25", statusCounts.failed],
       ["running", "\u8FD0\u884C\u4E2D", statusCounts.running],
       ["completed", "\u521A\u5B8C\u6210", statusCounts.completed]
-    ].map(([value, label, count]) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
+    ].filter(([value, , count]) => value === "all" || count > 0 || preferences.attentionFilter === value).map(([value, label, count]) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
       "button",
       {
         className: preferences.attentionFilter === value ? "sg_chip sg_chipActive" : "sg_chip",
@@ -16086,7 +16267,7 @@ function SessionGroupsBrowser({
         ]
       },
       value
-    )) }),
+    )) }) : null,
     filtersOpen ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_filters", children: [
       /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("label", { children: [
         "\u72B6\u6001",
@@ -16154,7 +16335,7 @@ function SessionGroupsBrowser({
         selected.size
       ] }),
       surface === "archive" ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { title: "\u5F53\u524D DSH Runtime \u5C1A\u672A\u63D0\u4F9B\u6062\u590D\u6216\u6C38\u4E45\u5220\u9664 API", children: "\u6062\u590D/\u6C38\u4E45\u5220\u9664\u6682\u4E0D\u53EF\u7528" }) : /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { type: "button", disabled: selected.size === 0, onClick: confirmArchiveSelected, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives2.IconArchiveOutline20, { size: 16 }),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconArchiveOutline20, { size: 16 }),
         "\u6279\u91CF\u5F52\u6863"
       ] })
     ] }) : null,
@@ -16185,36 +16366,36 @@ function SessionGroupsBrowser({
 
 // packages/dsh-session-groups/src/client/styles.ts
 var styles = `
-.sg_root{display:flex;min-height:0;flex:1;flex-direction:column;color:var(--dsw-alias-label-primary);font-size:13px}
-.sg_header{box-sizing:border-box;display:flex;height:36px;flex:none;align-items:center;justify-content:space-between;margin-top:2px;padding:0 8px 0 4px;font-size:14px;line-height:20px}.sg_headerActions{display:flex;align-items:center;gap:2px}
-.sg_iconButton,.sg_textButton{display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0 8px;border:0;background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer;border-radius:7px}.sg_iconButton{width:28px;padding:0;border-radius:50%}.sg_iconButton:hover,.sg_textButton:hover,.sg_textButtonActive{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
-.sg_views{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;margin:0 8px 6px;padding:2px;border-radius:9px;background:var(--dsw-alias-interactive-bg-hover)}.sg_views button{overflow:hidden;height:26px;border:0;border-radius:7px;background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer;font:inherit;font-size:12px;text-overflow:ellipsis;white-space:nowrap}.sg_views button:hover,.sg_views .sg_viewActive{background:var(--dsw-specific-sidebar-fill);color:var(--dsw-alias-label-primary)}
-.sg_searchWrap{display:flex;flex:none;gap:4px;padding:2px 8px 6px}.sg_search{box-sizing:border-box;min-width:0;width:100%;height:30px;border:1px solid var(--dsw-alias-border-l2);border-radius:9px;background:transparent;color:var(--dsw-alias-label-primary);font:inherit;font-size:13px;line-height:18px;padding:5px 8px}.sg_search:focus{outline:2px solid var(--dsw-alias-state-business-primary);outline-offset:-1px}.sg_filterButton{flex:none;height:30px;border:1px solid var(--dsw-alias-border-l2);border-radius:9px;background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer;font:inherit;font-size:12px;padding:0 8px}.sg_filterButtonActive{background:var(--dsw-alias-interactive-bg-hover-accent);color:var(--dsw-alias-state-business-primary)}
-.sg_quickFilters{display:flex;flex:none;gap:4px;overflow-x:auto;padding:0 8px 7px}.sg_chip{flex:none;height:25px;border:0;border-radius:999px;background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary);cursor:pointer;font:inherit;font-size:11px;padding:0 8px}.sg_chipActive{background:var(--dsw-alias-interactive-bg-hover-accent);color:var(--dsw-alias-state-business-primary)}
+.sg_root{display:flex;min-height:0;height:100%;flex:1;overflow:hidden;flex-direction:column;color:var(--dsw-alias-label-primary);font-size:13px}
+.sg_header{box-sizing:border-box;display:flex;height:32px;flex:none;align-items:center;justify-content:space-between;padding:0 8px 0 4px;font-size:14px;line-height:20px}.sg_headerActions{display:flex;align-items:center;gap:2px}
+.sg_iconButton,.sg_textButton{display:inline-flex;align-items:center;justify-content:center;height:26px;padding:0 7px;border:0;background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer;border-radius:7px}.sg_iconButton{width:26px;padding:0;border-radius:50%}.sg_iconButton:hover,.sg_textButton:hover,.sg_textButtonActive{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
+.sg_views{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;margin:0 8px 4px;padding:2px;border-radius:9px;background:var(--dsw-alias-interactive-bg-hover)}.sg_views button{overflow:hidden;height:24px;border:0;border-radius:7px;background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer;font:inherit;font-size:12px;text-overflow:ellipsis;white-space:nowrap}.sg_views button:hover,.sg_views .sg_viewActive{background:var(--dsw-specific-sidebar-fill);color:var(--dsw-alias-label-primary)}
+.sg_searchWrap{display:flex;flex:none;gap:4px;padding:0 8px 5px}.sg_search{box-sizing:border-box;min-width:0;width:100%;height:28px;border:1px solid var(--dsw-alias-border-l2);border-radius:9px;background:transparent;color:var(--dsw-alias-label-primary);font:inherit;font-size:12px;line-height:18px;padding:4px 8px}.sg_search:focus{outline:2px solid var(--dsw-alias-state-business-primary);outline-offset:-1px}.sg_filterButton{flex:none;height:28px;border:1px solid var(--dsw-alias-border-l2);border-radius:9px;background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer;font:inherit;font-size:12px;padding:0 8px}.sg_filterButtonActive{background:var(--dsw-alias-interactive-bg-hover-accent);color:var(--dsw-alias-state-business-primary)}
+.sg_quickFilters{display:flex;flex:none;gap:4px;overflow-x:auto;padding:0 8px 5px}.sg_chip{flex:none;height:23px;border:0;border-radius:999px;background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary);cursor:pointer;font:inherit;font-size:10px;padding:0 7px}.sg_chipActive{background:var(--dsw-alias-interactive-bg-hover-accent);color:var(--dsw-alias-state-business-primary)}
 .sg_filters{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 8px 8px;padding:8px;border:1px solid var(--dsw-alias-border-l2);border-radius:9px}.sg_filters label{display:flex;min-width:0;flex-direction:column;gap:3px;color:var(--dsw-alias-label-tertiary);font-size:11px}.sg_filters select{box-sizing:border-box;min-width:0;width:100%;height:27px;border:1px solid var(--dsw-alias-border-l2);border-radius:6px;background:var(--dsw-specific-sidebar-fill);color:var(--dsw-alias-label-primary);font:inherit;font-size:12px}.sg_filters>button{height:27px;border:0;border-radius:6px;background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary);cursor:pointer;font:inherit;font-size:12px;align-self:end}
 .sg_bulkBar{display:flex;flex:none;align-items:center;gap:8px;margin:0 8px 7px;padding:6px 8px;border-radius:8px;background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary);font-size:11px}.sg_bulkBar label{display:flex;align-items:center;gap:4px}.sg_bulkBar button{display:inline-flex;height:24px;align-items:center;gap:3px;margin-left:auto;border:0;border-radius:6px;background:var(--dsw-alias-interactive-bg-hover-accent);color:var(--dsw-alias-state-business-primary);cursor:pointer;font:inherit;font-size:11px}.sg_bulkBar button:disabled{cursor:not-allowed;opacity:.45}
 .sg_status,.sg_error,.sg_notice{margin:3px 12px;color:var(--dsw-alias-label-tertiary);font-size:11px;line-height:17px}.sg_error{color:var(--dsw-alias-state-warn-primary)}.sg_notice{padding:6px 8px;border-radius:7px;background:var(--dsw-alias-interactive-bg-hover)}
-.sg_groups{min-height:0;overflow:auto;padding:0 8px 16px 4px}.sg_group{margin:0}.sg_group+.sg_group{margin-top:5px}.sg_groupDepth-1{margin:1px 0 1px 14px}.sg_groupDepth-2{margin-left:14px}.sg_groupHead{position:relative;display:flex;min-width:0;height:32px;align-items:center;border-radius:8px}.sg_groupHead[draggable=true]{cursor:grab}.sg_groupHead[draggable=true]:active{cursor:grabbing}
-.sg_groupToggle{box-sizing:border-box;display:flex;min-width:0;height:32px;flex:1;align-items:center;gap:5px;border:0;background:transparent;color:var(--dsw-alias-label-primary);cursor:pointer;padding:0 7px;border-radius:8px;text-align:left}.sg_groupToggle:hover{background:var(--dsw-alias-interactive-bg-hover)}.sg_groupIcon{display:inline-flex;width:16px;height:20px;flex:none;align-items:center;justify-content:center;color:var(--dsw-alias-label-tertiary)}.sg_groupIcon svg{display:block}.sg_brandIcon{display:block;width:16px;height:16px;object-fit:contain}.sg_brandIcon svg{display:block;width:16px;height:16px;fill:currentColor}.sg_groupTitle{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:600;line-height:20px}.sg_kind,.sg_attentionCount{flex:none;border-radius:999px;padding:0 5px;font-size:10px;line-height:16px}.sg_kind{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary)}.sg_attentionCount{background:var(--dsw-alias-interactive-bg-hover-accent);color:var(--dsw-alias-label-secondary)}.sg_attentionCount-waiting{color:var(--dsw-alias-state-warn-primary)}.sg_attentionCount-failed{color:var(--dsw-alias-state-error-primary)}.sg_attentionCount-running{color:var(--dsw-alias-state-business-primary)}.sg_attentionCount-completed{color:var(--dsw-alias-state-success-primary)}.sg_count{margin-left:auto;color:var(--dsw-alias-label-tertiary);font-size:11px;line-height:20px}.sg_pinMark{flex:none;color:var(--dsw-alias-state-warn-primary);font-size:10px}
-.sg_groupBody{display:flex;flex-direction:column;margin-left:14px;padding-left:3px;border-left:1px solid var(--dsw-alias-border-l2)}.sg_groupDepth-1>.sg_groupBody{margin-left:10px}.sg_empty{margin:0;padding:8px;color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:18px}
-.sg_sessionWrap{position:relative;border-radius:8px}.sg_sessionWrap+.sg_sessionWrap{margin-top:1px}.sg_sessionWrap:hover{background:var(--dsw-alias-interactive-bg-hover)}.sg_sessionCurrent{background:var(--dsw-alias-interactive-bg-hover-accent)}.sg_sessionWrap[draggable=true]{cursor:grab}.sg_sessionWrap[draggable=true]:active{cursor:grabbing}.sg_session{display:flex;min-width:0;min-height:36px;align-items:center;padding:0 4px}.sg_select{flex:none;margin:0 4px 0 2px}.sg_sessionOpen{display:flex;min-width:0;min-height:36px;flex:1;align-items:center;gap:5px;border:0;background:transparent;color:var(--dsw-alias-label-primary);cursor:pointer;padding:2px 1px;text-align:left}.sg_sessionOpen:focus-visible{outline:2px solid var(--dsw-alias-state-business-primary);outline-offset:-2px;border-radius:6px}.sg_sessionText{display:flex;min-width:0;flex:1;flex-direction:column}.sg_sessionTitle,.sg_sessionMeta,.sg_snippet{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sg_sessionTitle{font-size:13px;line-height:18px}.sg_sessionMeta{color:var(--dsw-alias-label-tertiary);font-size:10px;line-height:14px}.sg_snippet{color:var(--dsw-alias-label-secondary);font-size:10px;line-height:14px}.sg_time{flex:none;max-width:62px;overflow:hidden;color:var(--dsw-alias-label-tertiary);font-size:10px;text-overflow:ellipsis;white-space:nowrap}
+.sg_groups{min-height:0;flex:1;overflow-x:hidden;overflow-y:auto;padding:4px 8px 20px 4px}.sg_group{margin:0}.sg_group+.sg_group{margin-top:12px}.sg_groupDepth-1{margin:1px 0 1px 10px}.sg_groupDepth-1+.sg_groupDepth-1{margin-top:2px}.sg_groupDepth-2{margin-left:12px}.sg_groupHead{position:relative;display:flex;min-width:0;height:32px;align-items:center;border-radius:8px}.sg_groupHead[draggable=true]{cursor:grab}.sg_groupHead[draggable=true]:active{cursor:grabbing}.sg_groupDepth-1>.sg_groupHead{height:28px}
+.sg_groupToggle{box-sizing:border-box;display:flex;min-width:0;height:32px;flex:1;align-items:center;gap:5px;border:0;background:transparent;color:var(--dsw-alias-label-primary);cursor:pointer;font:inherit;padding:0 34px 0 7px;border-radius:8px;text-align:left}.sg_groupToggle:hover{background:var(--dsw-alias-interactive-bg-hover)}.sg_groupToggleEmpty{cursor:default}.sg_groupToggleEmpty:hover{background:transparent}.sg_groupIcon{display:inline-flex;width:16px;height:20px;flex:none;overflow:hidden;align-items:center;justify-content:center;color:var(--dsw-alias-label-secondary)}.sg_groupIcon svg{display:block}.sg_folderIcon{width:16px;height:16px}.sg_brandIcon{display:block;width:16px;height:16px;object-fit:contain}.sg_brandIcon svg{display:block;width:16px;height:16px;fill:currentColor}.sg_groupTitle{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;font-weight:500;line-height:20px}.sg_groupDepth-1>.sg_groupHead .sg_groupToggle{height:28px}.sg_groupDepth-1>.sg_groupHead .sg_groupIcon{width:14px;height:18px}.sg_groupDepth-1>.sg_groupHead .sg_folderIcon{width:14px;height:14px}.sg_groupDepth-1>.sg_groupHead .sg_brandIcon{width:14px;height:14px}.sg_groupDepth-1>.sg_groupHead .sg_groupTitle{font-size:12px;font-weight:500;line-height:18px}.sg_groupDepth-1>.sg_groupHead .sg_count{font-size:10px;line-height:18px}.sg_kind,.sg_attentionCount{flex:none;border-radius:999px;padding:0 5px;font-size:10px;line-height:16px}.sg_kind{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary)}.sg_attentionCount{background:var(--dsw-alias-interactive-bg-hover-accent);color:var(--dsw-alias-label-secondary)}.sg_attentionCount-waiting{color:var(--dsw-alias-state-warn-primary)}.sg_attentionCount-failed{color:var(--dsw-alias-state-error-primary)}.sg_attentionCount-running{color:var(--dsw-alias-state-business-primary)}.sg_attentionCount-completed{color:var(--dsw-alias-state-success-primary)}.sg_count{margin-left:auto;color:var(--dsw-alias-label-tertiary);font-size:11px;line-height:20px}.sg_pinMark{flex:none;color:var(--dsw-alias-state-warn-primary);font-size:10px}
+.sg_groupBody{display:flex;flex-direction:column;margin-left:24px}.sg_groupDepth-1>.sg_groupBody{margin-left:22px}.sg_empty{margin:0;padding:8px;color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:18px}
+.sg_sessionWrap{position:relative;margin-left:-24px;padding-left:24px;border-radius:8px}.sg_sessionWrap+.sg_sessionWrap{margin-top:1px}.sg_sessionWrap:hover{background:var(--dsw-alias-interactive-bg-hover)}.sg_sessionCurrent{background:var(--dsw-alias-interactive-bg-hover-accent)}.sg_sessionCurrent .sg_sessionTitle{font-weight:500}.sg_sessionWrap[draggable=true]{cursor:grab}.sg_sessionWrap[draggable=true]:active{cursor:grabbing}.sg_session{display:flex;min-width:0;min-height:38px;align-items:center;padding:0 4px}.sg_select{flex:none;margin:0 4px 0 2px}.sg_sessionOpen{box-sizing:border-box;display:flex;min-width:0;min-height:38px;flex:1;align-items:center;gap:5px;border:0;background:transparent;color:var(--dsw-alias-label-primary);cursor:pointer;font:inherit;padding:2px 1px;text-align:left}.sg_sessionWrap:hover .sg_sessionOpen,.sg_sessionWrap:has(.sg_sessionHoverActions :focus-visible) .sg_sessionOpen,.sg_sessionWrap:has(.sg_sessionHoverActions .sg_menu[open]) .sg_sessionOpen{padding-right:51px}.sg_sessionCompact .sg_session,.sg_sessionCompact .sg_sessionOpen{min-height:34px}.sg_sessionOpen:focus-visible{outline:2px solid var(--dsw-alias-state-business-primary);outline-offset:-2px;border-radius:6px}.sg_sessionText{display:flex;min-width:0;flex:1;flex-direction:column}.sg_sessionTitle,.sg_sessionMeta,.sg_snippet{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sg_sessionTitle{font-size:14px;font-weight:400;line-height:20px}.sg_sessionMeta{color:var(--dsw-alias-label-tertiary);font-size:10px;line-height:14px}.sg_snippet{color:var(--dsw-alias-label-secondary);font-size:10px;line-height:14px}
 .sg_statusSlot{display:inline-flex;width:7px;height:20px;flex:none;align-items:center;justify-content:center}.sg_dot{width:7px;height:7px;flex:none;border-radius:50%}.sg_dot-waiting{background:var(--dsw-alias-state-warn-primary)}.sg_dot-failed{background:var(--dsw-alias-state-error-primary)}.sg_dot-running{background:var(--dsw-alias-state-business-primary);animation:sg_pulse 1.5s ease-in-out infinite}.sg_dot-completed{background:var(--dsw-alias-state-success-primary)}
 @keyframes sg_pulse{0%,100%{opacity:1}50%{opacity:.35}}@media (prefers-reduced-motion:reduce){.sg_dot-running{animation:none}}
-.sg_menu{position:relative;flex:none}.sg_menu>summary{display:flex;width:24px;height:28px;align-items:center;justify-content:center;border-radius:6px;color:var(--dsw-alias-label-tertiary);cursor:pointer;list-style:none;opacity:0}.sg_menu>summary::-webkit-details-marker{display:none}.sg_sessionWrap:hover>.sg_session>.sg_menu>summary,.sg_sessionWrap:focus-within>.sg_session>.sg_menu>summary,.sg_groupHead:hover>.sg_menu>summary,.sg_groupHead:focus-within>.sg_menu>summary,.sg_menu[open]>summary{opacity:1}.sg_menu>summary:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}.sg_menuPanel{position:absolute;z-index:20;right:0;top:29px;display:flex;width:190px;flex-direction:column;padding:4px;border:1px solid var(--dsw-alias-border-l2);border-radius:9px;background:var(--dsw-specific-sidebar-fill);box-shadow:0 6px 18px rgba(0,0,0,.18)}.sg_menuPanel button{display:flex;min-height:28px;align-items:center;gap:6px;border:0;border-radius:6px;background:transparent;color:var(--dsw-alias-label-primary);cursor:pointer;font:inherit;font-size:12px;padding:4px 7px;text-align:left}.sg_menuPanel button:hover{background:var(--dsw-alias-interactive-bg-hover)}.sg_groupMenu{position:absolute;right:4px}.sg_groupMenu .sg_menuPanel{top:27px}
+.sg_sessionHoverActions{position:absolute;z-index:5;right:4px;top:50%;display:flex;align-items:center;transform:translateY(-50%);border-radius:6px;background:var(--dsw-specific-sidebar-fill);opacity:0;pointer-events:none}.sg_sessionWrap:hover .sg_sessionHoverActions,.sg_sessionHoverActions:has(:focus-visible),.sg_sessionHoverActions:has(.sg_menu[open]){opacity:1;pointer-events:auto}.sg_sessionWrap:hover .sg_sessionHoverActions{background:var(--dsw-alias-interactive-bg-hover)}.sg_sessionCurrent .sg_sessionHoverActions{background:var(--dsw-alias-interactive-bg-hover-accent)}.sg_quickArchive{display:flex;width:24px;height:28px;align-items:center;justify-content:center;border:0;border-radius:6px;background:transparent;color:var(--dsw-alias-label-tertiary);cursor:pointer;padding:0}.sg_quickArchive:hover,.sg_quickArchive:focus-visible{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary);outline:none}
+.sg_menu{position:relative;flex:none}.sg_menu>summary{display:flex;width:24px;height:28px;align-items:center;justify-content:center;border-radius:6px;color:var(--dsw-alias-label-tertiary);cursor:pointer;list-style:none;opacity:0}.sg_menu>summary::-webkit-details-marker{display:none}.sg_sessionWrap:hover .sg_sessionHoverActions .sg_menu>summary,.sg_sessionHoverActions:has(:focus-visible) .sg_menu>summary,.sg_groupHead:hover>.sg_menu>summary,.sg_menu>summary:focus-visible,.sg_menu[open]>summary{opacity:1}.sg_menu>summary:hover,.sg_menu>summary:focus-visible{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary);outline:none}.sg_menuPanel{box-sizing:border-box;position:absolute;z-index:20;right:0;top:29px;display:flex;width:190px;max-height:var(--sg-menu-max-height,none);overflow-y:auto;flex-direction:column;padding:4px;border:1px solid var(--dsw-alias-border-l2);border-radius:9px;background:var(--dsw-specific-sidebar-fill);box-shadow:0 6px 18px rgba(0,0,0,.18)}.sg_menu[data-placement=up] .sg_menuPanel{top:auto;bottom:29px}.sg_menuPanel button{display:flex;min-height:28px;flex:none;align-items:center;gap:6px;border:0;border-radius:6px;background:transparent;color:var(--dsw-alias-label-primary);cursor:pointer;font:inherit;font-size:12px;padding:4px 7px;text-align:left}.sg_menuPanel button:hover{background:var(--dsw-alias-interactive-bg-hover)}.sg_groupMenu{position:absolute;right:4px}.sg_groupMenu .sg_menuPanel{top:27px}.sg_groupMenu[data-placement=up] .sg_menuPanel{top:auto;bottom:27px}
 .sg_activityDetails{display:flex;flex-direction:column;gap:3px;margin:0 5px 5px 17px;padding:7px;border-radius:7px;background:var(--dsw-alias-interactive-bg-hover)}.sg_activityHeading{display:flex;align-items:center;justify-content:space-between;color:var(--dsw-alias-label-secondary);font-size:11px}.sg_activityHeading button{display:flex;border:0;background:transparent;color:var(--dsw-alias-label-tertiary);cursor:pointer}.sg_job,.sg_subagent{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:5px;min-width:0;color:var(--dsw-alias-label-secondary);font-size:10px;line-height:15px}.sg_jobStatus{border-radius:999px;padding:0 4px;background:var(--dsw-specific-sidebar-fill)}.sg_jobStatus-failed{color:var(--dsw-alias-state-error-primary)}.sg_jobStatus-running,.sg_jobStatus-stopping{color:var(--dsw-alias-state-business-primary)}.sg_jobLabel,.sg_jobDetail{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sg_jobDetail{grid-column:2/4;color:var(--dsw-alias-label-tertiary)}.sg_subagent{width:100%;border:0;border-radius:5px;background:transparent;cursor:pointer;text-align:left}.sg_subagent:hover{background:var(--dsw-specific-sidebar-fill)}.sg_subagentStatus{width:6px;height:6px;border-radius:50%;background:var(--dsw-alias-label-tertiary)}.sg_subagentStatus-running{background:var(--dsw-alias-state-business-primary)}
 .sg_emptyState{display:flex;flex-direction:column;align-items:center;padding:18px 8px;color:var(--dsw-alias-label-tertiary);text-align:center}.sg_emptyState p{margin:0 0 8px}.sg_emptyState button{border:0;border-radius:6px;background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary);cursor:pointer;padding:5px 8px}
-.sg_dropEnd{height:7px;border-radius:4px}.sg_dropEnd:hover{background:var(--dsw-alias-interactive-bg-hover-accent)}.sg_dropEndGroups{margin:4px 0;height:10px}
+.sg_dropEnd{height:7px;border-radius:4px}.sg_dragging .sg_dropEnd:hover{background:var(--dsw-alias-interactive-bg-hover-accent)}.sg_dropEndGroups{margin:4px 0;height:10px}
 .sg_rail{display:flex;justify-content:center;padding-top:8px}.sg_railButton{width:36px;height:36px;border:0;border-radius:8px;background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer;font-weight:600}.sg_railButton:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
 `;
 function installStyles() {
   const id = "dsh-session-groups/styles";
   const existing = document.querySelector(`style[data-plugin-css="${id}"]`);
-  if (existing !== null) return () => {
-  };
   const element = document.createElement("style");
   element.dataset.pluginCss = id;
   element.textContent = styles;
-  document.head.appendChild(element);
+  if (existing === null) document.head.appendChild(element);
+  else existing.replaceWith(element);
   return () => {
     element.remove();
   };

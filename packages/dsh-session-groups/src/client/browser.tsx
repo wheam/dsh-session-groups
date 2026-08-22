@@ -2,6 +2,8 @@
 import {
   type DragEvent,
   type KeyboardEvent,
+  type MouseEvent,
+  type SyntheticEvent,
   useEffect,
   useMemo,
   useRef,
@@ -108,18 +110,6 @@ function pendingLabel(entry: BrowserSession): string {
   }
 }
 
-function relativeTime(timestamp: number, now: number): string {
-  const seconds = Math.max(0, Math.floor((now - timestamp) / 1_000))
-  if (seconds < 60) return '刚刚'
-  const minutes = Math.floor(seconds / 60)
-  if (minutes < 60) return `${minutes} 分钟前`
-  const hours = Math.floor(minutes / 60)
-  if (hours < 24) return `${hours} 小时前`
-  const days = Math.floor(hours / 24)
-  if (days < 30) return `${days} 天前`
-  return new Date(timestamp).toLocaleDateString()
-}
-
 function duration(startedAt: number, finishedAt: number | undefined, now: number): string {
   const seconds = Math.max(0, Math.floor(((finishedAt ?? now) - startedAt) / 1_000))
   if (seconds < 60) return `${seconds} 秒`
@@ -133,6 +123,11 @@ function sourceLabel(entry: BrowserSession): string {
   return entry.source.chatTitle === undefined
     ? entry.source.familyTitle
     : `${entry.source.familyTitle} · ${entry.source.chatTitle}`
+}
+
+/** Missing assignment is the default in project view, so only explicit origins earn row metadata. */
+function explicitSourceLabel(entry: BrowserSession): string | undefined {
+  return entry.source.rawSource === undefined ? undefined : sourceLabel(entry)
 }
 
 function metadata(entry: BrowserSession): string {
@@ -672,6 +667,39 @@ export function SessionGroupsBrowser({
     rows[nextIndex]?.focus()
   }
 
+  const blurClosedMenuOnLeave = (event: MouseEvent<HTMLElement>) => {
+    const active = document.activeElement
+    if (!(active instanceof HTMLElement) || active.tagName !== 'SUMMARY' || !event.currentTarget.contains(active)) return
+    const menu = active.closest('details')
+    if (menu?.open !== true) active.blur()
+  }
+
+  const placeMenuWithinScroller = (event: SyntheticEvent<HTMLDetailsElement>) => {
+    const menu = event.currentTarget
+    if (!menu.open) {
+      delete menu.dataset.placement
+      menu.style.removeProperty('--sg-menu-max-height')
+      return
+    }
+
+    const panel = menu.querySelector<HTMLElement>('.sg_menuPanel')
+    const scroller = menu.closest<HTMLElement>('.sg_groups')
+    if (panel === null || scroller === null) return
+
+    delete menu.dataset.placement
+    menu.style.removeProperty('--sg-menu-max-height')
+    const anchorRect = menu.getBoundingClientRect()
+    const scrollerRect = scroller.getBoundingClientRect()
+    const naturalHeight = panel.scrollHeight + 10
+    const spaceBelow = Math.max(0, scrollerRect.bottom - anchorRect.bottom - 4)
+    const spaceAbove = Math.max(0, anchorRect.top - scrollerRect.top - 4)
+    const opensUp = naturalHeight > spaceBelow && spaceAbove > spaceBelow
+    const available = opensUp ? spaceAbove : spaceBelow
+
+    menu.dataset.placement = opensUp ? 'up' : 'down'
+    menu.style.setProperty('--sg-menu-max-height', `${Math.max(40, available)}px`)
+  }
+
   const renderActivityDetails = (entry: BrowserSession) => {
     const catalog = sessions.subagentsByParent[entry.summary.id]
     return (
@@ -714,14 +742,21 @@ export function SessionGroupsBrowser({
     const current = entry.summary.id === sessions.current
     const expanded = expandedActivity.has(entry.summary.id)
     const snippet = contentHits.get(entry.summary.id)
+    const explicitSource = explicitSourceLabel(entry)
     const counterpart = surface === 'activity' || surface === 'archive'
-      ? `${entry.project.title} · ${sourceLabel(entry)}`
-      : preferences.browseMode === 'project' ? sourceLabel(entry) : entry.project.title
+      ? explicitSource === undefined ? entry.project.title : `${entry.project.title} · ${explicitSource}`
+      : preferences.browseMode === 'project' ? explicitSource : entry.project.title
     const pinned = preferences.pinnedSessions.includes(String(entry.summary.id))
     const sessionDraggable = canDragSession(entry, group)
+    const compact = counterpart === undefined && snippet === undefined
+    const wrapClassName = [
+      'sg_sessionWrap',
+      current ? 'sg_sessionCurrent' : '',
+      compact ? 'sg_sessionCompact' : '',
+    ].filter(Boolean).join(' ')
     return (
       <div
-        className={current ? 'sg_sessionWrap sg_sessionCurrent' : 'sg_sessionWrap'}
+        className={wrapClassName}
         key={entry.summary.id}
         draggable={sessionDraggable}
         onDragStart={() => { setDragged({ type: 'session', entry, groupKey: group.key }) }}
@@ -729,6 +764,7 @@ export function SessionGroupsBrowser({
           if (sessionDraggable && dragged?.type === 'session' && dragged.groupKey === group.key) event.preventDefault()
         }}
         onDrop={event => { dropSession(event, entry, group) }}
+        onMouseLeave={blurClosedMenuOnLeave}
       >
         <div className="sg_session">
           {manageMode ? (
@@ -741,41 +777,51 @@ export function SessionGroupsBrowser({
             />
           ) : null}
           <button className="sg_sessionOpen" type="button" title={metadata(entry)} aria-current={current ? 'page' : undefined} onClick={() => { open(entry.summary.id) }}>
-            <span className="sg_statusSlot">
-              {entry.attention === 'idle' ? null : (
-                <span className={`sg_dot sg_dot-${entry.attention}`} role="img" title={pendingLabel(entry)} aria-label={pendingLabel(entry)} />
-              )}
-            </span>
             {pinned ? <span className="sg_pinMark" aria-label="已置顶">★</span> : null}
             <span className="sg_sessionText">
               <span className="sg_sessionTitle">{entry.summary.blank ? '新会话' : entry.summary.displayTitle}</span>
-              <span className="sg_sessionMeta">{counterpart}</span>
+              {counterpart === undefined ? null : <span className="sg_sessionMeta">{counterpart}</span>}
               {snippet === undefined ? null : <span className="sg_snippet">{snippet}</span>}
             </span>
-            <span className="sg_time">{relativeTime(entry.summary.updatedAt, now)}</span>
+            {entry.attention === 'idle' ? null : (
+              <span className="sg_statusSlot">
+                <span className={`sg_dot sg_dot-${entry.attention}`} role="img" title={pendingLabel(entry)} aria-label={pendingLabel(entry)} />
+              </span>
+            )}
           </button>
-          <details className="sg_menu">
-            <summary title="会话操作" aria-label="会话操作"><IconEllipsisOutline16 /></summary>
-            <div className="sg_menuPanel">
-              <button type="button" onClick={() => { togglePinnedSession(entry.summary.id) }}>{pinned ? '取消置顶' : '置顶'}</button>
-              <button type="button" onClick={() => { toggleSessionActivity(entry) }}>{expanded ? '收起活动' : '查看 Job 与 Subagent'}</button>
-              {entry.project.path === undefined ? null : <button type="button" onClick={() => { run(openPath(entry.project.path!)) }}>打开项目文件夹</button>}
-              {entry.source.rawSource === undefined ? null : <button type="button" onClick={() => {
-                setSurface('browse')
-                setQuery('')
-                patchPreferences({ browseMode: 'source', attentionFilter: 'all', sourceFilter: entry.source.familyKey, chatFilter: '', updatedRange: 'any' })
-              }}>查看此来源的全部会话</button>}
-              {entry.source.chatTitle === undefined ? null : <button type="button" onClick={() => {
-                setSurface('browse')
-                setQuery('')
-                patchPreferences({ browseMode: 'source', attentionFilter: 'all', sourceFilter: entry.source.familyKey, chatFilter: entry.source.chatKey, updatedRange: 'any' })
-              }}>查看此聊天的全部会话</button>}
-              <button type="button" onClick={() => { setBrowseMode('project') }}>按项目查看</button>
-              {surface === 'archive' ? null : <button type="button" onClick={() => { run(renameSession(entry.summary.id, entry.summary.displayTitle)) }}>重命名</button>}
-              {surface === 'archive' ? null : <button type="button" onClick={() => { run(forkSession(entry.summary.id)) }}>分叉会话</button>}
-              {surface === 'archive' ? null : <button type="button" onClick={() => { run(archiveSession(entry.summary.id)) }}>归档</button>}
-            </div>
-          </details>
+          <div className="sg_sessionHoverActions">
+            {surface === 'archive' ? null : (
+              <button
+                className="sg_quickArchive"
+                type="button"
+                title="归档"
+                aria-label={`归档 ${entry.summary.displayTitle}`}
+                onClick={() => { run(archiveSession(entry.summary.id)) }}
+              ><IconArchiveOutline20 size={16} /></button>
+            )}
+            <details className="sg_menu" onToggle={placeMenuWithinScroller}>
+              <summary title="更多会话操作" aria-label="更多会话操作"><IconEllipsisOutline16 /></summary>
+              <div className="sg_menuPanel">
+                <button type="button" onClick={() => { togglePinnedSession(entry.summary.id) }}>{pinned ? '取消置顶' : '置顶'}</button>
+                <button type="button" onClick={() => { toggleSessionActivity(entry) }}>{expanded ? '收起活动' : '查看 Job 与 Subagent'}</button>
+                {entry.project.path === undefined ? null : <button type="button" onClick={() => { run(openPath(entry.project.path!)) }}>打开项目文件夹</button>}
+                {entry.source.rawSource === undefined ? null : <button type="button" onClick={() => {
+                  setSurface('browse')
+                  setQuery('')
+                  patchPreferences({ browseMode: 'source', attentionFilter: 'all', sourceFilter: entry.source.familyKey, chatFilter: '', updatedRange: 'any' })
+                }}>查看此来源的全部会话</button>}
+                {entry.source.chatTitle === undefined ? null : <button type="button" onClick={() => {
+                  setSurface('browse')
+                  setQuery('')
+                  patchPreferences({ browseMode: 'source', attentionFilter: 'all', sourceFilter: entry.source.familyKey, chatFilter: entry.source.chatKey, updatedRange: 'any' })
+                }}>查看此聊天的全部会话</button>}
+                <button type="button" onClick={() => { setBrowseMode('project') }}>按项目查看</button>
+                {surface === 'archive' ? null : <button type="button" onClick={() => { run(renameSession(entry.summary.id, entry.summary.displayTitle)) }}>重命名</button>}
+                {surface === 'archive' ? null : <button type="button" onClick={() => { run(forkSession(entry.summary.id)) }}>分叉会话</button>}
+                {surface === 'archive' ? null : <button type="button" onClick={() => { run(archiveSession(entry.summary.id)) }}>归档</button>}
+              </div>
+            </details>
+          </div>
         </div>
         {expanded ? renderActivityDetails(entry) : null}
       </div>
@@ -790,6 +836,7 @@ export function SessionGroupsBrowser({
     const total = fullGroup === undefined ? groupSize(group) : groupSize(fullGroup)
     const visible = groupSize(group)
     const counts = fullGroup?.counts ?? group.counts
+    const hasContent = group.sessions.length > 0 || (group.children?.length ?? 0) > 0
     return (
       <section className={`sg_group sg_groupDepth-${Math.min(depth, 2)}`} key={group.key}>
         <div
@@ -798,8 +845,15 @@ export function SessionGroupsBrowser({
           onDragStart={() => { setDragged({ type: 'group', group, ...(parentKey === undefined ? {} : { parentKey }) }) }}
           onDragOver={event => { if (canDrag) event.preventDefault() }}
           onDrop={event => { dropGroup(event, group, siblings.map(item => item.key), parentKey) }}
+          onMouseLeave={blurClosedMenuOnLeave}
         >
-          <button className="sg_groupToggle" type="button" aria-expanded={!folded} title={folded ? '展开分组' : '收起分组'} onClick={() => { toggleCollapsed(group.key) }}>
+          <button
+            className={hasContent ? 'sg_groupToggle' : 'sg_groupToggle sg_groupToggleEmpty'}
+            type="button"
+            aria-expanded={hasContent ? !folded : undefined}
+            title={hasContent ? folded ? '展开分组' : '收起分组' : '空分组'}
+            onClick={() => { if (hasContent) toggleCollapsed(group.key) }}
+          >
             <span className="sg_groupIcon" aria-hidden><SessionGroupIcon source={group.source} folded={folded} /></span>
             {pinned ? <span className="sg_pinMark" aria-label="已置顶">★</span> : null}
             <span className="sg_groupTitle" title={group.title}>{group.title}</span>
@@ -810,7 +864,7 @@ export function SessionGroupsBrowser({
             {counts.completed > 0 ? <span className="sg_attentionCount sg_attentionCount-completed">完成 {counts.completed}</span> : null}
             <span className="sg_count" title={hasActiveFilters ? `${visible} 个筛选命中，共 ${total} 个会话` : undefined}>{hasActiveFilters ? `${visible}/${total}` : total}</span>
           </button>
-          <details className="sg_menu sg_groupMenu">
+          <details className="sg_menu sg_groupMenu" onToggle={placeMenuWithinScroller}>
             <summary title="分组操作" aria-label="分组操作"><IconEllipsisOutline16 /></summary>
             <div className="sg_menuPanel">
               {surface === 'activity' ? null : <button type="button" onClick={() => { togglePinnedGroup(group.key) }}>{pinned ? '取消置顶' : '置顶'}</button>}
@@ -821,7 +875,7 @@ export function SessionGroupsBrowser({
             </div>
           </details>
         </div>
-        {folded ? null : (
+        {folded || !hasContent ? null : (
           <div className="sg_groupBody">
             {group.sessions.map(entry => renderSession(entry, group))}
             {canDrag && group.sessions.some(entry => canDragSession(entry, group)) ? <div className="sg_dropEnd" onDragOver={event => {
@@ -829,7 +883,6 @@ export function SessionGroupsBrowser({
             }} onDrop={event => { dropSessionAtEnd(event, group) }} /> : null}
             {group.children?.map(child => renderGroup(child, depth + 1, group.children!, group.key))}
             {canDrag && group.children !== undefined && group.children.length > 0 ? <div className="sg_dropEnd" onDragOver={event => { event.preventDefault() }} onDrop={event => { dropGroupAtEnd(event, group.children!, group.key) }} /> : null}
-            {group.sessions.length === 0 && group.children === undefined ? <p className="sg_empty">暂无会话</p> : null}
           </div>
         )}
       </section>
@@ -840,7 +893,7 @@ export function SessionGroupsBrowser({
   const allVisibleSelected = visibleIds.length > 0 && visibleIds.every(id => selected.has(id))
 
   return (
-    <section className="sg_root" aria-label="任务浏览器" onKeyDown={focusAdjacentSession}>
+    <section className={dragged === undefined ? 'sg_root' : 'sg_root sg_dragging'} aria-label="任务浏览器" onKeyDown={focusAdjacentSession}>
       <header className="sg_header">
         <strong>会话</strong>
         <div className="sg_headerActions">
@@ -868,13 +921,15 @@ export function SessionGroupsBrowser({
         <button className={filtersOpen || hasActiveFilters ? 'sg_filterButton sg_filterButtonActive' : 'sg_filterButton'} type="button" onClick={() => { setFiltersOpen(value => !value) }}>筛选</button>
       </div>
 
-      <div className="sg_quickFilters" aria-label="任务状态筛选">
+      {statusCounts.waiting + statusCounts.failed + statusCounts.running + statusCounts.completed > 0
+        || preferences.attentionFilter !== 'all' ? <div className="sg_quickFilters" aria-label="任务状态筛选">
         {([
           ['all', '全部', quickEntries.length],
           ['waiting', '待我处理', statusCounts.waiting],
+          ['failed', '失败', statusCounts.failed],
           ['running', '运行中', statusCounts.running],
           ['completed', '刚完成', statusCounts.completed],
-        ] as const).map(([value, label, count]) => (
+        ] as const).filter(([value, , count]) => value === 'all' || count > 0 || preferences.attentionFilter === value).map(([value, label, count]) => (
           <button
             className={preferences.attentionFilter === value ? 'sg_chip sg_chipActive' : 'sg_chip'}
             type="button"
@@ -882,7 +937,7 @@ export function SessionGroupsBrowser({
             onClick={() => { patchPreferences({ attentionFilter: value }) }}
           >{label} {count}</button>
         ))}
-      </div>
+      </div> : null}
 
       {filtersOpen ? (
         <div className="sg_filters">

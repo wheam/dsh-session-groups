@@ -139,10 +139,10 @@ describe('dual-axis browser groups', () => {
   it('keeps missing project and missing source as independent concepts', () => {
     const groups = deriveBrowserGroups(list(summary('loose', 1)), [], [], [], 'project')
     expect(groups.map(group => group.title)).toEqual(['无项目'])
-    expect(groups[0]?.sessions[0]?.source.familyTitle).toBe('本地或未标注来源')
+    expect(groups[0]?.sessions[0]?.source.familyTitle).toBe('未标注来源')
 
     const sourceGroups = deriveBrowserGroups(list(summary('loose', 1)), [], [], [], 'source')
-    expect(sourceGroups[0]?.title).toBe('本地或未标注来源')
+    expect(sourceGroups[0]?.title).toBe('未标注来源')
     expect(sourceGroups[0]?.children).toBeUndefined()
     expect(sourceGroups[0]?.sessions[0]?.project.title).toBe('无项目')
   })
