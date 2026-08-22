@@ -1,0 +1,8 @@
+# The Host service supplies durable provider assignments and the package's
+# dsh.client half shadows the stock Workspace browser through the documented
+# priority mechanism. Install this package, then enable this row in the target
+# profile if the package manager keeps inserted plugin rows disabled.
+- insert:
+    - id: dsh-session-groups
+      name: dsh-session-groups
+

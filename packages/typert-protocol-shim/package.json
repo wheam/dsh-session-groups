@@ -1,0 +1,12 @@
+{
+  "name": "@deepseek-ai/dsh-typert-protocol",
+  "version": "0.1.1-rc.2-build-shim",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh-typert-protocol-runtime": "npm:@deepseek-ai/dsh-typert-protocol@0.1.1-rc.2"
+  }
+}

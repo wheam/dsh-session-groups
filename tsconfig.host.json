@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@deepseek-ai/dsh-typert-protocol": ["./packages/typert-protocol-shim/src/index.ts"]
+    }
+  },
+  "files": [],
+  "references": [
+    { "path": "./packages/dsh-session-groups/tsconfig.host.json" },
+    { "path": "./packages/typert-protocol-shim/tsconfig.json" }
+  ]
+}
