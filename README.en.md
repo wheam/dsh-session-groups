@@ -12,20 +12,20 @@ Channel plugins attach a stable communication origin such as a Feishu chat, Slac
 
 > Installing this plugin adds the origin service and sidebar UI. A channel/provider plugin must call the [Provider API](#provider-api) before external source metadata appears.
 
-## Features
+## Why use it
 
-- Independent project and communication-source contexts for every Session.
-- Project-first browsing by real Workspace, inferred directory project, or "No project"; source-first browsing by app and concrete chat.
-- Project rows show origin metadata only for explicit channels; missing assignments stay quiet there and collect under "Unattributed" in source view.
-- Durable, provider-neutral source assignments keyed by exact `source + id`, with presentation-only alias families such as Feishu/Lark.
-- Built-in source icons and aliases for messaging channels plus coding agents including Claude Code, Codex, Cursor, GitHub Copilot, Gemini CLI, OpenCode, Windsurf, Cline, Continue, Aider, Kimi Code, Replit Agent, Amazon Q Developer, Tabnine, Cody, Roo Code, and Zed Agent.
-- Waiting-user, failed-job, running, unread-completion, and idle states. Running Sessions use an animated loader; background completions use an unread dot and bold title until opened. Includes group aggregation, quick filters, source/chat/date filters, and an Activity inbox.
-- Unified title/metadata and DSH conversation-content search with snippets, cancellation, and `Cmd/Ctrl+K` focus.
-- Exact update metadata in tooltips, project/source metadata, Workspace folder opening, pinning, four sort modes, and drag ordering.
-- Archived-session browser, multi-select archive, Job/Subagent details, and keyboard up/down navigation.
-- Existing Session and Workspace actions: open, create, rename, fork, archive, add, reorder, and delete registration.
-- Browser preferences persist locally and degrade safely if storage is unavailable or corrupt.
-- Local DSH storage only; no external network requests, credentials, model tools, or prompt changes.
+The stock DSH sidebar works well for browsing by Workspace. Once Sessions also arrive from Feishu or other channels, however, project ownership and communication origin become two different questions. This plugin preserves the project view and adds an independent source view.
+
+| What you need | Stock DSH sidebar | With this plugin |
+| --- | --- | --- |
+| Browse by project | Expands Sessions under registered Workspaces | Prefers real Workspaces and adds inferred directory projects plus a "No project" group |
+| Find channel-created tasks | Does not distinguish the originating chat | Groups by apps such as Feishu, Slack, and Telegram and by concrete chat; project rows can still show the source |
+| See what needs attention | Primarily presents the Session list | Aggregates waiting-user, failed-job, running, and unread-completion states in an Activity inbox |
+| Search past work | Locate it in the current list | Searches titles, projects, sources, and DSH conversation content with result snippets |
+| Organize many tasks | Uses the existing Workspace/Session order | Adds quick filters, source/chat/date filters, pinning, four sort modes, and drag ordering |
+| Inspect history and execution | Provides common Session actions | Adds archive browsing, batch archive, and Job/Subagent details |
+
+Existing Session actions—open, create, rename, fork, and archive—and Workspace registration actions remain available. The sidebar also adds folder opening, exact timestamps and metadata in tooltips, keyboard navigation, and icons and aliases for common messaging channels and coding agents.
 
 ## Install
 
