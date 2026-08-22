@@ -17,6 +17,12 @@ await ctx.sessionGroups.assign(sessionId, {
 
 相同 `source + id` 的 Session 会进入同一组。`title` 更新时，最新 assignment 的名称生效。Provider 创建 Session 失败时可以调用 `unassign(sessionId)` 清理预留关系。
 
+### 来源图标
+
+左栏会按 `source` 显示来源图标。已内置飞书/Lark、Slack、Microsoft Teams、钉钉、Telegram、Discord、微信、WhatsApp、Google Chat、Mattermost、Matrix、Signal、LINE、Messenger、iMessage、KakaoTalk、Viber、Rocket.Chat、Zulip、QQ、Gmail、Zoom 等常见渠道，并兼容 `larksuite`、`microsoft.teams`、`bridge:telegram-bot` 这类常见别名或带命名空间的值。
+
+真实 Workspace、未分组会话和不识别的自定义 `source` 保留原有的打开/关闭文件夹图标，因此新 Provider 可以先接入数据，不需要等待 UI 增加图标。
+
 ## 安装与开发
 
 ```bash
@@ -42,4 +48,3 @@ dsh plugin --profile web add link:/Users/wheam/Downloads/dsh-session-groups/pack
 ## Model Experience
 
 无。插件只改变浏览器导航，不修改模型输入、工具、提示词或 Session 对话日志。
-

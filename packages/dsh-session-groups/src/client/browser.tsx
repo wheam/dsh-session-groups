@@ -5,11 +5,7 @@ import type {} from '@deepseek-ai/dsh-client-ui-sidebar/client'
 import {
   IconArchiveOutline20,
   IconBranchOutline16,
-  IconChevronDownOutline14,
-  IconChevronRightOutline14,
   IconEditOutline16,
-  IconFolderClose16,
-  IconFolderOpen16,
   IconPlusOutline16,
   IconTrashOutline16,
 } from '@deepseek-ai/dsh-client-ui-primitives'
@@ -19,6 +15,7 @@ import type {
 } from '@deepseek-ai/dsh-client-runtime/client'
 import { sessionGroupsErrorMessage, type SessionGroupsClientSnapshot } from './controller.js'
 import { deriveBrowserGroups } from './groups.js'
+import { SessionGroupIcon } from './source-icons.js'
 
 /** Business callbacks and the renderer-bound observable hook. */
 export interface SessionGroupsBrowserInjected {
@@ -129,9 +126,8 @@ export function SessionGroupsBrowser({
           return (
             <section className="sg_group" key={group.key}>
               <div className="sg_groupHead">
-                <button className="sg_groupToggle" type="button" onClick={() => { toggle(group.key) }}>
-                  <span className="sg_chevron" aria-hidden>{folded ? <IconChevronRightOutline14 /> : <IconChevronDownOutline14 />}</span>
-                  <span className="sg_folder" aria-hidden>{folded ? <IconFolderClose16 /> : <IconFolderOpen16 />}</span>
+                <button className="sg_groupToggle" type="button" aria-expanded={!folded} title={folded ? '展开分组' : '收起分组'} onClick={() => { toggle(group.key) }}>
+                  <span className="sg_groupIcon" aria-hidden><SessionGroupIcon source={group.source} folded={folded} /></span>
                   <span className="sg_groupTitle" title={group.title}>{group.title}</span>
                   {group.source === undefined ? null : <span className="sg_source">{group.source}</span>}
                   <span className="sg_count">{group.sessions.length}</span>

@@ -56,6 +56,9 @@ importers:
       react:
         specifier: ^18.2.0
         version: 18.3.1
+      simple-icons:
+        specifier: 13.21.0
+        version: 13.21.0
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -1485,6 +1488,10 @@ packages:
 
   siginfo@2.0.0:
     resolution: {integrity: sha512-ybx0WO1/8bSBLEWXZvEd7gMW3Sn3JFlW3TvX1nREbDLRNQNaeNN8WK0meBwPdAaOI7TtRRRJn/Es1zhrrCHu7g==}
+
+  simple-icons@13.21.0:
+    resolution: {integrity: sha512-LI5pVJPBv6oc79OMsffwb6kEqnmB8P1Cjg1crNUlhsxPETQ5UzbCKQdxU+7MW6+DD1qfPkla/vSKlLD4IfyXpQ==}
+    engines: {node: '>=0.12.18'}
 
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
@@ -3171,6 +3178,8 @@ snapshots:
       '@types/hast': 3.0.5
 
   siginfo@2.0.0: {}
+
+  simple-icons@13.21.0: {}
 
   source-map-js@1.2.1: {}
 

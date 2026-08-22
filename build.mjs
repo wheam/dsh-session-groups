@@ -63,6 +63,7 @@ const client = await build({
   format: 'cjs',
   target: ['chrome120'],
   jsx: 'automatic',
+  loader: { '.svg': 'text' },
   external: [
     'react',
     'react/jsx-runtime',
