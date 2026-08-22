@@ -17,7 +17,7 @@ import type {
   SessionId,
   WorkspaceId,
 } from '@deepseek-ai/dsh-client-runtime/client'
-import type { SessionGroupsClientSnapshot } from './controller.js'
+import { sessionGroupsErrorMessage, type SessionGroupsClientSnapshot } from './controller.js'
 import { deriveBrowserGroups } from './groups.js'
 
 /** Business callbacks and the renderer-bound observable hook. */
@@ -121,7 +121,7 @@ export function SessionGroupsBrowser({
         />
       </div>
       {remote.loading ? <p className="sg_status">正在读取分组…</p> : null}
-      {remote.error !== undefined ? <p className="sg_error" title={remote.error}>分组服务暂时不可用，显示本地会话</p> : null}
+      {remote.error !== undefined ? <p className="sg_error" title={remote.error}>{sessionGroupsErrorMessage(remote.error)}</p> : null}
       {actionError !== undefined ? <p className="sg_error" title={actionError}>操作失败：{actionError}</p> : null}
       <div className="sg_groups">
         {visibleGroups.map(group => {

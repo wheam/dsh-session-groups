@@ -16,6 +16,15 @@ export interface SessionGroupsClientSnapshot extends SessionGroupSnapshot {
   readonly error?: string
 }
 
+const BACKEND_DISCONNECTED = /(?:load failed|failed to fetch|network(?:error| request failed)|econnrefused|connection (?:lost|closed|refused)|no active connection)/i
+
+/** Keep the compact sidebar warning honest about which layer failed. */
+export function sessionGroupsErrorMessage(error: string): string {
+  return BACKEND_DISCONNECTED.test(error)
+    ? 'DSH 后端已断开，仅显示已加载会话'
+    : '分组接口不可用，按本地会话显示'
+}
+
 const EMPTY: SessionGroupsClientSnapshot = Object.freeze({ assignments: Object.freeze([]), loading: true })
 
 /** Owns Remote refresh deduplication and publishes stable snapshots. */
