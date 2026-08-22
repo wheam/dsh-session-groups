@@ -36,6 +36,10 @@ export interface BrowserSession {
   readonly summary: SessionSummary
   readonly project: ProjectContext
   readonly source: SourceContext
+  /** Live work is independent from the row's highest-priority attention state. */
+  readonly running: boolean
+  /** Runtime-owned completion reminder; opening the Session clears it. */
+  readonly unread: boolean
   readonly attention: SessionAttention
   readonly jobs: readonly JobView[]
   readonly archived: boolean
@@ -47,6 +51,8 @@ export interface StatusCounts {
   readonly running: number
   readonly completed: number
   readonly idle: number
+  /** Exact unread total, independent from the highest-priority attention bucket. */
+  readonly unread: number
 }
 
 export type BrowserGroupType = 'project' | 'source' | 'chat' | 'activity'
@@ -164,10 +170,14 @@ export function resolveProjectContext(
   }
 }
 
+export function isSessionRunning(session: SessionSummary, jobs: readonly JobView[]): boolean {
+  return session.running || jobs.some(job => job.status === 'running' || job.status === 'stopping')
+}
+
 export function deriveSessionAttention(session: SessionSummary, jobs: readonly JobView[]): SessionAttention {
   if (session.pendingInteraction !== undefined) return 'waiting'
   if (jobs.some(job => job.status === 'failed')) return 'failed'
-  if (session.running || jobs.some(job => job.status === 'running' || job.status === 'stopping')) return 'running'
+  if (isSessionRunning(session, jobs)) return 'running'
   if (session.completed === true) return 'completed'
   return 'idle'
 }
@@ -250,6 +260,8 @@ export function deriveBrowserSessions(
         summary,
         project: resolveProjectContext(summary, workspaces, explicitWorkspaceBySession.get(summary.id)),
         source: sources.get(summary.id) ?? UNATTRIBUTED_SOURCE,
+        running: isSessionRunning(summary, jobs),
+        unread: summary.completed === true,
         attention: deriveSessionAttention(summary, jobs),
         jobs,
         archived: archived.has(summary.id),
@@ -258,8 +270,11 @@ export function deriveBrowserSessions(
 }
 
 export function countStatuses(sessions: readonly BrowserSession[]): StatusCounts {
-  const mutable = { waiting: 0, failed: 0, running: 0, completed: 0, idle: 0 }
-  for (const session of sessions) mutable[session.attention] += 1
+  const mutable = { waiting: 0, failed: 0, running: 0, completed: 0, idle: 0, unread: 0 }
+  for (const session of sessions) {
+    mutable[session.attention] += 1
+    if (session.unread) mutable.unread += 1
+  }
   return mutable
 }
 

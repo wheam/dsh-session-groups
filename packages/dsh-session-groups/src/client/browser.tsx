@@ -13,6 +13,7 @@ import type { PropsRuntime, SnapshotSelectorHook } from '@deepseek-ai/dsh-client
 import type {} from '@deepseek-ai/dsh-client-ui-sidebar/client'
 import {
   IconArchiveOutline20,
+  IconBrowseOutline16,
   IconEditOutline16,
   IconEllipsisOutline16,
   IconFolderOpenOutline16,
@@ -85,6 +86,21 @@ type Dragged =
   | { readonly type: 'group', readonly group: BrowserGroup, readonly parentKey?: string }
   | { readonly type: 'session', readonly entry: BrowserSession, readonly groupKey: string }
 
+/** Local gap-fill until the DSH primitive icon set exposes a pin glyph. */
+function IconPinOutline16() {
+  return (
+    <svg className="sg_menuIcon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M5 2.5h6M6.25 2.5v3L4.5 8.25V9.5h7V8.25L9.75 5.5v-3M8 9.5v4"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 const ATTENTION_ORDER: Readonly<Record<SessionAttention, number>> = {
   waiting: 0,
   failed: 1,
@@ -97,7 +113,7 @@ const ATTENTION_COPY: Readonly<Record<SessionAttention, { label: string, short: 
   waiting: { label: '等待用户', short: '待' },
   failed: { label: '后台任务失败', short: '失败' },
   running: { label: '正在运行', short: '运行' },
-  completed: { label: '刚完成', short: '完成' },
+  completed: { label: '未读（已完成）', short: '未读' },
   idle: { label: '空闲', short: '空闲' },
 }
 
@@ -139,6 +155,7 @@ function metadata(entry: BrowserSession): string {
     `来源：${sourceLabel(entry)}`,
     entry.source.kind === undefined ? undefined : `聊天类型：${sessionGroupKindLabel(entry.source.kind) ?? entry.source.kind}`,
     entry.summary.agentPreset === undefined ? undefined : `Agent preset：${entry.summary.agentPreset}`,
+    `阅读状态：${entry.unread ? '未读' : '已读'}`,
     `更新时间：${new Date(entry.summary.updatedAt).toLocaleString()}`,
   ]
   return parts.filter((part): part is string => part !== undefined).join('\n')
@@ -175,7 +192,7 @@ function groupAttentionRank(group: BrowserGroup): number {
   if (group.counts.waiting > 0) return 0
   if (group.counts.failed > 0) return 1
   if (group.counts.running > 0) return 2
-  if (group.counts.completed > 0) return 3
+  if (group.counts.unread > 0) return 3
   return 4
 }
 
@@ -193,7 +210,7 @@ function activityGroups(entries: readonly BrowserSession[]): BrowserGroup[] {
     ['waiting', '等待用户'],
     ['failed', '后台任务失败'],
     ['running', '运行中'],
-    ['completed', '刚完成'],
+    ['completed', '未读'],
   ]
   return definitions.flatMap(([attention, title]) => {
     const matching = entries.filter(entry => entry.attention === attention)
@@ -400,7 +417,12 @@ export function SessionGroupsBrowser({
     return entries.filter(entry => {
       if (surface === 'archive' ? !entry.archived : entry.archived) return false
       if (surface === 'activity' && entry.attention === 'idle') return false
-      if (preferences.attentionFilter !== 'all' && entry.attention !== preferences.attentionFilter) return false
+      if (preferences.attentionFilter !== 'all') {
+        const matchesAttention = preferences.attentionFilter === 'completed'
+          ? entry.unread
+          : entry.attention === preferences.attentionFilter
+        if (!matchesAttention) return false
+      }
       if (preferences.sourceFilter !== '' && entry.source.familyKey !== preferences.sourceFilter) return false
       if (preferences.chatFilter !== '' && entry.source.chatKey !== preferences.chatFilter) return false
       if (entry.summary.updatedAt < cutoff) return false
@@ -477,7 +499,13 @@ export function SessionGroupsBrowser({
   if (!wide) {
     return (
       <div className="sg_rail">
-        <button className="sg_railButton" type="button" title="任务浏览器" onClick={expandSidebar}>任</button>
+        <button
+          className="sg_railButton"
+          type="button"
+          title="任务浏览器"
+          aria-label="展开任务浏览器"
+          onClick={expandSidebar}
+        ><IconBrowseOutline16 size={18} /></button>
       </div>
     )
   }
@@ -749,9 +777,11 @@ export function SessionGroupsBrowser({
     const pinned = preferences.pinnedSessions.includes(String(entry.summary.id))
     const sessionDraggable = canDragSession(entry, group)
     const compact = counterpart === undefined && snippet === undefined
+    const showAttentionDot = entry.attention === 'waiting' || entry.attention === 'failed'
     const wrapClassName = [
       'sg_sessionWrap',
       current ? 'sg_sessionCurrent' : '',
+      entry.unread ? 'sg_sessionUnread' : 'sg_sessionRead',
       compact ? 'sg_sessionCompact' : '',
     ].filter(Boolean).join(' ')
     return (
@@ -776,16 +806,25 @@ export function SessionGroupsBrowser({
               onChange={() => { toggleSelected(entry.summary.id) }}
             />
           ) : null}
-          <button className="sg_sessionOpen" type="button" title={metadata(entry)} aria-current={current ? 'page' : undefined} onClick={() => { open(entry.summary.id) }}>
+          <button
+            className="sg_sessionOpen"
+            type="button"
+            title={metadata(entry)}
+            aria-current={current ? 'page' : undefined}
+            aria-label={`${entry.summary.displayTitle}，${entry.unread ? '未读' : '已读'}${entry.running ? '，正在运行' : ''}`}
+            onClick={() => { open(entry.summary.id) }}
+          >
             {pinned ? <span className="sg_pinMark" aria-label="已置顶">★</span> : null}
             <span className="sg_sessionText">
               <span className="sg_sessionTitle">{entry.summary.blank ? '新会话' : entry.summary.displayTitle}</span>
               {counterpart === undefined ? null : <span className="sg_sessionMeta">{counterpart}</span>}
               {snippet === undefined ? null : <span className="sg_snippet">{snippet}</span>}
             </span>
-            {entry.attention === 'idle' ? null : (
+            {!entry.running && !showAttentionDot && !entry.unread ? null : (
               <span className="sg_statusSlot">
-                <span className={`sg_dot sg_dot-${entry.attention}`} role="img" title={pendingLabel(entry)} aria-label={pendingLabel(entry)} />
+                {entry.running ? <span className="sg_spinner" role="img" title="正在运行" aria-label="正在运行" /> : null}
+                {showAttentionDot ? <span className={`sg_dot sg_dot-${entry.attention}`} role="img" title={pendingLabel(entry)} aria-label={pendingLabel(entry)} /> : null}
+                {entry.unread ? <span className="sg_unreadDot" role="img" title="未读" aria-label="未读" /> : null}
               </span>
             )}
           </button>
@@ -861,13 +900,13 @@ export function SessionGroupsBrowser({
             {counts.waiting > 0 ? <span className="sg_attentionCount sg_attentionCount-waiting">待 {counts.waiting}</span> : null}
             {counts.failed > 0 ? <span className="sg_attentionCount sg_attentionCount-failed">失败 {counts.failed}</span> : null}
             {counts.running > 0 ? <span className="sg_attentionCount sg_attentionCount-running">运行 {counts.running}</span> : null}
-            {counts.completed > 0 ? <span className="sg_attentionCount sg_attentionCount-completed">完成 {counts.completed}</span> : null}
+            {counts.unread > 0 ? <span className="sg_attentionCount sg_attentionCount-unread">未读 {counts.unread}</span> : null}
             <span className="sg_count" title={hasActiveFilters ? `${visible} 个筛选命中，共 ${total} 个会话` : undefined}>{hasActiveFilters ? `${visible}/${total}` : total}</span>
           </button>
           <details className="sg_menu sg_groupMenu" onToggle={placeMenuWithinScroller}>
             <summary title="分组操作" aria-label="分组操作"><IconEllipsisOutline16 /></summary>
             <div className="sg_menuPanel">
-              {surface === 'activity' ? null : <button type="button" onClick={() => { togglePinnedGroup(group.key) }}>{pinned ? '取消置顶' : '置顶'}</button>}
+              {surface === 'activity' ? null : <button type="button" onClick={() => { togglePinnedGroup(group.key) }}><IconPinOutline16 />{pinned ? '取消置顶' : '置顶'}</button>}
               {group.path === undefined ? null : <button type="button" onClick={() => { run(openPath(group.path!)) }}><IconFolderOpenOutline16 />打开文件夹</button>}
               {group.workspaceId === undefined ? null : <button type="button" onClick={() => { startSession(group.workspaceId) }}><IconPlusOutline16 />新建会话</button>}
               {group.workspaceId === undefined ? null : <button type="button" onClick={() => { run(renameWorkspace(group.workspaceId!, group.title)) }}><IconEditOutline16 />重命名 Workspace</button>}
@@ -921,14 +960,14 @@ export function SessionGroupsBrowser({
         <button className={filtersOpen || hasActiveFilters ? 'sg_filterButton sg_filterButtonActive' : 'sg_filterButton'} type="button" onClick={() => { setFiltersOpen(value => !value) }}>筛选</button>
       </div>
 
-      {statusCounts.waiting + statusCounts.failed + statusCounts.running + statusCounts.completed > 0
+      {statusCounts.waiting + statusCounts.failed + statusCounts.running + statusCounts.unread > 0
         || preferences.attentionFilter !== 'all' ? <div className="sg_quickFilters" aria-label="任务状态筛选">
         {([
           ['all', '全部', quickEntries.length],
           ['waiting', '待我处理', statusCounts.waiting],
           ['failed', '失败', statusCounts.failed],
           ['running', '运行中', statusCounts.running],
-          ['completed', '刚完成', statusCounts.completed],
+          ['completed', '未读', statusCounts.unread],
         ] as const).filter(([value, , count]) => value === 'all' || count > 0 || preferences.attentionFilter === value).map(([value, label, count]) => (
           <button
             className={preferences.attentionFilter === value ? 'sg_chip sg_chipActive' : 'sg_chip'}
@@ -943,7 +982,7 @@ export function SessionGroupsBrowser({
         <div className="sg_filters">
           <label>状态
             <select value={preferences.attentionFilter} onChange={event => { patchPreferences({ attentionFilter: event.currentTarget.value as BrowserPreferences['attentionFilter'] }) }}>
-              <option value="all">全部</option><option value="waiting">等待用户</option><option value="failed">后台失败</option><option value="running">运行中</option><option value="completed">刚完成</option>
+              <option value="all">全部</option><option value="waiting">等待用户</option><option value="failed">后台失败</option><option value="running">运行中</option><option value="completed">未读（已完成）</option>
             </select>
           </label>
           <label>来源

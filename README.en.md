@@ -19,7 +19,7 @@ Channel plugins attach a stable communication origin such as a Feishu chat, Slac
 - Project rows show origin metadata only for explicit channels; missing assignments stay quiet there and collect under "Unattributed" in source view.
 - Durable, provider-neutral source assignments keyed by exact `source + id`, with presentation-only alias families such as Feishu/Lark.
 - Built-in source icons and aliases for messaging channels plus coding agents including Claude Code, Codex, Cursor, GitHub Copilot, Gemini CLI, OpenCode, Windsurf, Cline, Continue, Aider, Kimi Code, Replit Agent, Amazon Q Developer, Tabnine, Cody, Roo Code, and Zed Agent.
-- Waiting-user, failed-job, running, recently-completed, and idle status with group aggregation, quick filters, source/chat/date filters, and an Activity inbox.
+- Waiting-user, failed-job, running, unread-completion, and idle states. Running Sessions use an animated loader; background completions use an unread dot and bold title until opened. Includes group aggregation, quick filters, source/chat/date filters, and an Activity inbox.
 - Unified title/metadata and DSH conversation-content search with snippets, cancellation, and `Cmd/Ctrl+K` focus.
 - Exact update metadata in tooltips, project/source metadata, Workspace folder opening, pinning, four sort modes, and drag ordering.
 - Archived-session browser, multi-select archive, Job/Subagent details, and keyboard up/down navigation.

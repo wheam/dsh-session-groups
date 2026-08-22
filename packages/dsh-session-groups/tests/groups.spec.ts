@@ -9,10 +9,12 @@ import type {
 } from '@deepseek-ai/dsh-client-runtime/client'
 import type { SessionGroupAssignment, SessionGroupId } from '../src/types.js'
 import {
+  countStatuses,
   deriveBrowserGroups,
   deriveBrowserSessions,
   deriveSessionAttention,
   isPathWithin,
+  isSessionRunning,
   normalizePathForGrouping,
   resolveProjectContext,
   sessionGroupKindLabel,
@@ -205,6 +207,27 @@ describe('session attention', () => {
     expect(deriveSessionAttention(summary('s3', 1, { completed: true }), [job('running')])).toBe('running')
     expect(deriveSessionAttention(summary('s4', 1, { completed: true }), [])).toBe('completed')
     expect(deriveSessionAttention(summary('s5', 1), [])).toBe('idle')
+  })
+
+  it('keeps running and unread as independent row signals', () => {
+    const entries = deriveBrowserSessions(
+      list(summary('s1', 1, { completed: true }), summary('s2', 2, { pendingInteraction: 'question' })),
+      [],
+      [],
+      [],
+    )
+    expect(entries.map(entry => [entry.running, entry.unread])).toEqual([[false, true], [false, false]])
+    expect(isSessionRunning(summary('s3', 3), [job('stopping')])).toBe(true)
+    expect(deriveSessionAttention(summary('s3', 3), [job('failed'), job('running')])).toBe('failed')
+    expect(isSessionRunning(summary('s3', 3), [job('failed'), job('running')])).toBe(true)
+
+    const failedUnread = deriveBrowserSessions(
+      list(summary('s4', 4, { completed: true })),
+      [],
+      [],
+      [],
+    ).map(entry => ({ ...entry, attention: 'failed' as const }))
+    expect(countStatuses(failedUnread)).toMatchObject({ failed: 1, completed: 0, unread: 1 })
   })
 })
 

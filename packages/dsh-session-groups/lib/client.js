@@ -14832,10 +14832,13 @@ function resolveProjectContext(session, workspaces, explicitWorkspace) {
     path: session.cwd
   };
 }
+function isSessionRunning(session, jobs) {
+  return session.running || jobs.some((job) => job.status === "running" || job.status === "stopping");
+}
 function deriveSessionAttention(session, jobs) {
   if (session.pendingInteraction !== void 0) return "waiting";
   if (jobs.some((job) => job.status === "failed")) return "failed";
-  if (session.running || jobs.some((job) => job.status === "running" || job.status === "stopping")) return "running";
+  if (isSessionRunning(session, jobs)) return "running";
   if (session.completed === true) return "completed";
   return "idle";
 }
@@ -14899,6 +14902,8 @@ function deriveBrowserSessions(list, workspaces, archivedSessionIds, assignments
       summary,
       project: resolveProjectContext(summary, workspaces, explicitWorkspaceBySession.get(summary.id)),
       source: sources.get(summary.id) ?? UNATTRIBUTED_SOURCE,
+      running: isSessionRunning(summary, jobs),
+      unread: summary.completed === true,
       attention: deriveSessionAttention(summary, jobs),
       jobs,
       archived: archived.has(summary.id)
@@ -14906,8 +14911,11 @@ function deriveBrowserSessions(list, workspaces, archivedSessionIds, assignments
   });
 }
 function countStatuses(sessions) {
-  const mutable = { waiting: 0, failed: 0, running: 0, completed: 0, idle: 0 };
-  for (const session of sessions) mutable[session.attention] += 1;
+  const mutable = { waiting: 0, failed: 0, running: 0, completed: 0, idle: 0, unread: 0 };
+  for (const session of sessions) {
+    mutable[session.attention] += 1;
+    if (session.unread) mutable.unread += 1;
+  }
   return mutable;
 }
 function makeGroup(input) {
@@ -15368,6 +15376,18 @@ var ContentSearchCoordinator = class {
 
 // packages/dsh-session-groups/src/client/browser.tsx
 var import_jsx_runtime2 = require("react/jsx-runtime");
+function IconPinOutline16() {
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("svg", { className: "sg_menuIcon", width: "16", height: "16", viewBox: "0 0 16 16", fill: "none", "aria-hidden": "true", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+    "path",
+    {
+      d: "M5 2.5h6M6.25 2.5v3L4.5 8.25V9.5h7V8.25L9.75 5.5v-3M8 9.5v4",
+      stroke: "currentColor",
+      strokeWidth: "1.4",
+      strokeLinecap: "round",
+      strokeLinejoin: "round"
+    }
+  ) });
+}
 var ATTENTION_ORDER = {
   waiting: 0,
   failed: 1,
@@ -15379,7 +15399,7 @@ var ATTENTION_COPY = {
   waiting: { label: "\u7B49\u5F85\u7528\u6237", short: "\u5F85" },
   failed: { label: "\u540E\u53F0\u4EFB\u52A1\u5931\u8D25", short: "\u5931\u8D25" },
   running: { label: "\u6B63\u5728\u8FD0\u884C", short: "\u8FD0\u884C" },
-  completed: { label: "\u521A\u5B8C\u6210", short: "\u5B8C\u6210" },
+  completed: { label: "\u672A\u8BFB\uFF08\u5DF2\u5B8C\u6210\uFF09", short: "\u672A\u8BFB" },
   idle: { label: "\u7A7A\u95F2", short: "\u7A7A\u95F2" }
 };
 function pendingLabel(entry) {
@@ -15417,6 +15437,7 @@ function metadata(entry) {
     `\u6765\u6E90\uFF1A${sourceLabel(entry)}`,
     entry.source.kind === void 0 ? void 0 : `\u804A\u5929\u7C7B\u578B\uFF1A${sessionGroupKindLabel(entry.source.kind) ?? entry.source.kind}`,
     entry.summary.agentPreset === void 0 ? void 0 : `Agent preset\uFF1A${entry.summary.agentPreset}`,
+    `\u9605\u8BFB\u72B6\u6001\uFF1A${entry.unread ? "\u672A\u8BFB" : "\u5DF2\u8BFB"}`,
     `\u66F4\u65B0\u65F6\u95F4\uFF1A${new Date(entry.summary.updatedAt).toLocaleString()}`
   ];
   return parts.filter((part) => part !== void 0).join("\n");
@@ -15449,7 +15470,7 @@ function groupAttentionRank(group) {
   if (group.counts.waiting > 0) return 0;
   if (group.counts.failed > 0) return 1;
   if (group.counts.running > 0) return 2;
-  if (group.counts.completed > 0) return 3;
+  if (group.counts.unread > 0) return 3;
   return 4;
 }
 function updatedCutoff(range, now) {
@@ -15469,7 +15490,7 @@ function activityGroups(entries) {
     ["waiting", "\u7B49\u5F85\u7528\u6237"],
     ["failed", "\u540E\u53F0\u4EFB\u52A1\u5931\u8D25"],
     ["running", "\u8FD0\u884C\u4E2D"],
-    ["completed", "\u521A\u5B8C\u6210"]
+    ["completed", "\u672A\u8BFB"]
   ];
   return definitions.flatMap(([attention, title]) => {
     const matching = entries.filter((entry) => entry.attention === attention);
@@ -15671,7 +15692,10 @@ function SessionGroupsBrowser({
     return entries.filter((entry) => {
       if (surface === "archive" ? !entry.archived : entry.archived) return false;
       if (surface === "activity" && entry.attention === "idle") return false;
-      if (preferences.attentionFilter !== "all" && entry.attention !== preferences.attentionFilter) return false;
+      if (preferences.attentionFilter !== "all") {
+        const matchesAttention = preferences.attentionFilter === "completed" ? entry.unread : entry.attention === preferences.attentionFilter;
+        if (!matchesAttention) return false;
+      }
       if (preferences.sourceFilter !== "" && entry.source.familyKey !== preferences.sourceFilter) return false;
       if (preferences.chatFilter !== "" && entry.source.chatKey !== preferences.chatFilter) return false;
       if (entry.summary.updatedAt < cutoff) return false;
@@ -15739,7 +15763,17 @@ function SessionGroupsBrowser({
     return sortGroups(projected.filter((group) => keepEmptyProjects || groupSize(group) > 0));
   }, [filteredEntries, hasActiveFilters, preferences, surface, workspaces.items]);
   if (!wide) {
-    return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "sg_rail", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { className: "sg_railButton", type: "button", title: "\u4EFB\u52A1\u6D4F\u89C8\u5668", onClick: expandSidebar, children: "\u4EFB" }) });
+    return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "sg_rail", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+      "button",
+      {
+        className: "sg_railButton",
+        type: "button",
+        title: "\u4EFB\u52A1\u6D4F\u89C8\u5668",
+        "aria-label": "\u5C55\u5F00\u4EFB\u52A1\u6D4F\u89C8\u5668",
+        onClick: expandSidebar,
+        children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconBrowseOutline16, { size: 18 })
+      }
+    ) });
   }
   const setBrowseMode = (mode) => {
     setSurface("browse");
@@ -15984,9 +16018,11 @@ function SessionGroupsBrowser({
     const pinned = preferences.pinnedSessions.includes(String(entry.summary.id));
     const sessionDraggable = canDragSession(entry, group);
     const compact = counterpart === void 0 && snippet === void 0;
+    const showAttentionDot = entry.attention === "waiting" || entry.attention === "failed";
     const wrapClassName = [
       "sg_sessionWrap",
       current ? "sg_sessionCurrent" : "",
+      entry.unread ? "sg_sessionUnread" : "sg_sessionRead",
       compact ? "sg_sessionCompact" : ""
     ].filter(Boolean).join(" ");
     return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
@@ -16018,17 +16054,32 @@ function SessionGroupsBrowser({
                 }
               }
             ) : null,
-            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { className: "sg_sessionOpen", type: "button", title: metadata(entry), "aria-current": current ? "page" : void 0, onClick: () => {
-              open(entry.summary.id);
-            }, children: [
-              pinned ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_pinMark", "aria-label": "\u5DF2\u7F6E\u9876", children: "\u2605" }) : null,
-              /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "sg_sessionText", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_sessionTitle", children: entry.summary.blank ? "\u65B0\u4F1A\u8BDD" : entry.summary.displayTitle }),
-                counterpart === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_sessionMeta", children: counterpart }),
-                snippet === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_snippet", children: snippet })
-              ] }),
-              entry.attention === "idle" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_statusSlot", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: `sg_dot sg_dot-${entry.attention}`, role: "img", title: pendingLabel(entry), "aria-label": pendingLabel(entry) }) })
-            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
+              "button",
+              {
+                className: "sg_sessionOpen",
+                type: "button",
+                title: metadata(entry),
+                "aria-current": current ? "page" : void 0,
+                "aria-label": `${entry.summary.displayTitle}\uFF0C${entry.unread ? "\u672A\u8BFB" : "\u5DF2\u8BFB"}${entry.running ? "\uFF0C\u6B63\u5728\u8FD0\u884C" : ""}`,
+                onClick: () => {
+                  open(entry.summary.id);
+                },
+                children: [
+                  pinned ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_pinMark", "aria-label": "\u5DF2\u7F6E\u9876", children: "\u2605" }) : null,
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "sg_sessionText", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_sessionTitle", children: entry.summary.blank ? "\u65B0\u4F1A\u8BDD" : entry.summary.displayTitle }),
+                    counterpart === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_sessionMeta", children: counterpart }),
+                    snippet === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_snippet", children: snippet })
+                  ] }),
+                  !entry.running && !showAttentionDot && !entry.unread ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "sg_statusSlot", children: [
+                    entry.running ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_spinner", role: "img", title: "\u6B63\u5728\u8FD0\u884C", "aria-label": "\u6B63\u5728\u8FD0\u884C" }) : null,
+                    showAttentionDot ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: `sg_dot sg_dot-${entry.attention}`, role: "img", title: pendingLabel(entry), "aria-label": pendingLabel(entry) }) : null,
+                    entry.unread ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_unreadDot", role: "img", title: "\u672A\u8BFB", "aria-label": "\u672A\u8BFB" }) : null
+                  ] })
+                ]
+              }
+            ),
             /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_sessionHoverActions", children: [
               surface === "archive" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
                 "button",
@@ -16140,9 +16191,9 @@ function SessionGroupsBrowser({
                     "\u8FD0\u884C ",
                     counts.running
                   ] }) : null,
-                  counts.completed > 0 ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "sg_attentionCount sg_attentionCount-completed", children: [
-                    "\u5B8C\u6210 ",
-                    counts.completed
+                  counts.unread > 0 ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "sg_attentionCount sg_attentionCount-unread", children: [
+                    "\u672A\u8BFB ",
+                    counts.unread
                   ] }) : null,
                   /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_count", title: hasActiveFilters ? `${visible2} \u4E2A\u7B5B\u9009\u547D\u4E2D\uFF0C\u5171 ${total} \u4E2A\u4F1A\u8BDD` : void 0, children: hasActiveFilters ? `${visible2}/${total}` : total })
                 ]
@@ -16151,9 +16202,12 @@ function SessionGroupsBrowser({
             /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("details", { className: "sg_menu sg_groupMenu", onToggle: placeMenuWithinScroller, children: [
               /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("summary", { title: "\u5206\u7EC4\u64CD\u4F5C", "aria-label": "\u5206\u7EC4\u64CD\u4F5C", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconEllipsisOutline16, {}) }),
               /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_menuPanel", children: [
-                surface === "activity" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
+                surface === "activity" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { type: "button", onClick: () => {
                   togglePinnedGroup(group.key);
-                }, children: pinned ? "\u53D6\u6D88\u7F6E\u9876" : "\u7F6E\u9876" }),
+                }, children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(IconPinOutline16, {}),
+                  pinned ? "\u53D6\u6D88\u7F6E\u9876" : "\u7F6E\u9876"
+                ] }),
                 group.path === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { type: "button", onClick: () => {
                   run(openPath(group.path));
                 }, children: [
@@ -16246,12 +16300,12 @@ function SessionGroupsBrowser({
         setFiltersOpen((value) => !value);
       }, children: "\u7B5B\u9009" })
     ] }),
-    statusCounts.waiting + statusCounts.failed + statusCounts.running + statusCounts.completed > 0 || preferences.attentionFilter !== "all" ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "sg_quickFilters", "aria-label": "\u4EFB\u52A1\u72B6\u6001\u7B5B\u9009", children: [
+    statusCounts.waiting + statusCounts.failed + statusCounts.running + statusCounts.unread > 0 || preferences.attentionFilter !== "all" ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "sg_quickFilters", "aria-label": "\u4EFB\u52A1\u72B6\u6001\u7B5B\u9009", children: [
       ["all", "\u5168\u90E8", quickEntries.length],
       ["waiting", "\u5F85\u6211\u5904\u7406", statusCounts.waiting],
       ["failed", "\u5931\u8D25", statusCounts.failed],
       ["running", "\u8FD0\u884C\u4E2D", statusCounts.running],
-      ["completed", "\u521A\u5B8C\u6210", statusCounts.completed]
+      ["completed", "\u672A\u8BFB", statusCounts.unread]
     ].filter(([value, , count]) => value === "all" || count > 0 || preferences.attentionFilter === value).map(([value, label, count]) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
       "button",
       {
@@ -16278,7 +16332,7 @@ function SessionGroupsBrowser({
           /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("option", { value: "waiting", children: "\u7B49\u5F85\u7528\u6237" }),
           /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("option", { value: "failed", children: "\u540E\u53F0\u5931\u8D25" }),
           /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("option", { value: "running", children: "\u8FD0\u884C\u4E2D" }),
-          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("option", { value: "completed", children: "\u521A\u5B8C\u6210" })
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("option", { value: "completed", children: "\u672A\u8BFB\uFF08\u5DF2\u5B8C\u6210\uFF09" })
         ] })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("label", { children: [
@@ -16376,17 +16430,17 @@ var styles = `
 .sg_bulkBar{display:flex;flex:none;align-items:center;gap:8px;margin:0 8px 7px;padding:6px 8px;border-radius:8px;background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary);font-size:11px}.sg_bulkBar label{display:flex;align-items:center;gap:4px}.sg_bulkBar button{display:inline-flex;height:24px;align-items:center;gap:3px;margin-left:auto;border:0;border-radius:6px;background:var(--dsw-alias-interactive-bg-hover-accent);color:var(--dsw-alias-state-business-primary);cursor:pointer;font:inherit;font-size:11px}.sg_bulkBar button:disabled{cursor:not-allowed;opacity:.45}
 .sg_status,.sg_error,.sg_notice{margin:3px 12px;color:var(--dsw-alias-label-tertiary);font-size:11px;line-height:17px}.sg_error{color:var(--dsw-alias-state-warn-primary)}.sg_notice{padding:6px 8px;border-radius:7px;background:var(--dsw-alias-interactive-bg-hover)}
 .sg_groups{min-height:0;flex:1;overflow-x:hidden;overflow-y:auto;padding:4px 8px 20px 4px}.sg_group{margin:0}.sg_group+.sg_group{margin-top:12px}.sg_groupDepth-1{margin:1px 0 1px 10px}.sg_groupDepth-1+.sg_groupDepth-1{margin-top:2px}.sg_groupDepth-2{margin-left:12px}.sg_groupHead{position:relative;display:flex;min-width:0;height:32px;align-items:center;border-radius:8px}.sg_groupHead[draggable=true]{cursor:grab}.sg_groupHead[draggable=true]:active{cursor:grabbing}.sg_groupDepth-1>.sg_groupHead{height:28px}
-.sg_groupToggle{box-sizing:border-box;display:flex;min-width:0;height:32px;flex:1;align-items:center;gap:5px;border:0;background:transparent;color:var(--dsw-alias-label-primary);cursor:pointer;font:inherit;padding:0 34px 0 7px;border-radius:8px;text-align:left}.sg_groupToggle:hover{background:var(--dsw-alias-interactive-bg-hover)}.sg_groupToggleEmpty{cursor:default}.sg_groupToggleEmpty:hover{background:transparent}.sg_groupIcon{display:inline-flex;width:16px;height:20px;flex:none;overflow:hidden;align-items:center;justify-content:center;color:var(--dsw-alias-label-secondary)}.sg_groupIcon svg{display:block}.sg_folderIcon{width:16px;height:16px}.sg_brandIcon{display:block;width:16px;height:16px;object-fit:contain}.sg_brandIcon svg{display:block;width:16px;height:16px;fill:currentColor}.sg_groupTitle{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;font-weight:500;line-height:20px}.sg_groupDepth-1>.sg_groupHead .sg_groupToggle{height:28px}.sg_groupDepth-1>.sg_groupHead .sg_groupIcon{width:14px;height:18px}.sg_groupDepth-1>.sg_groupHead .sg_folderIcon{width:14px;height:14px}.sg_groupDepth-1>.sg_groupHead .sg_brandIcon{width:14px;height:14px}.sg_groupDepth-1>.sg_groupHead .sg_groupTitle{font-size:12px;font-weight:500;line-height:18px}.sg_groupDepth-1>.sg_groupHead .sg_count{font-size:10px;line-height:18px}.sg_kind,.sg_attentionCount{flex:none;border-radius:999px;padding:0 5px;font-size:10px;line-height:16px}.sg_kind{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary)}.sg_attentionCount{background:var(--dsw-alias-interactive-bg-hover-accent);color:var(--dsw-alias-label-secondary)}.sg_attentionCount-waiting{color:var(--dsw-alias-state-warn-primary)}.sg_attentionCount-failed{color:var(--dsw-alias-state-error-primary)}.sg_attentionCount-running{color:var(--dsw-alias-state-business-primary)}.sg_attentionCount-completed{color:var(--dsw-alias-state-success-primary)}.sg_count{margin-left:auto;color:var(--dsw-alias-label-tertiary);font-size:11px;line-height:20px}.sg_pinMark{flex:none;color:var(--dsw-alias-state-warn-primary);font-size:10px}
+.sg_groupToggle{box-sizing:border-box;display:flex;min-width:0;height:32px;flex:1;align-items:center;gap:5px;border:0;background:transparent;color:var(--dsw-alias-label-primary);cursor:pointer;font:inherit;padding:0 34px 0 7px;border-radius:8px;text-align:left}.sg_groupToggle:hover{background:var(--dsw-alias-interactive-bg-hover)}.sg_groupToggleEmpty{cursor:default}.sg_groupToggleEmpty:hover{background:transparent}.sg_groupIcon{display:inline-flex;width:16px;height:20px;flex:none;overflow:hidden;align-items:center;justify-content:center;color:var(--dsw-alias-label-secondary)}.sg_groupIcon svg{display:block}.sg_folderIcon{width:16px;height:16px}.sg_brandIcon{display:block;width:16px;height:16px;object-fit:contain}.sg_brandIcon svg{display:block;width:16px;height:16px;fill:currentColor}.sg_groupTitle{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;font-weight:500;line-height:20px}.sg_groupDepth-1>.sg_groupHead .sg_groupToggle{height:28px}.sg_groupDepth-1>.sg_groupHead .sg_groupIcon{width:14px;height:18px}.sg_groupDepth-1>.sg_groupHead .sg_folderIcon{width:14px;height:14px}.sg_groupDepth-1>.sg_groupHead .sg_brandIcon{width:14px;height:14px}.sg_groupDepth-1>.sg_groupHead .sg_groupTitle{font-size:12px;font-weight:500;line-height:18px}.sg_groupDepth-1>.sg_groupHead .sg_count{font-size:10px;line-height:18px}.sg_kind,.sg_attentionCount{flex:none;border-radius:999px;padding:0 5px;font-size:10px;line-height:16px}.sg_kind{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary)}.sg_attentionCount{background:var(--dsw-alias-interactive-bg-hover-accent);color:var(--dsw-alias-label-secondary)}.sg_attentionCount-waiting{color:var(--dsw-alias-state-warn-primary)}.sg_attentionCount-failed{color:var(--dsw-alias-state-error-primary)}.sg_attentionCount-running,.sg_attentionCount-unread{color:var(--dsw-alias-state-business-primary)}.sg_count{margin-left:auto;color:var(--dsw-alias-label-tertiary);font-size:11px;line-height:20px}.sg_pinMark{flex:none;color:var(--dsw-alias-state-warn-primary);font-size:10px}
 .sg_groupBody{display:flex;flex-direction:column;margin-left:24px}.sg_groupDepth-1>.sg_groupBody{margin-left:22px}.sg_empty{margin:0;padding:8px;color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:18px}
-.sg_sessionWrap{position:relative;margin-left:-24px;padding-left:24px;border-radius:8px}.sg_sessionWrap+.sg_sessionWrap{margin-top:1px}.sg_sessionWrap:hover{background:var(--dsw-alias-interactive-bg-hover)}.sg_sessionCurrent{background:var(--dsw-alias-interactive-bg-hover-accent)}.sg_sessionCurrent .sg_sessionTitle{font-weight:500}.sg_sessionWrap[draggable=true]{cursor:grab}.sg_sessionWrap[draggable=true]:active{cursor:grabbing}.sg_session{display:flex;min-width:0;min-height:38px;align-items:center;padding:0 4px}.sg_select{flex:none;margin:0 4px 0 2px}.sg_sessionOpen{box-sizing:border-box;display:flex;min-width:0;min-height:38px;flex:1;align-items:center;gap:5px;border:0;background:transparent;color:var(--dsw-alias-label-primary);cursor:pointer;font:inherit;padding:2px 1px;text-align:left}.sg_sessionWrap:hover .sg_sessionOpen,.sg_sessionWrap:has(.sg_sessionHoverActions :focus-visible) .sg_sessionOpen,.sg_sessionWrap:has(.sg_sessionHoverActions .sg_menu[open]) .sg_sessionOpen{padding-right:51px}.sg_sessionCompact .sg_session,.sg_sessionCompact .sg_sessionOpen{min-height:34px}.sg_sessionOpen:focus-visible{outline:2px solid var(--dsw-alias-state-business-primary);outline-offset:-2px;border-radius:6px}.sg_sessionText{display:flex;min-width:0;flex:1;flex-direction:column}.sg_sessionTitle,.sg_sessionMeta,.sg_snippet{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sg_sessionTitle{font-size:14px;font-weight:400;line-height:20px}.sg_sessionMeta{color:var(--dsw-alias-label-tertiary);font-size:10px;line-height:14px}.sg_snippet{color:var(--dsw-alias-label-secondary);font-size:10px;line-height:14px}
-.sg_statusSlot{display:inline-flex;width:7px;height:20px;flex:none;align-items:center;justify-content:center}.sg_dot{width:7px;height:7px;flex:none;border-radius:50%}.sg_dot-waiting{background:var(--dsw-alias-state-warn-primary)}.sg_dot-failed{background:var(--dsw-alias-state-error-primary)}.sg_dot-running{background:var(--dsw-alias-state-business-primary);animation:sg_pulse 1.5s ease-in-out infinite}.sg_dot-completed{background:var(--dsw-alias-state-success-primary)}
-@keyframes sg_pulse{0%,100%{opacity:1}50%{opacity:.35}}@media (prefers-reduced-motion:reduce){.sg_dot-running{animation:none}}
+.sg_sessionWrap{position:relative;margin-left:-24px;padding-left:24px;border-radius:8px}.sg_sessionWrap+.sg_sessionWrap{margin-top:1px}.sg_sessionWrap:hover{background:var(--dsw-alias-interactive-bg-hover)}.sg_sessionCurrent{background:var(--dsw-alias-interactive-bg-hover-accent)}.sg_sessionCurrent .sg_sessionTitle{font-weight:500}.sg_sessionUnread .sg_sessionTitle{font-weight:600}.sg_sessionWrap[draggable=true]{cursor:grab}.sg_sessionWrap[draggable=true]:active{cursor:grabbing}.sg_session{display:flex;min-width:0;min-height:38px;align-items:center;padding:0 4px}.sg_select{flex:none;margin:0 4px 0 2px}.sg_sessionOpen{box-sizing:border-box;display:flex;min-width:0;min-height:38px;flex:1;align-items:center;gap:5px;border:0;background:transparent;color:var(--dsw-alias-label-primary);cursor:pointer;font:inherit;padding:2px 1px;text-align:left}.sg_sessionWrap:hover .sg_sessionOpen,.sg_sessionWrap:has(.sg_sessionHoverActions :focus-visible) .sg_sessionOpen,.sg_sessionWrap:has(.sg_sessionHoverActions .sg_menu[open]) .sg_sessionOpen{padding-right:51px}.sg_sessionCompact .sg_session,.sg_sessionCompact .sg_sessionOpen{min-height:34px}.sg_sessionOpen:focus-visible{outline:2px solid var(--dsw-alias-state-business-primary);outline-offset:-2px;border-radius:6px}.sg_sessionText{display:flex;min-width:0;flex:1;flex-direction:column}.sg_sessionTitle,.sg_sessionMeta,.sg_snippet{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sg_sessionTitle{font-size:14px;font-weight:400;line-height:20px}.sg_sessionMeta{color:var(--dsw-alias-label-tertiary);font-size:10px;line-height:14px}.sg_snippet{color:var(--dsw-alias-label-secondary);font-size:10px;line-height:14px}
+.sg_statusSlot{display:inline-flex;min-width:7px;height:20px;flex:none;align-items:center;justify-content:flex-end;gap:5px}.sg_dot,.sg_unreadDot{width:7px;height:7px;flex:none;border-radius:50%}.sg_dot-waiting{background:var(--dsw-alias-state-warn-primary)}.sg_dot-failed{background:var(--dsw-alias-state-error-primary)}.sg_unreadDot{background:var(--dsw-alias-state-business-primary)}.sg_spinner{box-sizing:border-box;width:12px;height:12px;flex:none;border:1.5px solid var(--dsw-alias-border-l2);border-top-color:var(--dsw-alias-state-business-primary);border-right-color:var(--dsw-alias-state-business-primary);border-radius:50%;animation:sg_spin .8s linear infinite}
+@keyframes sg_spin{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.sg_spinner{animation:none}}
 .sg_sessionHoverActions{position:absolute;z-index:5;right:4px;top:50%;display:flex;align-items:center;transform:translateY(-50%);border-radius:6px;background:var(--dsw-specific-sidebar-fill);opacity:0;pointer-events:none}.sg_sessionWrap:hover .sg_sessionHoverActions,.sg_sessionHoverActions:has(:focus-visible),.sg_sessionHoverActions:has(.sg_menu[open]){opacity:1;pointer-events:auto}.sg_sessionWrap:hover .sg_sessionHoverActions{background:var(--dsw-alias-interactive-bg-hover)}.sg_sessionCurrent .sg_sessionHoverActions{background:var(--dsw-alias-interactive-bg-hover-accent)}.sg_quickArchive{display:flex;width:24px;height:28px;align-items:center;justify-content:center;border:0;border-radius:6px;background:transparent;color:var(--dsw-alias-label-tertiary);cursor:pointer;padding:0}.sg_quickArchive:hover,.sg_quickArchive:focus-visible{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary);outline:none}
-.sg_menu{position:relative;flex:none}.sg_menu>summary{display:flex;width:24px;height:28px;align-items:center;justify-content:center;border-radius:6px;color:var(--dsw-alias-label-tertiary);cursor:pointer;list-style:none;opacity:0}.sg_menu>summary::-webkit-details-marker{display:none}.sg_sessionWrap:hover .sg_sessionHoverActions .sg_menu>summary,.sg_sessionHoverActions:has(:focus-visible) .sg_menu>summary,.sg_groupHead:hover>.sg_menu>summary,.sg_menu>summary:focus-visible,.sg_menu[open]>summary{opacity:1}.sg_menu>summary:hover,.sg_menu>summary:focus-visible{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary);outline:none}.sg_menuPanel{box-sizing:border-box;position:absolute;z-index:20;right:0;top:29px;display:flex;width:190px;max-height:var(--sg-menu-max-height,none);overflow-y:auto;flex-direction:column;padding:4px;border:1px solid var(--dsw-alias-border-l2);border-radius:9px;background:var(--dsw-specific-sidebar-fill);box-shadow:0 6px 18px rgba(0,0,0,.18)}.sg_menu[data-placement=up] .sg_menuPanel{top:auto;bottom:29px}.sg_menuPanel button{display:flex;min-height:28px;flex:none;align-items:center;gap:6px;border:0;border-radius:6px;background:transparent;color:var(--dsw-alias-label-primary);cursor:pointer;font:inherit;font-size:12px;padding:4px 7px;text-align:left}.sg_menuPanel button:hover{background:var(--dsw-alias-interactive-bg-hover)}.sg_groupMenu{position:absolute;right:4px}.sg_groupMenu .sg_menuPanel{top:27px}.sg_groupMenu[data-placement=up] .sg_menuPanel{top:auto;bottom:27px}
+.sg_menu{position:relative;flex:none}.sg_menu>summary{display:flex;width:24px;height:28px;align-items:center;justify-content:center;border-radius:6px;color:var(--dsw-alias-label-tertiary);cursor:pointer;list-style:none;opacity:0}.sg_menu>summary::-webkit-details-marker{display:none}.sg_sessionWrap:hover .sg_sessionHoverActions .sg_menu>summary,.sg_sessionHoverActions:has(:focus-visible) .sg_menu>summary,.sg_groupHead:hover>.sg_menu>summary,.sg_menu>summary:focus-visible,.sg_menu[open]>summary{opacity:1}.sg_menu>summary:hover,.sg_menu>summary:focus-visible{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary);outline:none}.sg_menuPanel{box-sizing:border-box;position:absolute;z-index:20;right:0;top:29px;display:flex;width:190px;max-height:var(--sg-menu-max-height,none);overflow-y:auto;flex-direction:column;padding:4px;border:1px solid var(--dsw-alias-border-l2);border-radius:9px;background:var(--dsw-specific-sidebar-fill);box-shadow:0 6px 18px rgba(0,0,0,.18)}.sg_menu[data-placement=up] .sg_menuPanel{top:auto;bottom:29px}.sg_menuPanel button{display:flex;min-height:28px;flex:none;align-items:center;gap:6px;border:0;border-radius:6px;background:transparent;color:var(--dsw-alias-label-primary);cursor:pointer;font:inherit;font-size:12px;padding:4px 7px;text-align:left}.sg_menuPanel button:hover{background:var(--dsw-alias-interactive-bg-hover)}.sg_menuIcon{display:block;flex:none}.sg_groupMenu{position:absolute;right:4px}.sg_groupMenu .sg_menuPanel{top:27px}.sg_groupMenu[data-placement=up] .sg_menuPanel{top:auto;bottom:27px}
 .sg_activityDetails{display:flex;flex-direction:column;gap:3px;margin:0 5px 5px 17px;padding:7px;border-radius:7px;background:var(--dsw-alias-interactive-bg-hover)}.sg_activityHeading{display:flex;align-items:center;justify-content:space-between;color:var(--dsw-alias-label-secondary);font-size:11px}.sg_activityHeading button{display:flex;border:0;background:transparent;color:var(--dsw-alias-label-tertiary);cursor:pointer}.sg_job,.sg_subagent{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:5px;min-width:0;color:var(--dsw-alias-label-secondary);font-size:10px;line-height:15px}.sg_jobStatus{border-radius:999px;padding:0 4px;background:var(--dsw-specific-sidebar-fill)}.sg_jobStatus-failed{color:var(--dsw-alias-state-error-primary)}.sg_jobStatus-running,.sg_jobStatus-stopping{color:var(--dsw-alias-state-business-primary)}.sg_jobLabel,.sg_jobDetail{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sg_jobDetail{grid-column:2/4;color:var(--dsw-alias-label-tertiary)}.sg_subagent{width:100%;border:0;border-radius:5px;background:transparent;cursor:pointer;text-align:left}.sg_subagent:hover{background:var(--dsw-specific-sidebar-fill)}.sg_subagentStatus{width:6px;height:6px;border-radius:50%;background:var(--dsw-alias-label-tertiary)}.sg_subagentStatus-running{background:var(--dsw-alias-state-business-primary)}
 .sg_emptyState{display:flex;flex-direction:column;align-items:center;padding:18px 8px;color:var(--dsw-alias-label-tertiary);text-align:center}.sg_emptyState p{margin:0 0 8px}.sg_emptyState button{border:0;border-radius:6px;background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary);cursor:pointer;padding:5px 8px}
 .sg_dropEnd{height:7px;border-radius:4px}.sg_dragging .sg_dropEnd:hover{background:var(--dsw-alias-interactive-bg-hover-accent)}.sg_dropEndGroups{margin:4px 0;height:10px}
-.sg_rail{display:flex;justify-content:center;padding-top:8px}.sg_railButton{width:36px;height:36px;border:0;border-radius:8px;background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer;font-weight:600}.sg_railButton:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
+.sg_rail{display:flex;justify-content:center;padding-top:8px}.sg_railButton{display:inline-flex;width:36px;height:36px;align-items:center;justify-content:center;border:0;border-radius:8px;background:transparent;color:var(--dsw-alias-label-primary);cursor:pointer;padding:0}.sg_railButton svg{display:block;flex:none}.sg_railButton:hover{background:var(--dsw-alias-interactive-bg-hover)}
 `;
 function installStyles() {
   const id = "dsh-session-groups/styles";

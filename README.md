@@ -19,7 +19,7 @@
 - 项目视图只为明确的渠道来源显示副标题；缺少 assignment 时保持简洁，并在来源视图统一归入“未标注来源”。
 - 使用精确的 `source + id` 保存稳定、与渠道实现无关的来源身份，并在展示层合并飞书/Lark 等已知别名。
 - 内置消息渠道与编码 Agent 来源图标及常见别名，包括飞书/Lark、Slack、Teams、Telegram、Claude Code、Codex、Cursor、GitHub Copilot、Gemini CLI、OpenCode、Windsurf、Cline、Continue、Aider、Kimi Code、Replit Agent、Amazon Q Developer、Tabnine、Cody、Roo Code 和 Zed Agent 等。
-- 展示等待用户、后台失败、运行中、刚完成和空闲状态，并提供分组聚合、快捷筛选、来源/聊天/日期筛选及 Activity 收件箱。
+- 展示等待用户、后台失败、运行中、未读完成和空闲状态；运行中的会话使用动态 loading，后台完成的会话以未读圆点和加粗标题提示，打开后自动恢复已读。另提供分组聚合、快捷筛选、来源/聊天/日期筛选及 Activity 收件箱。
 - 在同一入口搜索标题、项目、来源和 DSH 对话正文，支持命中片段、请求取消及 `Cmd/Ctrl+K` 聚焦。
 - 在 tooltip 中提供完整更新时间和项目/来源元数据，并支持打开文件夹、置顶、四种排序和拖拽排序。
 - 提供归档浏览、批量归档、Job/Subagent 详情和键盘上下导航。

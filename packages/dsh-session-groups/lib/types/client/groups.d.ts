@@ -24,6 +24,10 @@ export interface BrowserSession {
     readonly summary: SessionSummary;
     readonly project: ProjectContext;
     readonly source: SourceContext;
+    /** Live work is independent from the row's highest-priority attention state. */
+    readonly running: boolean;
+    /** Runtime-owned completion reminder; opening the Session clears it. */
+    readonly unread: boolean;
     readonly attention: SessionAttention;
     readonly jobs: readonly JobView[];
     readonly archived: boolean;
@@ -34,6 +38,8 @@ export interface StatusCounts {
     readonly running: number;
     readonly completed: number;
     readonly idle: number;
+    /** Exact unread total, independent from the highest-priority attention bucket. */
+    readonly unread: number;
 }
 export type BrowserGroupType = 'project' | 'source' | 'chat' | 'activity';
 /** One rendered sidebar level. Source mode uses source groups containing chat children. */
@@ -58,6 +64,7 @@ export declare function normalizePathForGrouping(path: string): string;
 export declare function isPathWithin(path: string, parent: string): boolean;
 /** Resolve explicit Workspace accounting first, then the most specific path, then a read-only cwd group. */
 export declare function resolveProjectContext(session: SessionSummary, workspaces: readonly WorkspaceView[], explicitWorkspace?: WorkspaceView): ProjectContext;
+export declare function isSessionRunning(session: SessionSummary, jobs: readonly JobView[]): boolean;
 export declare function deriveSessionAttention(session: SessionSummary, jobs: readonly JobView[]): SessionAttention;
 /** Derive all root-session rows once; every view is a non-mutating projection over these entries. */
 export declare function deriveBrowserSessions(list: SessionListState, workspaces: readonly WorkspaceView[], archivedSessionIds: readonly SessionId[], assignments: readonly SessionGroupAssignment[]): BrowserSession[];
