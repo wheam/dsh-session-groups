@@ -16202,48 +16202,63 @@ function SessionGroupsBrowser({
                 ]
               }
             ),
-            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "sg_sessionHoverActions", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("details", { className: "sg_menu", onToggle: placeMenuWithinScroller, children: [
-              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("summary", { title: "\u66F4\u591A\u4F1A\u8BDD\u64CD\u4F5C", "aria-label": "\u66F4\u591A\u4F1A\u8BDD\u64CD\u4F5C", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconEllipsisOutline16, {}) }),
-              /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_menuPanel", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                  togglePinnedSession(entry.summary.id);
-                }, children: pinned ? "\u53D6\u6D88\u7F6E\u9876" : "\u7F6E\u9876" }),
-                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                  toggleSessionActivity(entry);
-                }, children: expanded ? "\u6536\u8D77\u6D3B\u52A8" : "\u67E5\u770B Job \u4E0E Subagent" }),
-                entry.project.path === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                  run(openPath(entry.project.path));
-                }, children: "\u6253\u5F00\u9879\u76EE\u6587\u4EF6\u5939" }),
-                explicitSource === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                  setSurface("browse");
-                  setQuery("");
-                  patchPreferences({ browseMode: "source", attentionFilter: "all", sourceFilter: entry.source.familyKey, chatFilter: "", updatedRange: "any" });
-                }, children: "\u67E5\u770B\u6B64\u6765\u6E90\u7684\u5168\u90E8\u4F1A\u8BDD" }),
-                entry.source.chatTitle === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                  setSurface("browse");
-                  setQuery("");
-                  patchPreferences({ browseMode: "source", attentionFilter: "all", sourceFilter: entry.source.familyKey, chatFilter: entry.source.chatKey, updatedRange: "any" });
-                }, children: "\u67E5\u770B\u6B64\u804A\u5929\u7684\u5168\u90E8\u4F1A\u8BDD" }),
-                surface === "archive" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                  run(renameSession(entry.summary.id, entry.summary.displayTitle));
-                }, children: "\u91CD\u547D\u540D" }),
-                surface === "archive" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                  run(forkSession(entry.summary.id));
-                }, children: "\u5206\u53C9\u4F1A\u8BDD" }),
-                surface === "archive" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
-                  "button",
-                  {
-                    className: confirming ? "sg_menuConfirm" : void 0,
-                    type: "button",
-                    title: confirming ? void 0 : "\u9700\u8981\u70B9\u51FB\u4E24\u6B21\u786E\u8BA4",
-                    onClick: () => {
-                      requestArchive(entry.summary.id);
-                    },
-                    children: confirming ? "\u518D\u6B21\u70B9\u51FB\u786E\u8BA4\u5F52\u6863" : "\u5F52\u6863"
-                  }
-                )
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_sessionHoverActions", children: [
+              surface === "archive" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+                "button",
+                {
+                  className: "sg_quickArchive",
+                  type: "button",
+                  title: "\u5F52\u6863",
+                  "aria-label": `\u5F52\u6863 ${entry.summary.displayTitle}`,
+                  onClick: () => {
+                    run(archiveSession(entry.summary.id));
+                  },
+                  children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconArchiveOutline20, { size: 16 })
+                }
+              ),
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("details", { className: "sg_menu", onToggle: placeMenuWithinScroller, children: [
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("summary", { title: "\u66F4\u591A\u4F1A\u8BDD\u64CD\u4F5C", "aria-label": "\u66F4\u591A\u4F1A\u8BDD\u64CD\u4F5C", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconEllipsisOutline16, {}) }),
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_menuPanel", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
+                    togglePinnedSession(entry.summary.id);
+                  }, children: pinned ? "\u53D6\u6D88\u7F6E\u9876" : "\u7F6E\u9876" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
+                    toggleSessionActivity(entry);
+                  }, children: expanded ? "\u6536\u8D77\u6D3B\u52A8" : "\u67E5\u770B Job \u4E0E Subagent" }),
+                  entry.project.path === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
+                    run(openPath(entry.project.path));
+                  }, children: "\u6253\u5F00\u9879\u76EE\u6587\u4EF6\u5939" }),
+                  explicitSource === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
+                    setSurface("browse");
+                    setQuery("");
+                    patchPreferences({ browseMode: "source", attentionFilter: "all", sourceFilter: entry.source.familyKey, chatFilter: "", updatedRange: "any" });
+                  }, children: "\u67E5\u770B\u6B64\u6765\u6E90\u7684\u5168\u90E8\u4F1A\u8BDD" }),
+                  entry.source.chatTitle === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
+                    setSurface("browse");
+                    setQuery("");
+                    patchPreferences({ browseMode: "source", attentionFilter: "all", sourceFilter: entry.source.familyKey, chatFilter: entry.source.chatKey, updatedRange: "any" });
+                  }, children: "\u67E5\u770B\u6B64\u804A\u5929\u7684\u5168\u90E8\u4F1A\u8BDD" }),
+                  surface === "archive" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
+                    run(renameSession(entry.summary.id, entry.summary.displayTitle));
+                  }, children: "\u91CD\u547D\u540D" }),
+                  surface === "archive" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
+                    run(forkSession(entry.summary.id));
+                  }, children: "\u5206\u53C9\u4F1A\u8BDD" }),
+                  surface === "archive" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+                    "button",
+                    {
+                      className: confirming ? "sg_menuConfirm" : void 0,
+                      type: "button",
+                      title: confirming ? void 0 : "\u9700\u8981\u70B9\u51FB\u4E24\u6B21\u786E\u8BA4",
+                      onClick: () => {
+                        requestArchive(entry.summary.id);
+                      },
+                      children: confirming ? "\u518D\u6B21\u70B9\u51FB\u786E\u8BA4\u5F52\u6863" : "\u5F52\u6863"
+                    }
+                  )
+                ] })
               ] })
-            ] }) })
+            ] })
           ] }),
           expanded ? renderActivityDetails(entry) : null
         ]
@@ -16713,7 +16728,7 @@ var styles = `
 
 .sg_sessionWrap{position:relative;border-radius:7px}.sg_sessionWrap+.sg_sessionWrap{margin-top:1px}.sg_sessionWrap:hover{background:var(--dsw-alias-interactive-bg-hover)}.sg_sessionCurrent{background:var(--dsw-alias-interactive-bg-hover-accent)}.sg_sessionCurrent .sg_sessionTitle{font-weight:500}.sg_sessionUnread .sg_sessionTitle{font-weight:600}.sg_sessionWrap[draggable=true]{cursor:grab}.sg_sessionWrap[draggable=true]:active{cursor:grabbing}
 .sg_session{display:flex;min-width:0;align-items:center;padding:0 6px 0 8px}.sg_select{flex:none;margin:0 6px 0 0}
-.sg_sessionOpen{box-sizing:border-box;display:flex;min-width:0;min-height:44px;flex:1;align-items:center;gap:8px;border:0;background:transparent;color:var(--dsw-alias-label-primary);cursor:pointer;font:inherit;padding:0;text-align:left}.sg_sessionCompact .sg_sessionOpen{min-height:36px}.sg_sessionWrap:hover .sg_sessionOpen,.sg_sessionWrap:has(.sg_sessionHoverActions :focus-visible) .sg_sessionOpen,.sg_sessionWrap:has(.sg_sessionHoverActions .sg_menu[open]) .sg_sessionOpen{padding-right:30px}.sg_sessionOpen:focus-visible{outline:2px solid var(--dsw-alias-state-business-primary);outline-offset:-2px;border-radius:6px}
+.sg_sessionOpen{box-sizing:border-box;display:flex;min-width:0;min-height:44px;flex:1;align-items:center;gap:8px;border:0;background:transparent;color:var(--dsw-alias-label-primary);cursor:pointer;font:inherit;padding:0;text-align:left}.sg_sessionCompact .sg_sessionOpen{min-height:36px}.sg_sessionWrap:hover .sg_sessionOpen,.sg_sessionWrap:has(.sg_sessionHoverActions :focus-visible) .sg_sessionOpen,.sg_sessionWrap:has(.sg_sessionHoverActions .sg_menu[open]) .sg_sessionOpen{padding-right:54px}.sg_sessionOpen:focus-visible{outline:2px solid var(--dsw-alias-state-business-primary);outline-offset:-2px;border-radius:6px}
 .sg_sessionText{display:flex;min-width:0;flex:1;flex-direction:column;gap:1px}.sg_sessionTitleRow{display:flex;min-width:0;align-items:center;gap:4px}.sg_sessionTitle{overflow:hidden;min-width:0;font-size:13px;font-weight:400;line-height:18px;text-overflow:ellipsis;white-space:nowrap}
 .sg_sessionMeta{display:flex;min-width:0;align-items:center;gap:5px;color:var(--dsw-alias-label-secondary);font-size:11px;line-height:15px}.sg_metaText{overflow:hidden;min-width:0;text-overflow:ellipsis;white-space:nowrap}.sg_metaIcon{display:inline-flex;width:12px;height:12px;flex:none;align-items:center;justify-content:center;color:var(--dsw-alias-label-secondary)}.sg_metaIcon svg,.sg_metaIcon .sg_brandIcon,.sg_metaIcon .sg_brandIcon svg{display:block;width:12px;height:12px}.sg_metaSeparator,.sg_metaReason{flex:none}.sg_metaSeparator{color:var(--dsw-alias-label-tertiary)}
 .sg_snippet{overflow:hidden;color:var(--dsw-alias-label-secondary);font-size:11px;line-height:15px;text-overflow:ellipsis;white-space:nowrap}
@@ -16723,7 +16738,7 @@ var styles = `
 .sg_spinner{box-sizing:border-box;width:10px;height:10px;flex:none;border:1.5px solid color-mix(in srgb,var(--dsw-alias-state-business-primary) 25%,transparent);border-top-color:var(--dsw-alias-state-business-primary);border-radius:50%;margin:0 -1px;animation:sg_spin .8s linear infinite}.sg_spinnerSmall{width:8px;height:8px;margin:0}
 @keyframes sg_spin{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.sg_spinner{animation:none}.sg_chevron{transition:none}}
 
-.sg_sessionHoverActions{position:absolute;z-index:5;right:6px;top:50%;display:flex;align-items:center;transform:translateY(-50%);border-radius:6px;background:var(--dsw-specific-sidebar-fill);opacity:0;pointer-events:none}.sg_sessionWrap:hover .sg_sessionHoverActions,.sg_sessionHoverActions:has(:focus-visible),.sg_sessionHoverActions:has(.sg_menu[open]){opacity:1;pointer-events:auto}.sg_sessionWrap:hover .sg_sessionHoverActions{background:var(--dsw-alias-interactive-bg-hover)}.sg_sessionCurrent .sg_sessionHoverActions{background:var(--dsw-alias-interactive-bg-hover-accent)}
+.sg_quickArchive{display:flex;width:24px;height:28px;align-items:center;justify-content:center;border:0;border-radius:6px;background:transparent;color:var(--dsw-alias-label-tertiary);cursor:pointer;padding:0}.sg_quickArchive:hover,.sg_quickArchive:focus-visible{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary);outline:none}.sg_sessionHoverActions{position:absolute;z-index:5;right:6px;top:50%;display:flex;align-items:center;transform:translateY(-50%);border-radius:6px;background:var(--dsw-specific-sidebar-fill);opacity:0;pointer-events:none}.sg_sessionWrap:hover .sg_sessionHoverActions,.sg_sessionHoverActions:has(:focus-visible),.sg_sessionHoverActions:has(.sg_menu[open]){opacity:1;pointer-events:auto}.sg_sessionWrap:hover .sg_sessionHoverActions{background:var(--dsw-alias-interactive-bg-hover)}.sg_sessionCurrent .sg_sessionHoverActions{background:var(--dsw-alias-interactive-bg-hover-accent)}
 
 .sg_menu{position:relative;flex:none}.sg_menu>summary{display:flex;width:22px;height:22px;align-items:center;justify-content:center;border-radius:5px;color:var(--dsw-alias-label-tertiary);cursor:pointer;list-style:none;opacity:0}.sg_menu>summary::-webkit-details-marker{display:none}.sg_sessionWrap:hover .sg_sessionHoverActions .sg_menu>summary,.sg_sessionHoverActions:has(:focus-visible) .sg_menu>summary,.sg_groupHead:hover>.sg_menu>summary,.sg_menu>summary:focus-visible,.sg_menu[open]>summary{opacity:1}.sg_menu>summary:hover,.sg_menu>summary:focus-visible{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary);outline:none}
 .sg_toolMenu>summary{width:26px;height:26px;border-radius:7px;color:var(--dsw-alias-label-secondary);opacity:1}.sg_toolMenu[open]>summary{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}

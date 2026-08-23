@@ -982,6 +982,15 @@ export function SessionGroupsBrowser({
             </span>
           </button>
           <div className="sg_sessionHoverActions">
+            {surface === 'archive' ? null : (
+              <button
+                className="sg_quickArchive"
+                type="button"
+                title="归档"
+                aria-label={`归档 ${entry.summary.displayTitle}`}
+                onClick={() => { run(archiveSession(entry.summary.id)) }}
+              ><IconArchiveOutline20 size={16} /></button>
+            )}
             <details className="sg_menu" onToggle={placeMenuWithinScroller}>
               <summary title="更多会话操作" aria-label="更多会话操作"><IconEllipsisOutline16 /></summary>
               <div className="sg_menuPanel">
