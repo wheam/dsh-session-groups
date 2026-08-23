@@ -3,6 +3,7 @@ import {
   type DragEvent,
   type KeyboardEvent,
   type MouseEvent,
+  type ReactNode,
   type SyntheticEvent,
   useEffect,
   useMemo,
@@ -14,11 +15,16 @@ import type {} from '@deepseek-ai/dsh-client-ui-sidebar/client'
 import {
   IconArchiveOutline20,
   IconBrowseOutline16,
+  IconCheckOutline14,
+  IconChevronDownOutline14,
+  IconChevronLeftOutline14,
   IconEditOutline16,
   IconEllipsisOutline16,
   IconFolderOpenOutline16,
+  IconNewChatOutline16,
   IconPlusOutline16,
   IconRefreshOutline14,
+  IconSearchOutline16,
   IconTrashOutline16,
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import type {
@@ -86,14 +92,73 @@ type Dragged =
   | { readonly type: 'group', readonly group: BrowserGroup, readonly parentKey?: string }
   | { readonly type: 'session', readonly entry: BrowserSession, readonly groupKey: string }
 
+interface LocalIconProps {
+  readonly size?: number | undefined
+  readonly className?: string | undefined
+}
+
 /** Local gap-fill until the DSH primitive icon set exposes a pin glyph. */
-function IconPinOutline16() {
+function IconPinOutline({ size = 16, className }: LocalIconProps) {
   return (
-    <svg className="sg_menuIcon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <svg className={className} width={size} height={size} viewBox="0 0 16 16" fill="none" aria-hidden="true">
       <path
         d="M5 2.5h6M6.25 2.5v3L4.5 8.25V9.5h7V8.25L9.75 5.5v-3M8 9.5v4"
         stroke="currentColor"
         strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+/** Three descending rules: the conventional filter affordance at sidebar scale. */
+function IconFilterOutline({ size = 15, className }: LocalIconProps) {
+  return (
+    <svg className={className} width={size} height={size} viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M2.5 4.5h11M4.5 8h7M6.5 11.5h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+/** Two opposed arrows, the standard "change ordering" glyph. */
+function IconSortOutline({ size = 15, className }: LocalIconProps) {
+  return (
+    <svg className={className} width={size} height={size} viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M5 3v10M5 13l-2.5-2.5M5 13l2.5-2.5M11 13V3M11 3 8.5 5.5M11 3l2.5 2.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+/** Inbox tray: the entry point into the "needs attention" surface. */
+function IconInboxOutline({ size = 14, className }: LocalIconProps) {
+  return (
+    <svg className={className} width={size} height={size} viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M2 9.5V12a1.5 1.5 0 0 0 1.5 1.5h9A1.5 1.5 0 0 0 14 12V9.5M2 9.5h3.5l1 1.5h3l1-1.5H14M2 9.5 4 3h8l2 6.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+/** Closed folder at metadata scale; the group icon keeps the open/closed pair. */
+function IconFolderMini({ size = 12, className }: LocalIconProps) {
+  return (
+    <svg className={className} width={size} height={size} viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path
+        d="M2.75 6.25v-.6a2.15 2.15 0 0 1 2.15-2.15h2.34c.54 0 1.06.22 1.44.6l1.18 1.18c.28.28.66.44 1.06.44h4.18a2.15 2.15 0 0 1 2.15 2.15v6.48a2.15 2.15 0 0 1-2.15 2.15H4.9a2.15 2.15 0 0 1-2.15-2.15v-8.1Z"
+        stroke="currentColor"
+        strokeWidth="1.6"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -117,12 +182,34 @@ const ATTENTION_COPY: Readonly<Record<SessionAttention, { label: string, short: 
   idle: { label: '空闲', short: '空闲' },
 }
 
+const SORT_MODES: ReadonlyArray<readonly [BrowserPreferences['sortMode'], string]> = [
+  ['manual', '手动'],
+  ['recent', '最近更新'],
+  ['name', '名称'],
+  ['status', '状态'],
+]
+
+/** Groups that stand in for "no assignment" read as scaffolding, not as real names. */
+const PLACEHOLDER_GROUP_KEYS: ReadonlySet<string> = new Set(['project:none', 'source:unattributed'])
+
+const ARCHIVE_CONFIRM_MS = 3_000
+
 function pendingLabel(entry: BrowserSession): string {
   switch (entry.summary.pendingInteraction) {
     case 'approval': return '等待审批'
     case 'plan-review': return '等待计划审核'
     case 'question': return '等待回答问题'
     default: return ATTENTION_COPY[entry.attention].label
+  }
+}
+
+/** The metadata suffix that answers "why is this row marked": colour stays on the status dot. */
+function attentionReason(entry: BrowserSession): string | undefined {
+  switch (entry.attention) {
+    case 'waiting': return pendingLabel(entry)
+    case 'failed': return `${entry.jobs.filter(job => job.status === 'failed').length} 个 Job 失败`
+    case 'completed': return '已完成'
+    default: return undefined
   }
 }
 
@@ -207,10 +294,10 @@ function updatedCutoff(range: BrowserPreferences['updatedRange'], now: number): 
 
 function activityGroups(entries: readonly BrowserSession[]): BrowserGroup[] {
   const definitions: ReadonlyArray<readonly [SessionAttention, string]> = [
-    ['waiting', '等待用户'],
+    ['waiting', '待我处理'],
     ['failed', '后台任务失败'],
     ['running', '运行中'],
-    ['completed', '未读'],
+    ['completed', '刚完成'],
   ]
   return definitions.flatMap(([attention, title]) => {
     const matching = entries.filter(entry => entry.attention === attention)
@@ -286,10 +373,12 @@ export function SessionGroupsBrowser({
   const [selected, setSelected] = useState<ReadonlySet<SessionId>>(() => new Set())
   const [expandedActivity, setExpandedActivity] = useState<ReadonlySet<SessionId>>(() => new Set())
   const [activityCollapsed, setActivityCollapsed] = useState<ReadonlySet<string>>(() => new Set())
+  const [archiveConfirm, setArchiveConfirm] = useState<SessionId>()
   const [dragged, setDragged] = useState<Dragged>()
   const [now, setNow] = useState(() => Date.now())
   const searchRef = useRef<HTMLInputElement>(null)
   const focusAfterExpandRef = useRef(false)
+  const archiveConfirmTimer = useRef<number>()
   const searchCoordinator = useRef(new ContentSearchCoordinator<SessionSearchResultItem>()).current
   const expandedActivityRef = useRef<ReadonlySet<SessionId>>(expandedActivity)
   expandedActivityRef.current = expandedActivity
@@ -320,6 +409,9 @@ export function SessionGroupsBrowser({
   useEffect(() => () => {
     for (const sessionId of expandedActivityRef.current) setSubagentCatalogOpen(sessionId, false)
   }, [setSubagentCatalogOpen])
+  useEffect(() => () => {
+    if (archiveConfirmTimer.current !== undefined) window.clearTimeout(archiveConfirmTimer.current)
+  }, [])
   useEffect(() => {
     const focusSearch = (event: globalThis.KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLocaleLowerCase() === 'k') {
@@ -578,6 +670,17 @@ export function SessionGroupsBrowser({
     const confirmed = window.confirm(`确认归档选中的 ${sessionIds.length} 个会话？\n\n当前 DSH Runtime 未提供恢复 API，请确认后继续。`)
     if (confirmed) run(archiveSelected(sessionIds))
   }
+  /** Two-step inline confirm: a single mis-click can never archive, and nothing blocks the renderer. */
+  const requestArchive = (sessionId: SessionId) => {
+    if (archiveConfirmTimer.current !== undefined) window.clearTimeout(archiveConfirmTimer.current)
+    if (archiveConfirm === sessionId) {
+      setArchiveConfirm(undefined)
+      run(archiveSession(sessionId))
+      return
+    }
+    setArchiveConfirm(sessionId)
+    archiveConfirmTimer.current = window.setTimeout(() => { setArchiveConfirm(undefined) }, ARCHIVE_CONFIRM_MS)
+  }
   const toggleSessionActivity = (entry: BrowserSession) => {
     const willOpen = !expandedActivity.has(entry.summary.id)
     setExpandedActivity(previous => {
@@ -702,6 +805,12 @@ export function SessionGroupsBrowser({
     if (menu?.open !== true) active.blur()
   }
 
+  /** Top-chrome menus are plain popovers: acting on an item should dismiss them. */
+  const closeMenu = (event: MouseEvent<HTMLElement>) => {
+    const menu = event.currentTarget.closest('details')
+    if (menu !== null) menu.open = false
+  }
+
   const placeMenuWithinScroller = (event: SyntheticEvent<HTMLDetailsElement>) => {
     const menu = event.currentTarget
     if (!menu.open) {
@@ -766,18 +875,66 @@ export function SessionGroupsBrowser({
     )
   }
 
+  /** Only the highest-priority state occupies the reserved 8px slot on the left. */
+  const renderStatusMark = (entry: BrowserSession): ReactNode => {
+    switch (entry.attention) {
+      case 'waiting':
+        return <span className="sg_statusDot sg_dot-waiting" role="img" title={pendingLabel(entry)} aria-label={pendingLabel(entry)} />
+      case 'failed':
+        return <span className="sg_statusDot sg_dot-failed" role="img" title="后台任务失败" aria-label="后台任务失败" />
+      case 'running':
+        return <span className="sg_spinner" role="img" title="正在运行" aria-label="正在运行" />
+      case 'completed':
+        return <span className="sg_statusDot sg_dot-completed" role="img" title="未读（已完成）" aria-label="未读（已完成）" />
+      default:
+        return null
+    }
+  }
+
+  /** The counterpart axis plus the reason suffix; each surface shows the axis the list is not grouped by. */
+  const renderSessionMeta = (entry: BrowserSession): ReactNode[] => {
+    const parts: ReactNode[] = []
+    const explicitSource = entry.source.rawSource !== undefined
+    const chatTitle = entry.source.chatTitle ?? entry.source.familyTitle
+    const brandIcon = (
+      <span className="sg_metaIcon" key="brand">
+        <SessionGroupIcon source={entry.source.iconSource} folded={false} label={entry.source.familyTitle} />
+      </span>
+    )
+    if (surface === 'activity' || surface === 'archive') {
+      parts.push(<span className="sg_metaText" key="project">{entry.project.title}</span>)
+      if (explicitSource) {
+        parts.push(
+          <span className="sg_metaSeparator" key="separator" aria-hidden>·</span>,
+          brandIcon,
+          <span className="sg_metaText" key="chat">{chatTitle}</span>,
+        )
+      }
+    } else if (preferences.browseMode === 'project') {
+      if (explicitSource) parts.push(brandIcon, <span className="sg_metaText" key="chat">{chatTitle}</span>)
+    } else {
+      parts.push(
+        <span className="sg_metaIcon" key="folder" aria-hidden><IconFolderMini /></span>,
+        <span className="sg_metaText" key="project">{entry.project.title}</span>,
+      )
+    }
+    const reason = attentionReason(entry)
+    if (reason !== undefined) {
+      parts.push(<span className="sg_metaReason" key="reason">{parts.length === 0 ? reason : `· ${reason}`}</span>)
+    }
+    return parts
+  }
+
   const renderSession = (entry: BrowserSession, group: BrowserGroup) => {
     const current = entry.summary.id === sessions.current
     const expanded = expandedActivity.has(entry.summary.id)
     const snippet = contentHits.get(entry.summary.id)
     const explicitSource = explicitSourceLabel(entry)
-    const counterpart = surface === 'activity' || surface === 'archive'
-      ? explicitSource === undefined ? entry.project.title : `${entry.project.title} · ${explicitSource}`
-      : preferences.browseMode === 'project' ? explicitSource : entry.project.title
     const pinned = preferences.pinnedSessions.includes(String(entry.summary.id))
     const sessionDraggable = canDragSession(entry, group)
-    const compact = counterpart === undefined && snippet === undefined
-    const showAttentionDot = entry.attention === 'waiting' || entry.attention === 'failed'
+    const metaParts = renderSessionMeta(entry)
+    const compact = metaParts.length === 0 && snippet === undefined
+    const confirming = archiveConfirm === entry.summary.id
     const wrapClassName = [
       'sg_sessionWrap',
       current ? 'sg_sessionCurrent' : '',
@@ -814,37 +971,24 @@ export function SessionGroupsBrowser({
             aria-label={`${entry.summary.displayTitle}，${entry.unread ? '未读' : '已读'}${entry.running ? '，正在运行' : ''}`}
             onClick={() => { open(entry.summary.id) }}
           >
-            {pinned ? <span className="sg_pinMark" aria-label="已置顶">★</span> : null}
+            <span className="sg_statusSlot">{renderStatusMark(entry)}</span>
             <span className="sg_sessionText">
-              <span className="sg_sessionTitle">{entry.summary.blank ? '新会话' : entry.summary.displayTitle}</span>
-              {counterpart === undefined ? null : <span className="sg_sessionMeta">{counterpart}</span>}
+              <span className="sg_sessionTitleRow">
+                {pinned ? <span className="sg_pinMark" role="img" title="已置顶" aria-label="已置顶"><IconPinOutline size={11} /></span> : null}
+                <span className="sg_sessionTitle">{entry.summary.blank ? '新会话' : entry.summary.displayTitle}</span>
+              </span>
+              {metaParts.length === 0 ? null : <span className="sg_sessionMeta">{metaParts}</span>}
               {snippet === undefined ? null : <span className="sg_snippet">{snippet}</span>}
             </span>
-            {!entry.running && !showAttentionDot && !entry.unread ? null : (
-              <span className="sg_statusSlot">
-                {entry.running ? <span className="sg_spinner" role="img" title="正在运行" aria-label="正在运行" /> : null}
-                {showAttentionDot ? <span className={`sg_dot sg_dot-${entry.attention}`} role="img" title={pendingLabel(entry)} aria-label={pendingLabel(entry)} /> : null}
-                {entry.unread ? <span className="sg_unreadDot" role="img" title="未读" aria-label="未读" /> : null}
-              </span>
-            )}
           </button>
           <div className="sg_sessionHoverActions">
-            {surface === 'archive' ? null : (
-              <button
-                className="sg_quickArchive"
-                type="button"
-                title="归档"
-                aria-label={`归档 ${entry.summary.displayTitle}`}
-                onClick={() => { run(archiveSession(entry.summary.id)) }}
-              ><IconArchiveOutline20 size={16} /></button>
-            )}
             <details className="sg_menu" onToggle={placeMenuWithinScroller}>
               <summary title="更多会话操作" aria-label="更多会话操作"><IconEllipsisOutline16 /></summary>
               <div className="sg_menuPanel">
                 <button type="button" onClick={() => { togglePinnedSession(entry.summary.id) }}>{pinned ? '取消置顶' : '置顶'}</button>
                 <button type="button" onClick={() => { toggleSessionActivity(entry) }}>{expanded ? '收起活动' : '查看 Job 与 Subagent'}</button>
                 {entry.project.path === undefined ? null : <button type="button" onClick={() => { run(openPath(entry.project.path!)) }}>打开项目文件夹</button>}
-                {entry.source.rawSource === undefined ? null : <button type="button" onClick={() => {
+                {explicitSource === undefined ? null : <button type="button" onClick={() => {
                   setSurface('browse')
                   setQuery('')
                   patchPreferences({ browseMode: 'source', attentionFilter: 'all', sourceFilter: entry.source.familyKey, chatFilter: '', updatedRange: 'any' })
@@ -854,10 +998,16 @@ export function SessionGroupsBrowser({
                   setQuery('')
                   patchPreferences({ browseMode: 'source', attentionFilter: 'all', sourceFilter: entry.source.familyKey, chatFilter: entry.source.chatKey, updatedRange: 'any' })
                 }}>查看此聊天的全部会话</button>}
-                <button type="button" onClick={() => { setBrowseMode('project') }}>按项目查看</button>
                 {surface === 'archive' ? null : <button type="button" onClick={() => { run(renameSession(entry.summary.id, entry.summary.displayTitle)) }}>重命名</button>}
                 {surface === 'archive' ? null : <button type="button" onClick={() => { run(forkSession(entry.summary.id)) }}>分叉会话</button>}
-                {surface === 'archive' ? null : <button type="button" onClick={() => { run(archiveSession(entry.summary.id)) }}>归档</button>}
+                {surface === 'archive' ? null : (
+                  <button
+                    className={confirming ? 'sg_menuConfirm' : undefined}
+                    type="button"
+                    title={confirming ? undefined : '需要点击两次确认'}
+                    onClick={() => { requestArchive(entry.summary.id) }}
+                  >{confirming ? '再次点击确认归档' : '归档'}</button>
+                )}
               </div>
             </details>
           </div>
@@ -876,6 +1026,18 @@ export function SessionGroupsBrowser({
     const visible = groupSize(group)
     const counts = fullGroup?.counts ?? group.counts
     const hasContent = group.sessions.length > 0 || (group.children?.length ?? 0) > 0
+    const attention = ([
+      ['waiting', counts.waiting, '待我处理'],
+      ['failed', counts.failed, '后台任务失败'],
+      ['running', counts.running, '运行中'],
+      ['unread', counts.unread, '未读'],
+    ] as const).filter(([, count]) => count > 0)
+    const activityKind = group.type === 'activity' ? group.key.slice('activity:'.length) : undefined
+    const muted = PLACEHOLDER_GROUP_KEYS.has(group.key)
+    const toggleTitle = [
+      hasContent ? folded ? '展开分组' : '收起分组' : '空分组',
+      ...attention.map(([, count, label]) => `${label} ${count}`),
+    ].join('\n')
     return (
       <section className={`sg_group sg_groupDepth-${Math.min(depth, 2)}`} key={group.key}>
         <div
@@ -890,23 +1052,37 @@ export function SessionGroupsBrowser({
             className={hasContent ? 'sg_groupToggle' : 'sg_groupToggle sg_groupToggleEmpty'}
             type="button"
             aria-expanded={hasContent ? !folded : undefined}
-            title={hasContent ? folded ? '展开分组' : '收起分组' : '空分组'}
+            title={toggleTitle}
             onClick={() => { if (hasContent) toggleCollapsed(group.key) }}
           >
-            <span className="sg_groupIcon" aria-hidden><SessionGroupIcon source={group.source} folded={folded} /></span>
-            {pinned ? <span className="sg_pinMark" aria-label="已置顶">★</span> : null}
-            <span className="sg_groupTitle" title={group.title}>{group.title}</span>
-            {kindLabel === undefined ? null : <span className="sg_kind">{kindLabel}</span>}
-            {counts.waiting > 0 ? <span className="sg_attentionCount sg_attentionCount-waiting">待 {counts.waiting}</span> : null}
-            {counts.failed > 0 ? <span className="sg_attentionCount sg_attentionCount-failed">失败 {counts.failed}</span> : null}
-            {counts.running > 0 ? <span className="sg_attentionCount sg_attentionCount-running">运行 {counts.running}</span> : null}
-            {counts.unread > 0 ? <span className="sg_attentionCount sg_attentionCount-unread">未读 {counts.unread}</span> : null}
+            <span className={folded ? 'sg_chevron sg_chevronFolded' : 'sg_chevron'} aria-hidden>
+              {hasContent ? <IconChevronDownOutline14 size={12} /> : null}
+            </span>
+            {activityKind === undefined ? (
+              <span className="sg_groupIcon" aria-hidden><SessionGroupIcon source={group.source} folded={folded} /></span>
+            ) : activityKind === 'running' ? (
+              <span className="sg_spinner sg_spinnerSmall" aria-hidden />
+            ) : (
+              <span className={`sg_dot sg_dot-${activityKind}`} aria-hidden />
+            )}
+            <span className={muted ? 'sg_groupTitle sg_groupTitleMuted' : 'sg_groupTitle'} title={group.title}>{group.title}</span>
+            {pinned ? <span className="sg_pinMark" role="img" title="已置顶" aria-label="已置顶"><IconPinOutline size={11} /></span> : null}
+            {kindLabel === undefined || depth === 0 ? null : <span className="sg_kind">{kindLabel}</span>}
+            <span className="sg_groupSpacer" />
+            {attention.slice(0, 2).map(([kind, count, label]) => (
+              <span className="sg_attentionCount" key={kind} title={`${label} ${count}`}>
+                {kind === 'running'
+                  ? <span className="sg_spinner sg_spinnerSmall" aria-hidden />
+                  : <span className={`sg_dot sg_dot-${kind}`} aria-hidden />}
+                {count}
+              </span>
+            ))}
             <span className="sg_count" title={hasActiveFilters ? `${visible} 个筛选命中，共 ${total} 个会话` : undefined}>{hasActiveFilters ? `${visible}/${total}` : total}</span>
           </button>
           <details className="sg_menu sg_groupMenu" onToggle={placeMenuWithinScroller}>
             <summary title="分组操作" aria-label="分组操作"><IconEllipsisOutline16 /></summary>
             <div className="sg_menuPanel">
-              {surface === 'activity' ? null : <button type="button" onClick={() => { togglePinnedGroup(group.key) }}><IconPinOutline16 />{pinned ? '取消置顶' : '置顶'}</button>}
+              {surface === 'activity' ? null : <button type="button" onClick={() => { togglePinnedGroup(group.key) }}><IconPinOutline className="sg_menuIcon" />{pinned ? '取消置顶' : '置顶'}</button>}
               {group.path === undefined ? null : <button type="button" onClick={() => { run(openPath(group.path!)) }}><IconFolderOpenOutline16 />打开文件夹</button>}
               {group.workspaceId === undefined ? null : <button type="button" onClick={() => { startSession(group.workspaceId) }}><IconPlusOutline16 />新建会话</button>}
               {group.workspaceId === undefined ? null : <button type="button" onClick={() => { run(renameWorkspace(group.workspaceId!, group.title)) }}><IconEditOutline16 />重命名 Workspace</button>}
@@ -930,53 +1106,161 @@ export function SessionGroupsBrowser({
 
   const visibleIds = renderedSessionIds(groups, collapsed)
   const allVisibleSelected = visibleIds.length > 0 && visibleIds.every(id => selected.has(id))
+  const browsing = surface === 'browse'
+  const quickFilters = ([
+    ['waiting', '待处理', '待我处理', statusCounts.waiting],
+    ['failed', '失败', '后台失败', statusCounts.failed],
+    ['running', '运行', '运行中', statusCounts.running],
+    ['completed', '未读', '未读', statusCounts.unread],
+  ] as const).filter(([value, , , count]) => count > 0 || preferences.attentionFilter === value)
+  const hasMessages = remote.loading
+    || remote.error !== undefined
+    || actionError !== undefined
+    || searchError !== undefined
+    || searching
+    || searchHasMore
+    || surface === 'archive'
 
   return (
     <section className={dragged === undefined ? 'sg_root' : 'sg_root sg_dragging'} aria-label="任务浏览器" onKeyDown={focusAdjacentSession}>
-      <header className="sg_header">
-        <strong>会话</strong>
-        <div className="sg_headerActions">
-          <button className={manageMode ? 'sg_textButton sg_textButtonActive' : 'sg_textButton'} type="button" onClick={() => { setManageMode(value => !value); setSelected(new Set()) }}>管理</button>
-          <button className="sg_iconButton" type="button" title="添加 Workspace" aria-label="添加 Workspace" onClick={() => { run(addWorkspace()) }}><IconPlusOutline16 /></button>
-        </div>
-      </header>
-
-      <nav className="sg_views" aria-label="浏览方式">
-        <button className={surface === 'browse' && preferences.browseMode === 'project' ? 'sg_viewActive' : ''} type="button" onClick={() => { setBrowseMode('project') }}>按项目</button>
-        <button className={surface === 'browse' && preferences.browseMode === 'source' ? 'sg_viewActive' : ''} type="button" onClick={() => { setBrowseMode('source') }}>按来源</button>
-        <button className={surface === 'activity' ? 'sg_viewActive' : ''} type="button" onClick={() => { setSurface('activity') }}>Activity</button>
-        <button className={surface === 'archive' ? 'sg_viewActive' : ''} type="button" onClick={() => { setSurface('archive') }}>归档</button>
-      </nav>
+      {browsing ? null : (
+        <header className="sg_surfaceHead">
+          <button
+            className="sg_backButton"
+            type="button"
+            title="返回列表"
+            aria-label="返回列表"
+            onClick={() => { setSurface('browse') }}
+          ><IconChevronLeftOutline14 size={16} /></button>
+          <span className="sg_surfaceTitle">{surface === 'activity' ? '需要关注' : '归档'}</span>
+          <span className="sg_surfaceCount">{fullSurfaceEntries.length}</span>
+          <span className="sg_toolSpacer" />
+          <details className="sg_menu sg_toolMenu">
+            <summary title="更多" aria-label="更多"><IconEllipsisOutline16 /></summary>
+            <div className="sg_menuPanel">
+              <button type="button" onClick={event => { closeMenu(event); setManageMode(value => !value); setSelected(new Set()) }}>{manageMode ? '退出管理' : '管理'}</button>
+              <button type="button" onClick={event => { closeMenu(event); run(refresh()) }}><IconRefreshOutline14 />刷新来源</button>
+            </div>
+          </details>
+        </header>
+      )}
 
       <div className="sg_searchWrap">
-        <input
-          ref={searchRef}
-          className="sg_search"
-          type="search"
-          value={query}
-          placeholder="搜索标题或对话正文  ⌘K"
-          onChange={event => { setQuery(event.currentTarget.value) }}
-        />
-        <button className={filtersOpen || hasActiveFilters ? 'sg_filterButton sg_filterButtonActive' : 'sg_filterButton'} type="button" onClick={() => { setFiltersOpen(value => !value) }}>筛选</button>
+        <div className="sg_searchField">
+          <span className="sg_searchIcon" aria-hidden><IconSearchOutline16 size={14} /></span>
+          <input
+            ref={searchRef}
+            className="sg_search"
+            type="search"
+            value={query}
+            placeholder="搜索标题或对话"
+            aria-label="搜索标题或对话"
+            onChange={event => { setQuery(event.currentTarget.value) }}
+          />
+          <kbd className="sg_kbd" aria-hidden>⌘K</kbd>
+        </div>
+        <button
+          className="sg_newButton"
+          type="button"
+          title="新建会话"
+          aria-label="新建会话"
+          onClick={() => { startSession() }}
+        ><IconNewChatOutline16 /></button>
       </div>
 
-      {statusCounts.waiting + statusCounts.failed + statusCounts.running + statusCounts.unread > 0
-        || preferences.attentionFilter !== 'all' ? <div className="sg_quickFilters" aria-label="任务状态筛选">
-        {([
-          ['all', '全部', quickEntries.length],
-          ['waiting', '待我处理', statusCounts.waiting],
-          ['failed', '失败', statusCounts.failed],
-          ['running', '运行中', statusCounts.running],
-          ['completed', '未读', statusCounts.unread],
-        ] as const).filter(([value, , count]) => value === 'all' || count > 0 || preferences.attentionFilter === value).map(([value, label, count]) => (
+      {browsing ? (
+        <div className="sg_toolRow">
+          <div className="sg_segmented" role="group" aria-label="浏览方式">
+            <button
+              className={preferences.browseMode === 'project' ? 'sg_segment sg_segmentActive' : 'sg_segment'}
+              type="button"
+              aria-pressed={preferences.browseMode === 'project'}
+              onClick={() => { setBrowseMode('project') }}
+            >按项目</button>
+            <button
+              className={preferences.browseMode === 'source' ? 'sg_segment sg_segmentActive' : 'sg_segment'}
+              type="button"
+              aria-pressed={preferences.browseMode === 'source'}
+              onClick={() => { setBrowseMode('source') }}
+            >按来源</button>
+          </div>
+          <span className="sg_toolSpacer" />
           <button
-            className={preferences.attentionFilter === value ? 'sg_chip sg_chipActive' : 'sg_chip'}
+            className={filtersOpen || hasActiveFilters ? 'sg_toolButton sg_toolButtonActive' : 'sg_toolButton'}
             type="button"
-            key={value}
-            onClick={() => { patchPreferences({ attentionFilter: value }) }}
-          >{label} {count}</button>
-        ))}
-      </div> : null}
+            title="筛选"
+            aria-label="筛选"
+            aria-expanded={filtersOpen}
+            onClick={() => { setFiltersOpen(value => !value) }}
+          ><IconFilterOutline /></button>
+          <details className="sg_menu sg_toolMenu">
+            <summary title="排序" aria-label="排序"><IconSortOutline /></summary>
+            <div className="sg_menuPanel">
+              {SORT_MODES.map(([value, label]) => (
+                <button
+                  type="button"
+                  key={value}
+                  aria-checked={preferences.sortMode === value}
+                  role="menuitemradio"
+                  onClick={event => { closeMenu(event); patchPreferences({ sortMode: value }) }}
+                >
+                  <span className="sg_menuCheck">{preferences.sortMode === value ? <IconCheckOutline14 /> : null}</span>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </details>
+          <details className="sg_menu sg_toolMenu">
+            <summary title="更多" aria-label="更多"><IconEllipsisOutline16 /></summary>
+            <div className="sg_menuPanel">
+              <button type="button" onClick={event => { closeMenu(event); setManageMode(value => !value); setSelected(new Set()) }}>{manageMode ? '退出管理' : '管理'}</button>
+              <button type="button" onClick={event => { closeMenu(event); run(addWorkspace()) }}><IconPlusOutline16 />添加 Workspace</button>
+              <button type="button" onClick={event => { closeMenu(event); setSurface('archive') }}><IconArchiveOutline20 size={16} />归档会话</button>
+              <button type="button" onClick={event => { closeMenu(event); run(refresh()) }}><IconRefreshOutline14 />刷新来源</button>
+            </div>
+          </details>
+        </div>
+      ) : null}
+
+      {browsing ? (
+        <div className="sg_attentionRow">
+          <div className="sg_chips" role="group" aria-label="任务状态筛选">
+            {preferences.attentionFilter === 'all' ? null : (
+              <button
+                className="sg_chip sg_chip-all"
+                type="button"
+                aria-label={`全部 ${quickEntries.length}`}
+                onClick={() => { patchPreferences({ attentionFilter: 'all' }) }}
+              >全部 {quickEntries.length}</button>
+            )}
+            {quickFilters.map(([value, label, description, count]) => {
+              const active = preferences.attentionFilter === value
+              return (
+                <button
+                  className={active ? `sg_chip sg_chip-${value} sg_chipActive` : `sg_chip sg_chip-${value}`}
+                  type="button"
+                  key={value}
+                  aria-pressed={active}
+                  aria-label={`${description} ${count}`}
+                  onClick={() => { patchPreferences({ attentionFilter: value }) }}
+                >
+                  {value === 'running'
+                    ? <span className="sg_spinner sg_spinnerSmall" aria-hidden />
+                    : <span className={`sg_dot sg_dot-${value}`} aria-hidden />}
+                  {label} {count}
+                </button>
+              )
+            })}
+          </div>
+          <button
+            className="sg_inboxButton"
+            type="button"
+            title="需要关注"
+            aria-label="需要关注"
+            onClick={() => { setSurface('activity') }}
+          ><IconInboxOutline /></button>
+        </div>
+      ) : null}
 
       {filtersOpen ? (
         <div className="sg_filters">
@@ -1002,11 +1286,6 @@ export function SessionGroupsBrowser({
               <option value="any">不限</option><option value="day">24 小时内</option><option value="week">7 天内</option><option value="month">30 天内</option>
             </select>
           </label>
-          <label>排序
-            <select value={preferences.sortMode} onChange={event => { patchPreferences({ sortMode: event.currentTarget.value as BrowserPreferences['sortMode'] }) }}>
-              <option value="manual">手动</option><option value="recent">最近更新</option><option value="name">名称</option><option value="status">状态</option>
-            </select>
-          </label>
           <button type="button" onClick={clearFilters}>清除筛选</button>
         </div>
       ) : null}
@@ -1016,20 +1295,24 @@ export function SessionGroupsBrowser({
           <label><input type="checkbox" checked={allVisibleSelected} onChange={() => { setSelected(allVisibleSelected ? new Set() : new Set(visibleIds)) }} />选择当前结果</label>
           <span>已选 {selected.size}</span>
           {surface === 'archive' ? (
-            <span title="当前 DSH Runtime 尚未提供恢复或永久删除 API">恢复/永久删除暂不可用</span>
+            <span className="sg_bulkHint" title="当前 DSH Runtime 尚未提供恢复或永久删除 API">恢复/永久删除暂不可用</span>
           ) : (
             <button type="button" disabled={selected.size === 0} onClick={confirmArchiveSelected}><IconArchiveOutline20 size={16} />批量归档</button>
           )}
         </div>
       ) : null}
 
-      {remote.loading ? <p className="sg_status">正在读取来源信息…</p> : null}
-      {remote.error !== undefined ? <p className="sg_error" title={remote.error}>{sessionGroupsErrorMessage(remote.error)}</p> : null}
-      {actionError !== undefined ? <p className="sg_error" title={actionError}>操作失败：{actionError}</p> : null}
-      {searchError !== undefined ? <p className="sg_error" title={searchError}>正文搜索失败，已保留本地结果</p> : null}
-      {searching ? <p className="sg_status">正在搜索对话正文…</p> : null}
-      {searchHasMore ? <p className="sg_status">结果较多，请继续细化关键词</p> : null}
-      {surface === 'archive' ? <p className="sg_notice">归档会话可搜索和查看；当前 DSH Runtime 尚未提供安全的恢复或永久删除 API。</p> : null}
+      {hasMessages ? (
+        <div className="sg_messages" aria-live="polite">
+          {remote.loading ? <p className="sg_status">正在读取来源信息…</p> : null}
+          {remote.error !== undefined ? <p className="sg_error" title={remote.error}>{sessionGroupsErrorMessage(remote.error)}</p> : null}
+          {actionError !== undefined ? <p className="sg_error" title={actionError}>操作失败：{actionError}</p> : null}
+          {searchError !== undefined ? <p className="sg_error" title={searchError}>正文搜索失败，已保留本地结果</p> : null}
+          {searching ? <p className="sg_status">正在搜索对话正文…</p> : null}
+          {searchHasMore ? <p className="sg_status">结果较多，请继续细化关键词</p> : null}
+          {surface === 'archive' ? <p className="sg_notice" title="当前 DSH Runtime 尚未提供安全的恢复或永久删除 API">归档会话可搜索查看，暂不支持恢复或永久删除。</p> : null}
+        </div>
+      ) : null}
 
       <div className="sg_groups">
         {groups.map(group => renderGroup(group, 0, groups))}

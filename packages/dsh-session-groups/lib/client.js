@@ -15309,19 +15309,21 @@ function FolderGroupIcon({ folded }) {
     )
   ] });
 }
-function SessionGroupIcon({ source, folded }) {
+function SessionGroupIcon({ source, folded, label }) {
   const key = source === void 0 ? void 0 : resolveSourceIconKey(source);
   if (key === void 0) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FolderGroupIcon, { folded });
   const icon = SOURCE_ICONS[key];
   if ("dataUri" in icon) {
-    return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", { className: "sg_brandIcon", src: icon.dataUri, alt: "", title: icon.title });
+    return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", { className: "sg_brandIcon", src: icon.dataUri, alt: label ?? "", title: label ?? icon.title });
   }
   if ("label" in icon) {
     return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
       "span",
       {
         className: "sg_brandIcon",
-        title: icon.title,
+        role: label === void 0 ? void 0 : "img",
+        "aria-label": label,
+        title: label ?? icon.title,
         style: {
           display: "inline-flex",
           alignItems: "center",
@@ -15340,10 +15342,10 @@ function SessionGroupIcon({ source, folded }) {
   }
   const color = icon.hex === "000000" || icon.hex === "4A154B" ? "var(--dsw-alias-label-secondary)" : `#${icon.hex}`;
   if ("svg" in icon) {
-    return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "sg_brandIcon", title: icon.title, style: { color }, dangerouslySetInnerHTML: { __html: icon.svg } });
+    return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "sg_brandIcon", role: label === void 0 ? void 0 : "img", "aria-label": label, title: label ?? icon.title, style: { color }, dangerouslySetInnerHTML: { __html: icon.svg } });
   }
   return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("svg", { className: "sg_brandIcon", role: "img", viewBox: "0 0 24 24", style: { color }, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("title", { children: icon.title }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("title", { children: label ?? icon.title }),
     /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { fill: "currentColor", d: icon.path })
   ] });
 }
@@ -15376,13 +15378,52 @@ var ContentSearchCoordinator = class {
 
 // packages/dsh-session-groups/src/client/browser.tsx
 var import_jsx_runtime2 = require("react/jsx-runtime");
-function IconPinOutline16() {
-  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("svg", { className: "sg_menuIcon", width: "16", height: "16", viewBox: "0 0 16 16", fill: "none", "aria-hidden": "true", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+function IconPinOutline({ size = 16, className }) {
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("svg", { className, width: size, height: size, viewBox: "0 0 16 16", fill: "none", "aria-hidden": "true", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
     "path",
     {
       d: "M5 2.5h6M6.25 2.5v3L4.5 8.25V9.5h7V8.25L9.75 5.5v-3M8 9.5v4",
       stroke: "currentColor",
       strokeWidth: "1.4",
+      strokeLinecap: "round",
+      strokeLinejoin: "round"
+    }
+  ) });
+}
+function IconFilterOutline({ size = 15, className }) {
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("svg", { className, width: size, height: size, viewBox: "0 0 16 16", fill: "none", "aria-hidden": "true", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("path", { d: "M2.5 4.5h11M4.5 8h7M6.5 11.5h3", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round" }) });
+}
+function IconSortOutline({ size = 15, className }) {
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("svg", { className, width: size, height: size, viewBox: "0 0 16 16", fill: "none", "aria-hidden": "true", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+    "path",
+    {
+      d: "M5 3v10M5 13l-2.5-2.5M5 13l2.5-2.5M11 13V3M11 3 8.5 5.5M11 3l2.5 2.5",
+      stroke: "currentColor",
+      strokeWidth: "1.5",
+      strokeLinecap: "round",
+      strokeLinejoin: "round"
+    }
+  ) });
+}
+function IconInboxOutline({ size = 14, className }) {
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("svg", { className, width: size, height: size, viewBox: "0 0 16 16", fill: "none", "aria-hidden": "true", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+    "path",
+    {
+      d: "M2 9.5V12a1.5 1.5 0 0 0 1.5 1.5h9A1.5 1.5 0 0 0 14 12V9.5M2 9.5h3.5l1 1.5h3l1-1.5H14M2 9.5 4 3h8l2 6.5",
+      stroke: "currentColor",
+      strokeWidth: "1.5",
+      strokeLinecap: "round",
+      strokeLinejoin: "round"
+    }
+  ) });
+}
+function IconFolderMini({ size = 12, className }) {
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("svg", { className, width: size, height: size, viewBox: "0 0 20 20", fill: "none", "aria-hidden": "true", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+    "path",
+    {
+      d: "M2.75 6.25v-.6a2.15 2.15 0 0 1 2.15-2.15h2.34c.54 0 1.06.22 1.44.6l1.18 1.18c.28.28.66.44 1.06.44h4.18a2.15 2.15 0 0 1 2.15 2.15v6.48a2.15 2.15 0 0 1-2.15 2.15H4.9a2.15 2.15 0 0 1-2.15-2.15v-8.1Z",
+      stroke: "currentColor",
+      strokeWidth: "1.6",
       strokeLinecap: "round",
       strokeLinejoin: "round"
     }
@@ -15402,6 +15443,14 @@ var ATTENTION_COPY = {
   completed: { label: "\u672A\u8BFB\uFF08\u5DF2\u5B8C\u6210\uFF09", short: "\u672A\u8BFB" },
   idle: { label: "\u7A7A\u95F2", short: "\u7A7A\u95F2" }
 };
+var SORT_MODES = [
+  ["manual", "\u624B\u52A8"],
+  ["recent", "\u6700\u8FD1\u66F4\u65B0"],
+  ["name", "\u540D\u79F0"],
+  ["status", "\u72B6\u6001"]
+];
+var PLACEHOLDER_GROUP_KEYS = /* @__PURE__ */ new Set(["project:none", "source:unattributed"]);
+var ARCHIVE_CONFIRM_MS = 3e3;
 function pendingLabel(entry) {
   switch (entry.summary.pendingInteraction) {
     case "approval":
@@ -15412,6 +15461,18 @@ function pendingLabel(entry) {
       return "\u7B49\u5F85\u56DE\u7B54\u95EE\u9898";
     default:
       return ATTENTION_COPY[entry.attention].label;
+  }
+}
+function attentionReason(entry) {
+  switch (entry.attention) {
+    case "waiting":
+      return pendingLabel(entry);
+    case "failed":
+      return `${entry.jobs.filter((job) => job.status === "failed").length} \u4E2A Job \u5931\u8D25`;
+    case "completed":
+      return "\u5DF2\u5B8C\u6210";
+    default:
+      return void 0;
   }
 }
 function duration3(startedAt, finishedAt, now) {
@@ -15487,10 +15548,10 @@ function updatedCutoff(range, now) {
 }
 function activityGroups(entries) {
   const definitions = [
-    ["waiting", "\u7B49\u5F85\u7528\u6237"],
+    ["waiting", "\u5F85\u6211\u5904\u7406"],
     ["failed", "\u540E\u53F0\u4EFB\u52A1\u5931\u8D25"],
     ["running", "\u8FD0\u884C\u4E2D"],
-    ["completed", "\u672A\u8BFB"]
+    ["completed", "\u521A\u5B8C\u6210"]
   ];
   return definitions.flatMap(([attention, title]) => {
     const matching = entries.filter((entry) => entry.attention === attention);
@@ -15561,10 +15622,12 @@ function SessionGroupsBrowser({
   const [selected, setSelected] = (0, import_react.useState)(() => /* @__PURE__ */ new Set());
   const [expandedActivity, setExpandedActivity] = (0, import_react.useState)(() => /* @__PURE__ */ new Set());
   const [activityCollapsed, setActivityCollapsed] = (0, import_react.useState)(() => /* @__PURE__ */ new Set());
+  const [archiveConfirm, setArchiveConfirm] = (0, import_react.useState)();
   const [dragged, setDragged] = (0, import_react.useState)();
   const [now, setNow] = (0, import_react.useState)(() => Date.now());
   const searchRef = (0, import_react.useRef)(null);
   const focusAfterExpandRef = (0, import_react.useRef)(false);
+  const archiveConfirmTimer = (0, import_react.useRef)();
   const searchCoordinator = (0, import_react.useRef)(new ContentSearchCoordinator()).current;
   const expandedActivityRef = (0, import_react.useRef)(expandedActivity);
   expandedActivityRef.current = expandedActivity;
@@ -15599,6 +15662,9 @@ function SessionGroupsBrowser({
   (0, import_react.useEffect)(() => () => {
     for (const sessionId of expandedActivityRef.current) setSubagentCatalogOpen(sessionId, false);
   }, [setSubagentCatalogOpen]);
+  (0, import_react.useEffect)(() => () => {
+    if (archiveConfirmTimer.current !== void 0) window.clearTimeout(archiveConfirmTimer.current);
+  }, []);
   (0, import_react.useEffect)(() => {
     const focusSearch = (event) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLocaleLowerCase() === "k") {
@@ -15843,6 +15909,18 @@ function SessionGroupsBrowser({
 \u5F53\u524D DSH Runtime \u672A\u63D0\u4F9B\u6062\u590D API\uFF0C\u8BF7\u786E\u8BA4\u540E\u7EE7\u7EED\u3002`);
     if (confirmed) run(archiveSelected(sessionIds));
   };
+  const requestArchive = (sessionId) => {
+    if (archiveConfirmTimer.current !== void 0) window.clearTimeout(archiveConfirmTimer.current);
+    if (archiveConfirm === sessionId) {
+      setArchiveConfirm(void 0);
+      run(archiveSession(sessionId));
+      return;
+    }
+    setArchiveConfirm(sessionId);
+    archiveConfirmTimer.current = window.setTimeout(() => {
+      setArchiveConfirm(void 0);
+    }, ARCHIVE_CONFIRM_MS);
+  };
   const toggleSessionActivity = (entry) => {
     const willOpen = !expandedActivity.has(entry.summary.id);
     setExpandedActivity((previous) => {
@@ -15947,6 +16025,10 @@ function SessionGroupsBrowser({
     const menu = active.closest("details");
     if (menu?.open !== true) active.blur();
   };
+  const closeMenu = (event) => {
+    const menu = event.currentTarget.closest("details");
+    if (menu !== null) menu.open = false;
+  };
   const placeMenuWithinScroller = (event) => {
     const menu = event.currentTarget;
     if (!menu.open) {
@@ -16009,16 +16091,58 @@ function SessionGroupsBrowser({
       catalog?.state === "error" ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "sg_error", children: "Subagent \u5217\u8868\u8BFB\u53D6\u5931\u8D25" }) : null
     ] });
   };
+  const renderStatusMark = (entry) => {
+    switch (entry.attention) {
+      case "waiting":
+        return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_statusDot sg_dot-waiting", role: "img", title: pendingLabel(entry), "aria-label": pendingLabel(entry) });
+      case "failed":
+        return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_statusDot sg_dot-failed", role: "img", title: "\u540E\u53F0\u4EFB\u52A1\u5931\u8D25", "aria-label": "\u540E\u53F0\u4EFB\u52A1\u5931\u8D25" });
+      case "running":
+        return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_spinner", role: "img", title: "\u6B63\u5728\u8FD0\u884C", "aria-label": "\u6B63\u5728\u8FD0\u884C" });
+      case "completed":
+        return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_statusDot sg_dot-completed", role: "img", title: "\u672A\u8BFB\uFF08\u5DF2\u5B8C\u6210\uFF09", "aria-label": "\u672A\u8BFB\uFF08\u5DF2\u5B8C\u6210\uFF09" });
+      default:
+        return null;
+    }
+  };
+  const renderSessionMeta = (entry) => {
+    const parts = [];
+    const explicitSource = entry.source.rawSource !== void 0;
+    const chatTitle = entry.source.chatTitle ?? entry.source.familyTitle;
+    const brandIcon = /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_metaIcon", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(SessionGroupIcon, { source: entry.source.iconSource, folded: false, label: entry.source.familyTitle }) }, "brand");
+    if (surface === "activity" || surface === "archive") {
+      parts.push(/* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_metaText", children: entry.project.title }, "project"));
+      if (explicitSource) {
+        parts.push(
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_metaSeparator", "aria-hidden": true, children: "\xB7" }, "separator"),
+          brandIcon,
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_metaText", children: chatTitle }, "chat")
+        );
+      }
+    } else if (preferences.browseMode === "project") {
+      if (explicitSource) parts.push(brandIcon, /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_metaText", children: chatTitle }, "chat"));
+    } else {
+      parts.push(
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_metaIcon", "aria-hidden": true, children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(IconFolderMini, {}) }, "folder"),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_metaText", children: entry.project.title }, "project")
+      );
+    }
+    const reason = attentionReason(entry);
+    if (reason !== void 0) {
+      parts.push(/* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_metaReason", children: parts.length === 0 ? reason : `\xB7 ${reason}` }, "reason"));
+    }
+    return parts;
+  };
   const renderSession = (entry, group) => {
     const current = entry.summary.id === sessions.current;
     const expanded = expandedActivity.has(entry.summary.id);
     const snippet = contentHits.get(entry.summary.id);
     const explicitSource = explicitSourceLabel(entry);
-    const counterpart = surface === "activity" || surface === "archive" ? explicitSource === void 0 ? entry.project.title : `${entry.project.title} \xB7 ${explicitSource}` : preferences.browseMode === "project" ? explicitSource : entry.project.title;
     const pinned = preferences.pinnedSessions.includes(String(entry.summary.id));
     const sessionDraggable = canDragSession(entry, group);
-    const compact = counterpart === void 0 && snippet === void 0;
-    const showAttentionDot = entry.attention === "waiting" || entry.attention === "failed";
+    const metaParts = renderSessionMeta(entry);
+    const compact = metaParts.length === 0 && snippet === void 0;
+    const confirming = archiveConfirm === entry.summary.id;
     const wrapClassName = [
       "sg_sessionWrap",
       current ? "sg_sessionCurrent" : "",
@@ -16066,71 +16190,60 @@ function SessionGroupsBrowser({
                   open(entry.summary.id);
                 },
                 children: [
-                  pinned ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_pinMark", "aria-label": "\u5DF2\u7F6E\u9876", children: "\u2605" }) : null,
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_statusSlot", children: renderStatusMark(entry) }),
                   /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "sg_sessionText", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_sessionTitle", children: entry.summary.blank ? "\u65B0\u4F1A\u8BDD" : entry.summary.displayTitle }),
-                    counterpart === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_sessionMeta", children: counterpart }),
+                    /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "sg_sessionTitleRow", children: [
+                      pinned ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_pinMark", role: "img", title: "\u5DF2\u7F6E\u9876", "aria-label": "\u5DF2\u7F6E\u9876", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(IconPinOutline, { size: 11 }) }) : null,
+                      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_sessionTitle", children: entry.summary.blank ? "\u65B0\u4F1A\u8BDD" : entry.summary.displayTitle })
+                    ] }),
+                    metaParts.length === 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_sessionMeta", children: metaParts }),
                     snippet === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_snippet", children: snippet })
-                  ] }),
-                  !entry.running && !showAttentionDot && !entry.unread ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "sg_statusSlot", children: [
-                    entry.running ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_spinner", role: "img", title: "\u6B63\u5728\u8FD0\u884C", "aria-label": "\u6B63\u5728\u8FD0\u884C" }) : null,
-                    showAttentionDot ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: `sg_dot sg_dot-${entry.attention}`, role: "img", title: pendingLabel(entry), "aria-label": pendingLabel(entry) }) : null,
-                    entry.unread ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_unreadDot", role: "img", title: "\u672A\u8BFB", "aria-label": "\u672A\u8BFB" }) : null
                   ] })
                 ]
               }
             ),
-            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_sessionHoverActions", children: [
-              surface === "archive" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
-                "button",
-                {
-                  className: "sg_quickArchive",
-                  type: "button",
-                  title: "\u5F52\u6863",
-                  "aria-label": `\u5F52\u6863 ${entry.summary.displayTitle}`,
-                  onClick: () => {
-                    run(archiveSession(entry.summary.id));
-                  },
-                  children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconArchiveOutline20, { size: 16 })
-                }
-              ),
-              /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("details", { className: "sg_menu", onToggle: placeMenuWithinScroller, children: [
-                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("summary", { title: "\u66F4\u591A\u4F1A\u8BDD\u64CD\u4F5C", "aria-label": "\u66F4\u591A\u4F1A\u8BDD\u64CD\u4F5C", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconEllipsisOutline16, {}) }),
-                /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_menuPanel", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                    togglePinnedSession(entry.summary.id);
-                  }, children: pinned ? "\u53D6\u6D88\u7F6E\u9876" : "\u7F6E\u9876" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                    toggleSessionActivity(entry);
-                  }, children: expanded ? "\u6536\u8D77\u6D3B\u52A8" : "\u67E5\u770B Job \u4E0E Subagent" }),
-                  entry.project.path === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                    run(openPath(entry.project.path));
-                  }, children: "\u6253\u5F00\u9879\u76EE\u6587\u4EF6\u5939" }),
-                  entry.source.rawSource === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                    setSurface("browse");
-                    setQuery("");
-                    patchPreferences({ browseMode: "source", attentionFilter: "all", sourceFilter: entry.source.familyKey, chatFilter: "", updatedRange: "any" });
-                  }, children: "\u67E5\u770B\u6B64\u6765\u6E90\u7684\u5168\u90E8\u4F1A\u8BDD" }),
-                  entry.source.chatTitle === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                    setSurface("browse");
-                    setQuery("");
-                    patchPreferences({ browseMode: "source", attentionFilter: "all", sourceFilter: entry.source.familyKey, chatFilter: entry.source.chatKey, updatedRange: "any" });
-                  }, children: "\u67E5\u770B\u6B64\u804A\u5929\u7684\u5168\u90E8\u4F1A\u8BDD" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                    setBrowseMode("project");
-                  }, children: "\u6309\u9879\u76EE\u67E5\u770B" }),
-                  surface === "archive" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                    run(renameSession(entry.summary.id, entry.summary.displayTitle));
-                  }, children: "\u91CD\u547D\u540D" }),
-                  surface === "archive" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                    run(forkSession(entry.summary.id));
-                  }, children: "\u5206\u53C9\u4F1A\u8BDD" }),
-                  surface === "archive" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
-                    run(archiveSession(entry.summary.id));
-                  }, children: "\u5F52\u6863" })
-                ] })
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "sg_sessionHoverActions", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("details", { className: "sg_menu", onToggle: placeMenuWithinScroller, children: [
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("summary", { title: "\u66F4\u591A\u4F1A\u8BDD\u64CD\u4F5C", "aria-label": "\u66F4\u591A\u4F1A\u8BDD\u64CD\u4F5C", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconEllipsisOutline16, {}) }),
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_menuPanel", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
+                  togglePinnedSession(entry.summary.id);
+                }, children: pinned ? "\u53D6\u6D88\u7F6E\u9876" : "\u7F6E\u9876" }),
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
+                  toggleSessionActivity(entry);
+                }, children: expanded ? "\u6536\u8D77\u6D3B\u52A8" : "\u67E5\u770B Job \u4E0E Subagent" }),
+                entry.project.path === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
+                  run(openPath(entry.project.path));
+                }, children: "\u6253\u5F00\u9879\u76EE\u6587\u4EF6\u5939" }),
+                explicitSource === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
+                  setSurface("browse");
+                  setQuery("");
+                  patchPreferences({ browseMode: "source", attentionFilter: "all", sourceFilter: entry.source.familyKey, chatFilter: "", updatedRange: "any" });
+                }, children: "\u67E5\u770B\u6B64\u6765\u6E90\u7684\u5168\u90E8\u4F1A\u8BDD" }),
+                entry.source.chatTitle === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
+                  setSurface("browse");
+                  setQuery("");
+                  patchPreferences({ browseMode: "source", attentionFilter: "all", sourceFilter: entry.source.familyKey, chatFilter: entry.source.chatKey, updatedRange: "any" });
+                }, children: "\u67E5\u770B\u6B64\u804A\u5929\u7684\u5168\u90E8\u4F1A\u8BDD" }),
+                surface === "archive" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
+                  run(renameSession(entry.summary.id, entry.summary.displayTitle));
+                }, children: "\u91CD\u547D\u540D" }),
+                surface === "archive" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => {
+                  run(forkSession(entry.summary.id));
+                }, children: "\u5206\u53C9\u4F1A\u8BDD" }),
+                surface === "archive" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+                  "button",
+                  {
+                    className: confirming ? "sg_menuConfirm" : void 0,
+                    type: "button",
+                    title: confirming ? void 0 : "\u9700\u8981\u70B9\u51FB\u4E24\u6B21\u786E\u8BA4",
+                    onClick: () => {
+                      requestArchive(entry.summary.id);
+                    },
+                    children: confirming ? "\u518D\u6B21\u70B9\u51FB\u786E\u8BA4\u5F52\u6863" : "\u5F52\u6863"
+                  }
+                )
               ] })
-            ] })
+            ] }) })
           ] }),
           expanded ? renderActivityDetails(entry) : null
         ]
@@ -16147,6 +16260,18 @@ function SessionGroupsBrowser({
     const visible2 = groupSize(group);
     const counts = fullGroup?.counts ?? group.counts;
     const hasContent = group.sessions.length > 0 || (group.children?.length ?? 0) > 0;
+    const attention = [
+      ["waiting", counts.waiting, "\u5F85\u6211\u5904\u7406"],
+      ["failed", counts.failed, "\u540E\u53F0\u4EFB\u52A1\u5931\u8D25"],
+      ["running", counts.running, "\u8FD0\u884C\u4E2D"],
+      ["unread", counts.unread, "\u672A\u8BFB"]
+    ].filter(([, count]) => count > 0);
+    const activityKind = group.type === "activity" ? group.key.slice("activity:".length) : void 0;
+    const muted = PLACEHOLDER_GROUP_KEYS.has(group.key);
+    const toggleTitle = [
+      hasContent ? folded ? "\u5C55\u5F00\u5206\u7EC4" : "\u6536\u8D77\u5206\u7EC4" : "\u7A7A\u5206\u7EC4",
+      ...attention.map(([, count, label]) => `${label} ${count}`)
+    ].join("\n");
     return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("section", { className: `sg_group sg_groupDepth-${Math.min(depth, 2)}`, children: [
       /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
         "div",
@@ -16170,31 +16295,21 @@ function SessionGroupsBrowser({
                 className: hasContent ? "sg_groupToggle" : "sg_groupToggle sg_groupToggleEmpty",
                 type: "button",
                 "aria-expanded": hasContent ? !folded : void 0,
-                title: hasContent ? folded ? "\u5C55\u5F00\u5206\u7EC4" : "\u6536\u8D77\u5206\u7EC4" : "\u7A7A\u5206\u7EC4",
+                title: toggleTitle,
                 onClick: () => {
                   if (hasContent) toggleCollapsed(group.key);
                 },
                 children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_groupIcon", "aria-hidden": true, children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(SessionGroupIcon, { source: group.source, folded }) }),
-                  pinned ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_pinMark", "aria-label": "\u5DF2\u7F6E\u9876", children: "\u2605" }) : null,
-                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_groupTitle", title: group.title, children: group.title }),
-                  kindLabel === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_kind", children: kindLabel }),
-                  counts.waiting > 0 ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "sg_attentionCount sg_attentionCount-waiting", children: [
-                    "\u5F85 ",
-                    counts.waiting
-                  ] }) : null,
-                  counts.failed > 0 ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "sg_attentionCount sg_attentionCount-failed", children: [
-                    "\u5931\u8D25 ",
-                    counts.failed
-                  ] }) : null,
-                  counts.running > 0 ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "sg_attentionCount sg_attentionCount-running", children: [
-                    "\u8FD0\u884C ",
-                    counts.running
-                  ] }) : null,
-                  counts.unread > 0 ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "sg_attentionCount sg_attentionCount-unread", children: [
-                    "\u672A\u8BFB ",
-                    counts.unread
-                  ] }) : null,
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: folded ? "sg_chevron sg_chevronFolded" : "sg_chevron", "aria-hidden": true, children: hasContent ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconChevronDownOutline14, { size: 12 }) : null }),
+                  activityKind === void 0 ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_groupIcon", "aria-hidden": true, children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(SessionGroupIcon, { source: group.source, folded }) }) : activityKind === "running" ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_spinner sg_spinnerSmall", "aria-hidden": true }) : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: `sg_dot sg_dot-${activityKind}`, "aria-hidden": true }),
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: muted ? "sg_groupTitle sg_groupTitleMuted" : "sg_groupTitle", title: group.title, children: group.title }),
+                  pinned ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_pinMark", role: "img", title: "\u5DF2\u7F6E\u9876", "aria-label": "\u5DF2\u7F6E\u9876", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(IconPinOutline, { size: 11 }) }) : null,
+                  kindLabel === void 0 || depth === 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_kind", children: kindLabel }),
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_groupSpacer" }),
+                  attention.slice(0, 2).map(([kind, count, label]) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "sg_attentionCount", title: `${label} ${count}`, children: [
+                    kind === "running" ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_spinner sg_spinnerSmall", "aria-hidden": true }) : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: `sg_dot sg_dot-${kind}`, "aria-hidden": true }),
+                    count
+                  ] }, kind)),
                   /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_count", title: hasActiveFilters ? `${visible2} \u4E2A\u7B5B\u9009\u547D\u4E2D\uFF0C\u5171 ${total} \u4E2A\u4F1A\u8BDD` : void 0, children: hasActiveFilters ? `${visible2}/${total}` : total })
                 ]
               }
@@ -16205,7 +16320,7 @@ function SessionGroupsBrowser({
                 surface === "activity" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { type: "button", onClick: () => {
                   togglePinnedGroup(group.key);
                 }, children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(IconPinOutline16, {}),
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(IconPinOutline, { className: "sg_menuIcon" }),
                   pinned ? "\u53D6\u6D88\u7F6E\u9876" : "\u7F6E\u9876"
                 ] }),
                 group.path === void 0 ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { type: "button", onClick: () => {
@@ -16255,73 +16370,231 @@ function SessionGroupsBrowser({
   };
   const visibleIds = renderedSessionIds(groups, collapsed);
   const allVisibleSelected = visibleIds.length > 0 && visibleIds.every((id) => selected.has(id));
+  const browsing = surface === "browse";
+  const quickFilters = [
+    ["waiting", "\u5F85\u5904\u7406", "\u5F85\u6211\u5904\u7406", statusCounts.waiting],
+    ["failed", "\u5931\u8D25", "\u540E\u53F0\u5931\u8D25", statusCounts.failed],
+    ["running", "\u8FD0\u884C", "\u8FD0\u884C\u4E2D", statusCounts.running],
+    ["completed", "\u672A\u8BFB", "\u672A\u8BFB", statusCounts.unread]
+  ].filter(([value, , , count]) => count > 0 || preferences.attentionFilter === value);
+  const hasMessages = remote.loading || remote.error !== void 0 || actionError !== void 0 || searchError !== void 0 || searching || searchHasMore || surface === "archive";
   return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("section", { className: dragged === void 0 ? "sg_root" : "sg_root sg_dragging", "aria-label": "\u4EFB\u52A1\u6D4F\u89C8\u5668", onKeyDown: focusAdjacentSession, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("header", { className: "sg_header", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("strong", { children: "\u4F1A\u8BDD" }),
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_headerActions", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { className: manageMode ? "sg_textButton sg_textButtonActive" : "sg_textButton", type: "button", onClick: () => {
-          setManageMode((value) => !value);
-          setSelected(/* @__PURE__ */ new Set());
-        }, children: "\u7BA1\u7406" }),
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { className: "sg_iconButton", type: "button", title: "\u6DFB\u52A0 Workspace", "aria-label": "\u6DFB\u52A0 Workspace", onClick: () => {
-          run(addWorkspace());
-        }, children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconPlusOutline16, {}) })
-      ] })
-    ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("nav", { className: "sg_views", "aria-label": "\u6D4F\u89C8\u65B9\u5F0F", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { className: surface === "browse" && preferences.browseMode === "project" ? "sg_viewActive" : "", type: "button", onClick: () => {
-        setBrowseMode("project");
-      }, children: "\u6309\u9879\u76EE" }),
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { className: surface === "browse" && preferences.browseMode === "source" ? "sg_viewActive" : "", type: "button", onClick: () => {
-        setBrowseMode("source");
-      }, children: "\u6309\u6765\u6E90" }),
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { className: surface === "activity" ? "sg_viewActive" : "", type: "button", onClick: () => {
-        setSurface("activity");
-      }, children: "Activity" }),
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { className: surface === "archive" ? "sg_viewActive" : "", type: "button", onClick: () => {
-        setSurface("archive");
-      }, children: "\u5F52\u6863" })
-    ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_searchWrap", children: [
+    browsing ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("header", { className: "sg_surfaceHead", children: [
       /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
-        "input",
+        "button",
         {
-          ref: searchRef,
-          className: "sg_search",
-          type: "search",
-          value: query,
-          placeholder: "\u641C\u7D22\u6807\u9898\u6216\u5BF9\u8BDD\u6B63\u6587  \u2318K",
-          onChange: (event) => {
-            setQuery(event.currentTarget.value);
-          }
+          className: "sg_backButton",
+          type: "button",
+          title: "\u8FD4\u56DE\u5217\u8868",
+          "aria-label": "\u8FD4\u56DE\u5217\u8868",
+          onClick: () => {
+            setSurface("browse");
+          },
+          children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconChevronLeftOutline14, { size: 16 })
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { className: filtersOpen || hasActiveFilters ? "sg_filterButton sg_filterButtonActive" : "sg_filterButton", type: "button", onClick: () => {
-        setFiltersOpen((value) => !value);
-      }, children: "\u7B5B\u9009" })
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_surfaceTitle", children: surface === "activity" ? "\u9700\u8981\u5173\u6CE8" : "\u5F52\u6863" }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_surfaceCount", children: fullSurfaceEntries.length }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_toolSpacer" }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("details", { className: "sg_menu sg_toolMenu", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("summary", { title: "\u66F4\u591A", "aria-label": "\u66F4\u591A", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconEllipsisOutline16, {}) }),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_menuPanel", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: (event) => {
+            closeMenu(event);
+            setManageMode((value) => !value);
+            setSelected(/* @__PURE__ */ new Set());
+          }, children: manageMode ? "\u9000\u51FA\u7BA1\u7406" : "\u7BA1\u7406" }),
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { type: "button", onClick: (event) => {
+            closeMenu(event);
+            run(refresh());
+          }, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconRefreshOutline14, {}),
+            "\u5237\u65B0\u6765\u6E90"
+          ] })
+        ] })
+      ] })
     ] }),
-    statusCounts.waiting + statusCounts.failed + statusCounts.running + statusCounts.unread > 0 || preferences.attentionFilter !== "all" ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "sg_quickFilters", "aria-label": "\u4EFB\u52A1\u72B6\u6001\u7B5B\u9009", children: [
-      ["all", "\u5168\u90E8", quickEntries.length],
-      ["waiting", "\u5F85\u6211\u5904\u7406", statusCounts.waiting],
-      ["failed", "\u5931\u8D25", statusCounts.failed],
-      ["running", "\u8FD0\u884C\u4E2D", statusCounts.running],
-      ["completed", "\u672A\u8BFB", statusCounts.unread]
-    ].filter(([value, , count]) => value === "all" || count > 0 || preferences.attentionFilter === value).map(([value, label, count]) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
-      "button",
-      {
-        className: preferences.attentionFilter === value ? "sg_chip sg_chipActive" : "sg_chip",
-        type: "button",
-        onClick: () => {
-          patchPreferences({ attentionFilter: value });
-        },
-        children: [
-          label,
-          " ",
-          count
-        ]
-      },
-      value
-    )) }) : null,
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_searchWrap", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_searchField", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_searchIcon", "aria-hidden": true, children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconSearchOutline16, { size: 14 }) }),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+          "input",
+          {
+            ref: searchRef,
+            className: "sg_search",
+            type: "search",
+            value: query,
+            placeholder: "\u641C\u7D22\u6807\u9898\u6216\u5BF9\u8BDD",
+            "aria-label": "\u641C\u7D22\u6807\u9898\u6216\u5BF9\u8BDD",
+            onChange: (event) => {
+              setQuery(event.currentTarget.value);
+            }
+          }
+        ),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("kbd", { className: "sg_kbd", "aria-hidden": true, children: "\u2318K" })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+        "button",
+        {
+          className: "sg_newButton",
+          type: "button",
+          title: "\u65B0\u5EFA\u4F1A\u8BDD",
+          "aria-label": "\u65B0\u5EFA\u4F1A\u8BDD",
+          onClick: () => {
+            startSession();
+          },
+          children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconNewChatOutline16, {})
+        }
+      )
+    ] }),
+    browsing ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_toolRow", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_segmented", role: "group", "aria-label": "\u6D4F\u89C8\u65B9\u5F0F", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+          "button",
+          {
+            className: preferences.browseMode === "project" ? "sg_segment sg_segmentActive" : "sg_segment",
+            type: "button",
+            "aria-pressed": preferences.browseMode === "project",
+            onClick: () => {
+              setBrowseMode("project");
+            },
+            children: "\u6309\u9879\u76EE"
+          }
+        ),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+          "button",
+          {
+            className: preferences.browseMode === "source" ? "sg_segment sg_segmentActive" : "sg_segment",
+            type: "button",
+            "aria-pressed": preferences.browseMode === "source",
+            onClick: () => {
+              setBrowseMode("source");
+            },
+            children: "\u6309\u6765\u6E90"
+          }
+        )
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_toolSpacer" }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+        "button",
+        {
+          className: filtersOpen || hasActiveFilters ? "sg_toolButton sg_toolButtonActive" : "sg_toolButton",
+          type: "button",
+          title: "\u7B5B\u9009",
+          "aria-label": "\u7B5B\u9009",
+          "aria-expanded": filtersOpen,
+          onClick: () => {
+            setFiltersOpen((value) => !value);
+          },
+          children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(IconFilterOutline, {})
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("details", { className: "sg_menu sg_toolMenu", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("summary", { title: "\u6392\u5E8F", "aria-label": "\u6392\u5E8F", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(IconSortOutline, {}) }),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "sg_menuPanel", children: SORT_MODES.map(([value, label]) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
+          "button",
+          {
+            type: "button",
+            "aria-checked": preferences.sortMode === value,
+            role: "menuitemradio",
+            onClick: (event) => {
+              closeMenu(event);
+              patchPreferences({ sortMode: value });
+            },
+            children: [
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_menuCheck", children: preferences.sortMode === value ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconCheckOutline14, {}) : null }),
+              label
+            ]
+          },
+          value
+        )) })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("details", { className: "sg_menu sg_toolMenu", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("summary", { title: "\u66F4\u591A", "aria-label": "\u66F4\u591A", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconEllipsisOutline16, {}) }),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_menuPanel", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: (event) => {
+            closeMenu(event);
+            setManageMode((value) => !value);
+            setSelected(/* @__PURE__ */ new Set());
+          }, children: manageMode ? "\u9000\u51FA\u7BA1\u7406" : "\u7BA1\u7406" }),
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { type: "button", onClick: (event) => {
+            closeMenu(event);
+            run(addWorkspace());
+          }, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconPlusOutline16, {}),
+            "\u6DFB\u52A0 Workspace"
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { type: "button", onClick: (event) => {
+            closeMenu(event);
+            setSurface("archive");
+          }, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconArchiveOutline20, { size: 16 }),
+            "\u5F52\u6863\u4F1A\u8BDD"
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { type: "button", onClick: (event) => {
+            closeMenu(event);
+            run(refresh());
+          }, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconRefreshOutline14, {}),
+            "\u5237\u65B0\u6765\u6E90"
+          ] })
+        ] })
+      ] })
+    ] }) : null,
+    browsing ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_attentionRow", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_chips", role: "group", "aria-label": "\u4EFB\u52A1\u72B6\u6001\u7B5B\u9009", children: [
+        preferences.attentionFilter === "all" ? null : /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
+          "button",
+          {
+            className: "sg_chip sg_chip-all",
+            type: "button",
+            "aria-label": `\u5168\u90E8 ${quickEntries.length}`,
+            onClick: () => {
+              patchPreferences({ attentionFilter: "all" });
+            },
+            children: [
+              "\u5168\u90E8 ",
+              quickEntries.length
+            ]
+          }
+        ),
+        quickFilters.map(([value, label, description, count]) => {
+          const active = preferences.attentionFilter === value;
+          return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
+            "button",
+            {
+              className: active ? `sg_chip sg_chip-${value} sg_chipActive` : `sg_chip sg_chip-${value}`,
+              type: "button",
+              "aria-pressed": active,
+              "aria-label": `${description} ${count}`,
+              onClick: () => {
+                patchPreferences({ attentionFilter: value });
+              },
+              children: [
+                value === "running" ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_spinner sg_spinnerSmall", "aria-hidden": true }) : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: `sg_dot sg_dot-${value}`, "aria-hidden": true }),
+                label,
+                " ",
+                count
+              ]
+            },
+            value
+          );
+        })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+        "button",
+        {
+          className: "sg_inboxButton",
+          type: "button",
+          title: "\u9700\u8981\u5173\u6CE8",
+          "aria-label": "\u9700\u8981\u5173\u6CE8",
+          onClick: () => {
+            setSurface("activity");
+          },
+          children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(IconInboxOutline, {})
+        }
+      )
+    ] }) : null,
     filtersOpen ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_filters", children: [
       /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("label", { children: [
         "\u72B6\u6001",
@@ -16364,17 +16637,6 @@ function SessionGroupsBrowser({
           /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("option", { value: "month", children: "30 \u5929\u5185" })
         ] })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("label", { children: [
-        "\u6392\u5E8F",
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("select", { value: preferences.sortMode, onChange: (event) => {
-          patchPreferences({ sortMode: event.currentTarget.value });
-        }, children: [
-          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("option", { value: "manual", children: "\u624B\u52A8" }),
-          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("option", { value: "recent", children: "\u6700\u8FD1\u66F4\u65B0" }),
-          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("option", { value: "name", children: "\u540D\u79F0" }),
-          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("option", { value: "status", children: "\u72B6\u6001" })
-        ] })
-      ] }),
       /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: clearFilters, children: "\u6E05\u9664\u7B5B\u9009" })
     ] }) : null,
     manageMode ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_bulkBar", children: [
@@ -16388,21 +16650,23 @@ function SessionGroupsBrowser({
         "\u5DF2\u9009 ",
         selected.size
       ] }),
-      surface === "archive" ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { title: "\u5F53\u524D DSH Runtime \u5C1A\u672A\u63D0\u4F9B\u6062\u590D\u6216\u6C38\u4E45\u5220\u9664 API", children: "\u6062\u590D/\u6C38\u4E45\u5220\u9664\u6682\u4E0D\u53EF\u7528" }) : /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { type: "button", disabled: selected.size === 0, onClick: confirmArchiveSelected, children: [
+      surface === "archive" ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "sg_bulkHint", title: "\u5F53\u524D DSH Runtime \u5C1A\u672A\u63D0\u4F9B\u6062\u590D\u6216\u6C38\u4E45\u5220\u9664 API", children: "\u6062\u590D/\u6C38\u4E45\u5220\u9664\u6682\u4E0D\u53EF\u7528" }) : /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { type: "button", disabled: selected.size === 0, onClick: confirmArchiveSelected, children: [
         /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_dsh_client_ui_primitives.IconArchiveOutline20, { size: 16 }),
         "\u6279\u91CF\u5F52\u6863"
       ] })
     ] }) : null,
-    remote.loading ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "sg_status", children: "\u6B63\u5728\u8BFB\u53D6\u6765\u6E90\u4FE1\u606F\u2026" }) : null,
-    remote.error !== void 0 ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "sg_error", title: remote.error, children: sessionGroupsErrorMessage(remote.error) }) : null,
-    actionError !== void 0 ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("p", { className: "sg_error", title: actionError, children: [
-      "\u64CD\u4F5C\u5931\u8D25\uFF1A",
-      actionError
+    hasMessages ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_messages", "aria-live": "polite", children: [
+      remote.loading ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "sg_status", children: "\u6B63\u5728\u8BFB\u53D6\u6765\u6E90\u4FE1\u606F\u2026" }) : null,
+      remote.error !== void 0 ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "sg_error", title: remote.error, children: sessionGroupsErrorMessage(remote.error) }) : null,
+      actionError !== void 0 ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("p", { className: "sg_error", title: actionError, children: [
+        "\u64CD\u4F5C\u5931\u8D25\uFF1A",
+        actionError
+      ] }) : null,
+      searchError !== void 0 ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "sg_error", title: searchError, children: "\u6B63\u6587\u641C\u7D22\u5931\u8D25\uFF0C\u5DF2\u4FDD\u7559\u672C\u5730\u7ED3\u679C" }) : null,
+      searching ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "sg_status", children: "\u6B63\u5728\u641C\u7D22\u5BF9\u8BDD\u6B63\u6587\u2026" }) : null,
+      searchHasMore ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "sg_status", children: "\u7ED3\u679C\u8F83\u591A\uFF0C\u8BF7\u7EE7\u7EED\u7EC6\u5316\u5173\u952E\u8BCD" }) : null,
+      surface === "archive" ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "sg_notice", title: "\u5F53\u524D DSH Runtime \u5C1A\u672A\u63D0\u4F9B\u5B89\u5168\u7684\u6062\u590D\u6216\u6C38\u4E45\u5220\u9664 API", children: "\u5F52\u6863\u4F1A\u8BDD\u53EF\u641C\u7D22\u67E5\u770B\uFF0C\u6682\u4E0D\u652F\u6301\u6062\u590D\u6216\u6C38\u4E45\u5220\u9664\u3002" }) : null
     ] }) : null,
-    searchError !== void 0 ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "sg_error", title: searchError, children: "\u6B63\u6587\u641C\u7D22\u5931\u8D25\uFF0C\u5DF2\u4FDD\u7559\u672C\u5730\u7ED3\u679C" }) : null,
-    searching ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "sg_status", children: "\u6B63\u5728\u641C\u7D22\u5BF9\u8BDD\u6B63\u6587\u2026" }) : null,
-    searchHasMore ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "sg_status", children: "\u7ED3\u679C\u8F83\u591A\uFF0C\u8BF7\u7EE7\u7EED\u7EC6\u5316\u5173\u952E\u8BCD" }) : null,
-    surface === "archive" ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "sg_notice", children: "\u5F52\u6863\u4F1A\u8BDD\u53EF\u641C\u7D22\u548C\u67E5\u770B\uFF1B\u5F53\u524D DSH Runtime \u5C1A\u672A\u63D0\u4F9B\u5B89\u5168\u7684\u6062\u590D\u6216\u6C38\u4E45\u5220\u9664 API\u3002" }) : null,
     /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sg_groups", children: [
       groups.map((group) => renderGroup(group, 0, groups)),
       canDrag && groups.length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "sg_dropEnd sg_dropEndGroups", onDragOver: (event) => {
@@ -16421,23 +16685,53 @@ function SessionGroupsBrowser({
 // packages/dsh-session-groups/src/client/styles.ts
 var styles = `
 .sg_root{display:flex;min-height:0;height:100%;flex:1;overflow:hidden;flex-direction:column;color:var(--dsw-alias-label-primary);font-size:13px}
-.sg_header{box-sizing:border-box;display:flex;height:32px;flex:none;align-items:center;justify-content:space-between;padding:0 8px 0 4px;font-size:14px;line-height:20px}.sg_headerActions{display:flex;align-items:center;gap:2px}
-.sg_iconButton,.sg_textButton{display:inline-flex;align-items:center;justify-content:center;height:26px;padding:0 7px;border:0;background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer;border-radius:7px}.sg_iconButton{width:26px;padding:0;border-radius:50%}.sg_iconButton:hover,.sg_textButton:hover,.sg_textButtonActive{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
-.sg_views{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;margin:0 8px 4px;padding:2px;border-radius:9px;background:var(--dsw-alias-interactive-bg-hover)}.sg_views button{overflow:hidden;height:24px;border:0;border-radius:7px;background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer;font:inherit;font-size:12px;text-overflow:ellipsis;white-space:nowrap}.sg_views button:hover,.sg_views .sg_viewActive{background:var(--dsw-specific-sidebar-fill);color:var(--dsw-alias-label-primary)}
-.sg_searchWrap{display:flex;flex:none;gap:4px;padding:0 8px 5px}.sg_search{box-sizing:border-box;min-width:0;width:100%;height:28px;border:1px solid var(--dsw-alias-border-l2);border-radius:9px;background:transparent;color:var(--dsw-alias-label-primary);font:inherit;font-size:12px;line-height:18px;padding:4px 8px}.sg_search:focus{outline:2px solid var(--dsw-alias-state-business-primary);outline-offset:-1px}.sg_filterButton{flex:none;height:28px;border:1px solid var(--dsw-alias-border-l2);border-radius:9px;background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer;font:inherit;font-size:12px;padding:0 8px}.sg_filterButtonActive{background:var(--dsw-alias-interactive-bg-hover-accent);color:var(--dsw-alias-state-business-primary)}
-.sg_quickFilters{display:flex;flex:none;gap:4px;overflow-x:auto;padding:0 8px 5px}.sg_chip{flex:none;height:23px;border:0;border-radius:999px;background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary);cursor:pointer;font:inherit;font-size:10px;padding:0 7px}.sg_chipActive{background:var(--dsw-alias-interactive-bg-hover-accent);color:var(--dsw-alias-state-business-primary)}
-.sg_filters{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 8px 8px;padding:8px;border:1px solid var(--dsw-alias-border-l2);border-radius:9px}.sg_filters label{display:flex;min-width:0;flex-direction:column;gap:3px;color:var(--dsw-alias-label-tertiary);font-size:11px}.sg_filters select{box-sizing:border-box;min-width:0;width:100%;height:27px;border:1px solid var(--dsw-alias-border-l2);border-radius:6px;background:var(--dsw-specific-sidebar-fill);color:var(--dsw-alias-label-primary);font:inherit;font-size:12px}.sg_filters>button{height:27px;border:0;border-radius:6px;background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary);cursor:pointer;font:inherit;font-size:12px;align-self:end}
-.sg_bulkBar{display:flex;flex:none;align-items:center;gap:8px;margin:0 8px 7px;padding:6px 8px;border-radius:8px;background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary);font-size:11px}.sg_bulkBar label{display:flex;align-items:center;gap:4px}.sg_bulkBar button{display:inline-flex;height:24px;align-items:center;gap:3px;margin-left:auto;border:0;border-radius:6px;background:var(--dsw-alias-interactive-bg-hover-accent);color:var(--dsw-alias-state-business-primary);cursor:pointer;font:inherit;font-size:11px}.sg_bulkBar button:disabled{cursor:not-allowed;opacity:.45}
-.sg_status,.sg_error,.sg_notice{margin:3px 12px;color:var(--dsw-alias-label-tertiary);font-size:11px;line-height:17px}.sg_error{color:var(--dsw-alias-state-warn-primary)}.sg_notice{padding:6px 8px;border-radius:7px;background:var(--dsw-alias-interactive-bg-hover)}
-.sg_groups{min-height:0;flex:1;overflow-x:hidden;overflow-y:auto;padding:4px 8px 20px 4px}.sg_group{margin:0}.sg_group+.sg_group{margin-top:12px}.sg_groupDepth-1{margin:1px 0 1px 10px}.sg_groupDepth-1+.sg_groupDepth-1{margin-top:2px}.sg_groupDepth-2{margin-left:12px}.sg_groupHead{position:relative;display:flex;min-width:0;height:32px;align-items:center;border-radius:8px}.sg_groupHead[draggable=true]{cursor:grab}.sg_groupHead[draggable=true]:active{cursor:grabbing}.sg_groupDepth-1>.sg_groupHead{height:28px}
-.sg_groupToggle{box-sizing:border-box;display:flex;min-width:0;height:32px;flex:1;align-items:center;gap:5px;border:0;background:transparent;color:var(--dsw-alias-label-primary);cursor:pointer;font:inherit;padding:0 34px 0 7px;border-radius:8px;text-align:left}.sg_groupToggle:hover{background:var(--dsw-alias-interactive-bg-hover)}.sg_groupToggleEmpty{cursor:default}.sg_groupToggleEmpty:hover{background:transparent}.sg_groupIcon{display:inline-flex;width:16px;height:20px;flex:none;overflow:hidden;align-items:center;justify-content:center;color:var(--dsw-alias-label-secondary)}.sg_groupIcon svg{display:block}.sg_folderIcon{width:16px;height:16px}.sg_brandIcon{display:block;width:16px;height:16px;object-fit:contain}.sg_brandIcon svg{display:block;width:16px;height:16px;fill:currentColor}.sg_groupTitle{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;font-weight:500;line-height:20px}.sg_groupDepth-1>.sg_groupHead .sg_groupToggle{height:28px}.sg_groupDepth-1>.sg_groupHead .sg_groupIcon{width:14px;height:18px}.sg_groupDepth-1>.sg_groupHead .sg_folderIcon{width:14px;height:14px}.sg_groupDepth-1>.sg_groupHead .sg_brandIcon{width:14px;height:14px}.sg_groupDepth-1>.sg_groupHead .sg_groupTitle{font-size:12px;font-weight:500;line-height:18px}.sg_groupDepth-1>.sg_groupHead .sg_count{font-size:10px;line-height:18px}.sg_kind,.sg_attentionCount{flex:none;border-radius:999px;padding:0 5px;font-size:10px;line-height:16px}.sg_kind{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary)}.sg_attentionCount{background:var(--dsw-alias-interactive-bg-hover-accent);color:var(--dsw-alias-label-secondary)}.sg_attentionCount-waiting{color:var(--dsw-alias-state-warn-primary)}.sg_attentionCount-failed{color:var(--dsw-alias-state-error-primary)}.sg_attentionCount-running,.sg_attentionCount-unread{color:var(--dsw-alias-state-business-primary)}.sg_count{margin-left:auto;color:var(--dsw-alias-label-tertiary);font-size:11px;line-height:20px}.sg_pinMark{flex:none;color:var(--dsw-alias-state-warn-primary);font-size:10px}
-.sg_groupBody{display:flex;flex-direction:column;margin-left:24px}.sg_groupDepth-1>.sg_groupBody{margin-left:22px}.sg_empty{margin:0;padding:8px;color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:18px}
-.sg_sessionWrap{position:relative;margin-left:-24px;padding-left:24px;border-radius:8px}.sg_sessionWrap+.sg_sessionWrap{margin-top:1px}.sg_sessionWrap:hover{background:var(--dsw-alias-interactive-bg-hover)}.sg_sessionCurrent{background:var(--dsw-alias-interactive-bg-hover-accent)}.sg_sessionCurrent .sg_sessionTitle{font-weight:500}.sg_sessionUnread .sg_sessionTitle{font-weight:600}.sg_sessionWrap[draggable=true]{cursor:grab}.sg_sessionWrap[draggable=true]:active{cursor:grabbing}.sg_session{display:flex;min-width:0;min-height:38px;align-items:center;padding:0 4px}.sg_select{flex:none;margin:0 4px 0 2px}.sg_sessionOpen{box-sizing:border-box;display:flex;min-width:0;min-height:38px;flex:1;align-items:center;gap:5px;border:0;background:transparent;color:var(--dsw-alias-label-primary);cursor:pointer;font:inherit;padding:2px 1px;text-align:left}.sg_sessionWrap:hover .sg_sessionOpen,.sg_sessionWrap:has(.sg_sessionHoverActions :focus-visible) .sg_sessionOpen,.sg_sessionWrap:has(.sg_sessionHoverActions .sg_menu[open]) .sg_sessionOpen{padding-right:51px}.sg_sessionCompact .sg_session,.sg_sessionCompact .sg_sessionOpen{min-height:34px}.sg_sessionOpen:focus-visible{outline:2px solid var(--dsw-alias-state-business-primary);outline-offset:-2px;border-radius:6px}.sg_sessionText{display:flex;min-width:0;flex:1;flex-direction:column}.sg_sessionTitle,.sg_sessionMeta,.sg_snippet{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sg_sessionTitle{font-size:14px;font-weight:400;line-height:20px}.sg_sessionMeta{color:var(--dsw-alias-label-tertiary);font-size:10px;line-height:14px}.sg_snippet{color:var(--dsw-alias-label-secondary);font-size:10px;line-height:14px}
-.sg_statusSlot{display:inline-flex;min-width:7px;height:20px;flex:none;align-items:center;justify-content:flex-end;gap:5px}.sg_dot,.sg_unreadDot{width:7px;height:7px;flex:none;border-radius:50%}.sg_dot-waiting{background:var(--dsw-alias-state-warn-primary)}.sg_dot-failed{background:var(--dsw-alias-state-error-primary)}.sg_unreadDot{background:var(--dsw-alias-state-business-primary)}.sg_spinner{box-sizing:border-box;width:12px;height:12px;flex:none;border:1.5px solid var(--dsw-alias-border-l2);border-top-color:var(--dsw-alias-state-business-primary);border-right-color:var(--dsw-alias-state-business-primary);border-radius:50%;animation:sg_spin .8s linear infinite}
-@keyframes sg_spin{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.sg_spinner{animation:none}}
-.sg_sessionHoverActions{position:absolute;z-index:5;right:4px;top:50%;display:flex;align-items:center;transform:translateY(-50%);border-radius:6px;background:var(--dsw-specific-sidebar-fill);opacity:0;pointer-events:none}.sg_sessionWrap:hover .sg_sessionHoverActions,.sg_sessionHoverActions:has(:focus-visible),.sg_sessionHoverActions:has(.sg_menu[open]){opacity:1;pointer-events:auto}.sg_sessionWrap:hover .sg_sessionHoverActions{background:var(--dsw-alias-interactive-bg-hover)}.sg_sessionCurrent .sg_sessionHoverActions{background:var(--dsw-alias-interactive-bg-hover-accent)}.sg_quickArchive{display:flex;width:24px;height:28px;align-items:center;justify-content:center;border:0;border-radius:6px;background:transparent;color:var(--dsw-alias-label-tertiary);cursor:pointer;padding:0}.sg_quickArchive:hover,.sg_quickArchive:focus-visible{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary);outline:none}
-.sg_menu{position:relative;flex:none}.sg_menu>summary{display:flex;width:24px;height:28px;align-items:center;justify-content:center;border-radius:6px;color:var(--dsw-alias-label-tertiary);cursor:pointer;list-style:none;opacity:0}.sg_menu>summary::-webkit-details-marker{display:none}.sg_sessionWrap:hover .sg_sessionHoverActions .sg_menu>summary,.sg_sessionHoverActions:has(:focus-visible) .sg_menu>summary,.sg_groupHead:hover>.sg_menu>summary,.sg_menu>summary:focus-visible,.sg_menu[open]>summary{opacity:1}.sg_menu>summary:hover,.sg_menu>summary:focus-visible{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary);outline:none}.sg_menuPanel{box-sizing:border-box;position:absolute;z-index:20;right:0;top:29px;display:flex;width:190px;max-height:var(--sg-menu-max-height,none);overflow-y:auto;flex-direction:column;padding:4px;border:1px solid var(--dsw-alias-border-l2);border-radius:9px;background:var(--dsw-specific-sidebar-fill);box-shadow:0 6px 18px rgba(0,0,0,.18)}.sg_menu[data-placement=up] .sg_menuPanel{top:auto;bottom:29px}.sg_menuPanel button{display:flex;min-height:28px;flex:none;align-items:center;gap:6px;border:0;border-radius:6px;background:transparent;color:var(--dsw-alias-label-primary);cursor:pointer;font:inherit;font-size:12px;padding:4px 7px;text-align:left}.sg_menuPanel button:hover{background:var(--dsw-alias-interactive-bg-hover)}.sg_menuIcon{display:block;flex:none}.sg_groupMenu{position:absolute;right:4px}.sg_groupMenu .sg_menuPanel{top:27px}.sg_groupMenu[data-placement=up] .sg_menuPanel{top:auto;bottom:27px}
-.sg_activityDetails{display:flex;flex-direction:column;gap:3px;margin:0 5px 5px 17px;padding:7px;border-radius:7px;background:var(--dsw-alias-interactive-bg-hover)}.sg_activityHeading{display:flex;align-items:center;justify-content:space-between;color:var(--dsw-alias-label-secondary);font-size:11px}.sg_activityHeading button{display:flex;border:0;background:transparent;color:var(--dsw-alias-label-tertiary);cursor:pointer}.sg_job,.sg_subagent{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:5px;min-width:0;color:var(--dsw-alias-label-secondary);font-size:10px;line-height:15px}.sg_jobStatus{border-radius:999px;padding:0 4px;background:var(--dsw-specific-sidebar-fill)}.sg_jobStatus-failed{color:var(--dsw-alias-state-error-primary)}.sg_jobStatus-running,.sg_jobStatus-stopping{color:var(--dsw-alias-state-business-primary)}.sg_jobLabel,.sg_jobDetail{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sg_jobDetail{grid-column:2/4;color:var(--dsw-alias-label-tertiary)}.sg_subagent{width:100%;border:0;border-radius:5px;background:transparent;cursor:pointer;text-align:left}.sg_subagent:hover{background:var(--dsw-specific-sidebar-fill)}.sg_subagentStatus{width:6px;height:6px;border-radius:50%;background:var(--dsw-alias-label-tertiary)}.sg_subagentStatus-running{background:var(--dsw-alias-state-business-primary)}
+
+.sg_surfaceHead{box-sizing:border-box;display:flex;height:46px;flex:none;align-items:center;gap:6px;padding:0 8px 0 6px}.sg_backButton{display:inline-flex;width:28px;height:28px;flex:none;align-items:center;justify-content:center;border:0;border-radius:7px;background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer;padding:0}.sg_backButton:hover,.sg_backButton:focus-visible{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary);outline:none}.sg_surfaceTitle{color:var(--dsw-alias-label-primary);font-size:14px;font-weight:600;line-height:20px}.sg_surfaceCount{color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:18px}
+
+.sg_searchWrap{display:flex;flex:none;align-items:center;gap:6px;padding:8px 10px 6px}.sg_searchField{box-sizing:border-box;display:flex;min-width:0;height:30px;flex:1;align-items:center;gap:6px;border-radius:8px;background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-tertiary);padding:0 8px 0 9px}.sg_searchField:focus-within{outline:2px solid var(--dsw-alias-state-business-primary);outline-offset:-1px}.sg_searchIcon{display:flex;flex:none;align-items:center;color:var(--dsw-alias-label-tertiary)}.sg_search{box-sizing:border-box;min-width:0;flex:1;border:0;background:transparent;color:var(--dsw-alias-label-primary);font:inherit;font-size:12px;line-height:18px;padding:0}.sg_search:focus{outline:none}.sg_search::-webkit-search-cancel-button,.sg_search::-webkit-search-decoration{-webkit-appearance:none;display:none}.sg_kbd{flex:none;border:1px solid var(--dsw-alias-border-l2);border-radius:4px;color:var(--dsw-alias-label-tertiary);font:inherit;font-size:10px;line-height:15px;padding:0 4px}.sg_newButton{display:inline-flex;width:30px;height:30px;flex:none;align-items:center;justify-content:center;border:0;border-radius:8px;background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer;padding:0}.sg_newButton:hover,.sg_newButton:focus-visible{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary);outline:none}
+
+.sg_toolRow{display:flex;flex:none;align-items:center;gap:4px;padding:0 10px 6px}.sg_segmented{display:flex;flex:none;align-items:center;gap:2px;border-radius:8px;background:var(--dsw-alias-interactive-bg-hover);padding:2px}.sg_segment{box-sizing:border-box;display:flex;height:22px;align-items:center;border:1px solid transparent;border-radius:6px;background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer;font:inherit;font-size:12px;padding:0 10px}.sg_segment:hover{color:var(--dsw-alias-label-primary)}.sg_segmentActive{border-color:var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-primary);font-weight:500}.sg_toolSpacer{flex:1}.sg_toolButton{display:inline-flex;width:26px;height:26px;flex:none;align-items:center;justify-content:center;border:0;border-radius:7px;background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer;padding:0}.sg_toolButton:hover,.sg_toolButton:focus-visible{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary);outline:none}.sg_toolButtonActive,.sg_toolButtonActive:hover{background:var(--dsw-alias-interactive-bg-hover-accent);color:var(--dsw-alias-state-business-primary)}
+
+.sg_attentionRow{display:flex;flex:none;align-items:center;gap:4px;height:30px;margin:0 10px 8px}.sg_chips{display:flex;min-width:0;flex:1;align-items:center;gap:4px;overflow-x:auto;scrollbar-width:none}.sg_chips::-webkit-scrollbar{display:none}.sg_chip{display:inline-flex;height:24px;flex:none;align-items:center;gap:5px;border:0;border-radius:6px;background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary);cursor:pointer;font:inherit;font-size:11px;padding:0 8px}.sg_chip:hover{color:var(--dsw-alias-label-primary)}.sg_chipActive{color:var(--dsw-alias-label-primary);font-weight:500}.sg_chip-all.sg_chipActive,.sg_chip-running.sg_chipActive,.sg_chip-completed.sg_chipActive{background:var(--dsw-alias-interactive-bg-hover-accent)}.sg_chip-waiting.sg_chipActive{background:color-mix(in srgb,var(--dsw-alias-state-warn-primary) 14%,transparent)}.sg_chip-failed.sg_chipActive{background:color-mix(in srgb,var(--dsw-alias-state-error-primary) 14%,transparent)}.sg_inboxButton{display:inline-flex;width:24px;height:24px;flex:none;align-items:center;justify-content:center;border:0;border-radius:6px;background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer;padding:0}.sg_inboxButton:hover,.sg_inboxButton:focus-visible{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary);outline:none}
+
+.sg_filters{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 10px 8px;padding:8px;border:1px solid var(--dsw-alias-border-l2);border-radius:9px}.sg_filters label{display:flex;min-width:0;flex-direction:column;gap:3px;color:var(--dsw-alias-label-tertiary);font-size:11px}.sg_filters select{box-sizing:border-box;min-width:0;width:100%;height:27px;border:1px solid var(--dsw-alias-border-l2);border-radius:6px;background:var(--dsw-specific-sidebar-fill);color:var(--dsw-alias-label-primary);font:inherit;font-size:12px}.sg_filters>button{height:27px;border:0;border-radius:6px;background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary);cursor:pointer;font:inherit;font-size:12px;align-self:end;grid-column:1/3}
+
+.sg_bulkBar{display:flex;flex:none;align-items:center;gap:8px;margin:0 10px 7px;padding:6px 8px;border-radius:8px;background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary);font-size:11px}.sg_bulkBar label{display:flex;align-items:center;gap:4px}.sg_bulkBar button{display:inline-flex;height:24px;align-items:center;gap:3px;margin-left:auto;border:0;border-radius:6px;background:var(--dsw-alias-interactive-bg-hover-accent);color:var(--dsw-alias-state-business-primary);cursor:pointer;font:inherit;font-size:11px}.sg_bulkBar button:disabled{cursor:not-allowed;opacity:.45}.sg_bulkHint{margin-left:auto;color:var(--dsw-alias-label-tertiary);font-size:11px}
+
+.sg_messages{display:flex;flex:none;flex-direction:column;max-height:36px;overflow:hidden;padding:0 12px 4px}.sg_status,.sg_error,.sg_notice{overflow:hidden;margin:0;color:var(--dsw-alias-label-tertiary);font-size:11px;line-height:17px;text-overflow:ellipsis;white-space:nowrap}.sg_error{color:var(--dsw-alias-state-warn-primary)}
+
+.sg_groups{min-height:0;flex:1;overflow-x:hidden;overflow-y:auto;padding:0 6px 20px}.sg_group{margin:0}.sg_group+.sg_group{margin-top:10px}.sg_groupDepth-1,.sg_groupDepth-2{margin:2px 0 2px 14px;padding-left:8px;border-left:1px solid var(--dsw-alias-border-l2)}.sg_groupDepth-1+.sg_groupDepth-1{margin-top:2px}.sg_groupHead{position:relative;display:flex;min-width:0;height:28px;align-items:center;border-radius:6px}.sg_groupHead[draggable=true]{cursor:grab}.sg_groupHead[draggable=true]:active{cursor:grabbing}
+.sg_groupToggle{box-sizing:border-box;display:flex;min-width:0;height:28px;flex:1;align-items:center;gap:6px;border:0;border-radius:6px;background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer;font:inherit;padding:0 26px 0 6px;text-align:left}.sg_groupToggle:hover{background:var(--dsw-alias-interactive-bg-hover)}.sg_groupToggleEmpty{cursor:default}.sg_groupToggleEmpty:hover{background:transparent}
+.sg_chevron{display:flex;width:12px;height:12px;flex:none;align-items:center;justify-content:center;color:var(--dsw-alias-label-tertiary);transition:transform .12s ease}.sg_chevron svg{display:block}.sg_chevronFolded{transform:rotate(-90deg)}
+.sg_groupIcon{display:inline-flex;width:14px;height:14px;flex:none;overflow:hidden;align-items:center;justify-content:center;color:var(--dsw-alias-label-secondary)}.sg_groupIcon svg{display:block}.sg_folderIcon{width:14px;height:14px}.sg_brandIcon{display:block;width:14px;height:14px;object-fit:contain}.sg_brandIcon svg{display:block;width:14px;height:14px;fill:currentColor}
+.sg_groupTitle{overflow:hidden;min-width:0;flex:0 1 auto;color:var(--dsw-alias-label-secondary);font-size:12px;font-weight:600;line-height:18px;text-overflow:ellipsis;white-space:nowrap}.sg_groupTitleMuted{color:var(--dsw-alias-label-tertiary)}.sg_groupDepth-1>.sg_groupHead .sg_groupTitle,.sg_groupDepth-2>.sg_groupHead .sg_groupTitle{color:var(--dsw-alias-label-primary);font-weight:500}.sg_groupSpacer{flex:1}
+.sg_kind{flex:none;border-radius:4px;background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-tertiary);font-size:10px;line-height:16px;padding:0 5px}
+.sg_attentionCount{display:inline-flex;flex:none;align-items:center;gap:3px;color:var(--dsw-alias-label-secondary);font-size:11px;line-height:16px}
+.sg_count{flex:none;min-width:14px;color:var(--dsw-alias-label-tertiary);font-size:11px;line-height:18px;text-align:right}
+.sg_pinMark{display:inline-flex;flex:none;align-items:center;color:var(--dsw-alias-label-tertiary)}.sg_pinMark svg{display:block}
+.sg_groupBody{display:flex;flex-direction:column}.sg_empty{margin:0;padding:8px;color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:18px}
+
+.sg_sessionWrap{position:relative;border-radius:7px}.sg_sessionWrap+.sg_sessionWrap{margin-top:1px}.sg_sessionWrap:hover{background:var(--dsw-alias-interactive-bg-hover)}.sg_sessionCurrent{background:var(--dsw-alias-interactive-bg-hover-accent)}.sg_sessionCurrent .sg_sessionTitle{font-weight:500}.sg_sessionUnread .sg_sessionTitle{font-weight:600}.sg_sessionWrap[draggable=true]{cursor:grab}.sg_sessionWrap[draggable=true]:active{cursor:grabbing}
+.sg_session{display:flex;min-width:0;align-items:center;padding:0 6px 0 8px}.sg_select{flex:none;margin:0 6px 0 0}
+.sg_sessionOpen{box-sizing:border-box;display:flex;min-width:0;min-height:44px;flex:1;align-items:center;gap:8px;border:0;background:transparent;color:var(--dsw-alias-label-primary);cursor:pointer;font:inherit;padding:0;text-align:left}.sg_sessionCompact .sg_sessionOpen{min-height:36px}.sg_sessionWrap:hover .sg_sessionOpen,.sg_sessionWrap:has(.sg_sessionHoverActions :focus-visible) .sg_sessionOpen,.sg_sessionWrap:has(.sg_sessionHoverActions .sg_menu[open]) .sg_sessionOpen{padding-right:30px}.sg_sessionOpen:focus-visible{outline:2px solid var(--dsw-alias-state-business-primary);outline-offset:-2px;border-radius:6px}
+.sg_sessionText{display:flex;min-width:0;flex:1;flex-direction:column;gap:1px}.sg_sessionTitleRow{display:flex;min-width:0;align-items:center;gap:4px}.sg_sessionTitle{overflow:hidden;min-width:0;font-size:13px;font-weight:400;line-height:18px;text-overflow:ellipsis;white-space:nowrap}
+.sg_sessionMeta{display:flex;min-width:0;align-items:center;gap:5px;color:var(--dsw-alias-label-secondary);font-size:11px;line-height:15px}.sg_metaText{overflow:hidden;min-width:0;text-overflow:ellipsis;white-space:nowrap}.sg_metaIcon{display:inline-flex;width:12px;height:12px;flex:none;align-items:center;justify-content:center;color:var(--dsw-alias-label-secondary)}.sg_metaIcon svg,.sg_metaIcon .sg_brandIcon,.sg_metaIcon .sg_brandIcon svg{display:block;width:12px;height:12px}.sg_metaSeparator,.sg_metaReason{flex:none}.sg_metaSeparator{color:var(--dsw-alias-label-tertiary)}
+.sg_snippet{overflow:hidden;color:var(--dsw-alias-label-secondary);font-size:11px;line-height:15px;text-overflow:ellipsis;white-space:nowrap}
+
+.sg_statusSlot{display:flex;width:8px;height:18px;flex:none;align-items:center;justify-content:center}
+.sg_dot,.sg_statusDot{flex:none;border-radius:50%;background:var(--dsw-alias-label-tertiary)}.sg_dot{width:6px;height:6px}.sg_statusDot{width:8px;height:8px}.sg_dot-waiting{background:var(--dsw-alias-state-warn-primary)}.sg_dot-failed{background:var(--dsw-alias-state-error-primary)}.sg_dot-completed,.sg_dot-unread,.sg_dot-running{background:var(--dsw-alias-state-business-primary)}
+.sg_spinner{box-sizing:border-box;width:10px;height:10px;flex:none;border:1.5px solid color-mix(in srgb,var(--dsw-alias-state-business-primary) 25%,transparent);border-top-color:var(--dsw-alias-state-business-primary);border-radius:50%;margin:0 -1px;animation:sg_spin .8s linear infinite}.sg_spinnerSmall{width:8px;height:8px;margin:0}
+@keyframes sg_spin{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.sg_spinner{animation:none}.sg_chevron{transition:none}}
+
+.sg_sessionHoverActions{position:absolute;z-index:5;right:6px;top:50%;display:flex;align-items:center;transform:translateY(-50%);border-radius:6px;background:var(--dsw-specific-sidebar-fill);opacity:0;pointer-events:none}.sg_sessionWrap:hover .sg_sessionHoverActions,.sg_sessionHoverActions:has(:focus-visible),.sg_sessionHoverActions:has(.sg_menu[open]){opacity:1;pointer-events:auto}.sg_sessionWrap:hover .sg_sessionHoverActions{background:var(--dsw-alias-interactive-bg-hover)}.sg_sessionCurrent .sg_sessionHoverActions{background:var(--dsw-alias-interactive-bg-hover-accent)}
+
+.sg_menu{position:relative;flex:none}.sg_menu>summary{display:flex;width:22px;height:22px;align-items:center;justify-content:center;border-radius:5px;color:var(--dsw-alias-label-tertiary);cursor:pointer;list-style:none;opacity:0}.sg_menu>summary::-webkit-details-marker{display:none}.sg_sessionWrap:hover .sg_sessionHoverActions .sg_menu>summary,.sg_sessionHoverActions:has(:focus-visible) .sg_menu>summary,.sg_groupHead:hover>.sg_menu>summary,.sg_menu>summary:focus-visible,.sg_menu[open]>summary{opacity:1}.sg_menu>summary:hover,.sg_menu>summary:focus-visible{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary);outline:none}
+.sg_toolMenu>summary{width:26px;height:26px;border-radius:7px;color:var(--dsw-alias-label-secondary);opacity:1}.sg_toolMenu[open]>summary{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
+.sg_menuPanel{box-sizing:border-box;position:absolute;z-index:20;right:0;top:29px;display:flex;width:190px;max-height:var(--sg-menu-max-height,none);overflow-y:auto;flex-direction:column;padding:4px;border:1px solid var(--dsw-alias-border-l2);border-radius:9px;background:var(--dsw-specific-sidebar-fill);box-shadow:0 6px 18px rgba(0,0,0,.18)}.sg_menu[data-placement=up] .sg_menuPanel{top:auto;bottom:29px}.sg_menuPanel button{display:flex;min-height:28px;flex:none;align-items:center;gap:6px;border:0;border-radius:6px;background:transparent;color:var(--dsw-alias-label-primary);cursor:pointer;font:inherit;font-size:12px;padding:4px 7px;text-align:left}.sg_menuPanel button:hover{background:var(--dsw-alias-interactive-bg-hover)}.sg_menuIcon{display:block;flex:none}.sg_menuCheck{display:inline-flex;width:14px;flex:none;align-items:center;justify-content:center;color:var(--dsw-alias-state-business-primary)}.sg_menuConfirm{color:var(--dsw-alias-state-error-primary);font-weight:500}.sg_menuSeparator{height:1px;flex:none;margin:4px 3px;background:var(--dsw-alias-border-l2)}
+.sg_groupMenu{position:absolute;right:4px}.sg_groupMenu .sg_menuPanel{top:25px}.sg_groupMenu[data-placement=up] .sg_menuPanel{top:auto;bottom:25px}
+
+.sg_activityDetails{display:flex;flex-direction:column;gap:3px;margin:0 6px 5px 16px;padding:7px;border-radius:7px;background:var(--dsw-alias-interactive-bg-hover)}.sg_activityHeading{display:flex;align-items:center;justify-content:space-between;color:var(--dsw-alias-label-secondary);font-size:11px}.sg_activityHeading button{display:flex;border:0;background:transparent;color:var(--dsw-alias-label-tertiary);cursor:pointer}.sg_job,.sg_subagent{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:5px;min-width:0;color:var(--dsw-alias-label-secondary);font-size:11px;line-height:16px}.sg_jobStatus{border-radius:999px;padding:0 4px;background:var(--dsw-specific-sidebar-fill)}.sg_jobStatus-failed{color:var(--dsw-alias-state-error-primary)}.sg_jobStatus-running,.sg_jobStatus-stopping{color:var(--dsw-alias-state-business-primary)}.sg_jobLabel,.sg_jobDetail{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sg_jobDetail{grid-column:2/4;color:var(--dsw-alias-label-tertiary)}.sg_subagent{width:100%;border:0;border-radius:5px;background:transparent;cursor:pointer;text-align:left}.sg_subagent:hover{background:var(--dsw-specific-sidebar-fill)}.sg_subagentStatus{width:6px;height:6px;border-radius:50%;background:var(--dsw-alias-label-tertiary)}.sg_subagentStatus-running{background:var(--dsw-alias-state-business-primary)}
+
 .sg_emptyState{display:flex;flex-direction:column;align-items:center;padding:18px 8px;color:var(--dsw-alias-label-tertiary);text-align:center}.sg_emptyState p{margin:0 0 8px}.sg_emptyState button{border:0;border-radius:6px;background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary);cursor:pointer;padding:5px 8px}
 .sg_dropEnd{height:7px;border-radius:4px}.sg_dragging .sg_dropEnd:hover{background:var(--dsw-alias-interactive-bg-hover-accent)}.sg_dropEndGroups{margin:4px 0;height:10px}
 .sg_rail{display:flex;justify-content:center;padding-top:8px}.sg_railButton{display:inline-flex;width:36px;height:36px;align-items:center;justify-content:center;border:0;border-radius:8px;background:transparent;color:var(--dsw-alias-label-primary);cursor:pointer;padding:0}.sg_railButton svg{display:block;flex:none}.sg_railButton:hover{background:var(--dsw-alias-interactive-bg-hover)}

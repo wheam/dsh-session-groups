@@ -149,19 +149,21 @@ function FolderGroupIcon({ folded }: { folded: boolean }) {
 }
 
 /** Render a stable brand mark when known; preserve the current open/closed folder otherwise. */
-export function SessionGroupIcon({ source, folded }: { source?: string, folded: boolean }) {
+export function SessionGroupIcon({ source, folded, label }: { source?: string, folded: boolean, label?: string }) {
   const key = source === undefined ? undefined : resolveSourceIconKey(source)
   if (key === undefined) return <FolderGroupIcon folded={folded} />
 
   const icon = SOURCE_ICONS[key]
   if ('dataUri' in icon) {
-    return <img className="sg_brandIcon" src={icon.dataUri} alt="" title={icon.title} />
+    return <img className="sg_brandIcon" src={icon.dataUri} alt={label ?? ''} title={label ?? icon.title} />
   }
   if ('label' in icon) {
     return (
       <span
         className="sg_brandIcon"
-        title={icon.title}
+        role={label === undefined ? undefined : 'img'}
+        aria-label={label}
+        title={label ?? icon.title}
         style={{
           display: 'inline-flex',
           alignItems: 'center',
@@ -181,11 +183,11 @@ export function SessionGroupIcon({ source, folded }: { source?: string, folded: 
     ? 'var(--dsw-alias-label-secondary)'
     : `#${icon.hex}`
   if ('svg' in icon) {
-    return <span className="sg_brandIcon" title={icon.title} style={{ color }} dangerouslySetInnerHTML={{ __html: icon.svg }} />
+    return <span className="sg_brandIcon" role={label === undefined ? undefined : 'img'} aria-label={label} title={label ?? icon.title} style={{ color }} dangerouslySetInnerHTML={{ __html: icon.svg }} />
   }
   return (
     <svg className="sg_brandIcon" role="img" viewBox="0 0 24 24" style={{ color }}>
-      <title>{icon.title}</title>
+      <title>{label ?? icon.title}</title>
       <path fill="currentColor" d={icon.path} />
     </svg>
   )
