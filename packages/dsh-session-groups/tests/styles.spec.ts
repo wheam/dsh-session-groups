@@ -36,4 +36,10 @@ describe('session group styles', () => {
 
     expect(appended[1]?.remove).toHaveBeenCalledOnce()
   })
+
+  it('reveals the workspace new-session shortcut on hover and keyboard focus', () => {
+    expect(styles).toContain('.sg_groupHead:hover>.sg_groupStart')
+    expect(styles).toContain('.sg_groupStart:focus-visible')
+    expect(styles).toContain('.sg_groupHeadStartable .sg_groupToggle{padding-right:58px}')
+  })
 })

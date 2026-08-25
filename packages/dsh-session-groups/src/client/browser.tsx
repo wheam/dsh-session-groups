@@ -869,6 +869,7 @@ export function SessionGroupsBrowser({
 
   const renderGroup = (group: BrowserGroup, depth: number, siblings: readonly BrowserGroup[], parentKey?: string) => {
     const folded = collapsed.has(group.key)
+    const workspaceId = group.workspaceId
     const pinned = surface !== 'activity' && preferences.pinnedGroups[preferences.browseMode].includes(group.key)
     const kindLabel = sessionGroupKindLabel(group.providerKind)
     const fullGroup = fullGroupIndex.get(group.key)
@@ -879,7 +880,7 @@ export function SessionGroupsBrowser({
     return (
       <section className={`sg_group sg_groupDepth-${Math.min(depth, 2)}`} key={group.key}>
         <div
-          className="sg_groupHead"
+          className={workspaceId === undefined ? 'sg_groupHead' : 'sg_groupHead sg_groupHeadStartable'}
           draggable={canDrag}
           onDragStart={() => { setDragged({ type: 'group', group, ...(parentKey === undefined ? {} : { parentKey }) }) }}
           onDragOver={event => { if (canDrag) event.preventDefault() }}
@@ -903,14 +904,23 @@ export function SessionGroupsBrowser({
             {counts.unread > 0 ? <span className="sg_attentionCount sg_attentionCount-unread">未读 {counts.unread}</span> : null}
             <span className="sg_count" title={hasActiveFilters ? `${visible} 个筛选命中，共 ${total} 个会话` : undefined}>{hasActiveFilters ? `${visible}/${total}` : total}</span>
           </button>
+          {workspaceId === undefined ? null : (
+            <button
+              className="sg_groupStart"
+              type="button"
+              title="新建会话"
+              aria-label={`在 ${group.title} 中新建会话`}
+              onClick={() => { startSession(workspaceId) }}
+            ><IconPlusOutline16 /></button>
+          )}
           <details className="sg_menu sg_groupMenu" onToggle={placeMenuWithinScroller}>
             <summary title="分组操作" aria-label="分组操作"><IconEllipsisOutline16 /></summary>
             <div className="sg_menuPanel">
               {surface === 'activity' ? null : <button type="button" onClick={() => { togglePinnedGroup(group.key) }}><IconPinOutline16 />{pinned ? '取消置顶' : '置顶'}</button>}
               {group.path === undefined ? null : <button type="button" onClick={() => { run(openPath(group.path!)) }}><IconFolderOpenOutline16 />打开文件夹</button>}
-              {group.workspaceId === undefined ? null : <button type="button" onClick={() => { startSession(group.workspaceId) }}><IconPlusOutline16 />新建会话</button>}
-              {group.workspaceId === undefined ? null : <button type="button" onClick={() => { run(renameWorkspace(group.workspaceId!, group.title)) }}><IconEditOutline16 />重命名 Workspace</button>}
-              {group.workspaceId === undefined ? null : <button type="button" onClick={() => { run(deleteWorkspace(group.workspaceId!, group.title)) }}><IconTrashOutline16 />删除 Workspace 注册</button>}
+              {workspaceId === undefined ? null : <button type="button" onClick={() => { startSession(workspaceId) }}><IconPlusOutline16 />新建会话</button>}
+              {workspaceId === undefined ? null : <button type="button" onClick={() => { run(renameWorkspace(workspaceId, group.title)) }}><IconEditOutline16 />重命名 Workspace</button>}
+              {workspaceId === undefined ? null : <button type="button" onClick={() => { run(deleteWorkspace(workspaceId, group.title)) }}><IconTrashOutline16 />删除 Workspace 注册</button>}
             </div>
           </details>
         </div>
