@@ -1,8 +1,14 @@
 # The Host service supplies durable provider assignments and the package's
 # dsh.client half shadows the stock Workspace browser through the documented
-# priority mechanism. Install this package, then enable this row in the target
-# profile if the package manager keeps inserted plugin rows disabled.
+# priority mechanism. Enable the bundled row explicitly on fresh profiles.
 - insert:
     - id: dsh-session-groups
       name: dsh-session-groups
+      disabled: false
 
+# This browser offers conversation-content search. DSH 0.1.5 disables the
+# index by default; opt in lazily and keep it in memory, as the Web profile does.
+- id: session-query-sqlite
+  config:
+    path: ':memory:'
+    openAt: first-search

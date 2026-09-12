@@ -2,7 +2,7 @@
 
 [English](README.en.md)
 
-[![DeepSeek Harness](https://img.shields.io/badge/DeepSeek%20Harness-0.1.1--rc.2-4f46e5)](https://github.com/deepseek-ai/deepseek-harness)
+[![DeepSeek Harness](https://img.shields.io/badge/DeepSeek%20Harness-0.1.5-4f46e5)](https://github.com/deepseek-ai/deepseek-harness)
 [![CI](https://github.com/wheam/dsh-session-groups/actions/workflows/ci.yml/badge.svg)](https://github.com/wheam/dsh-session-groups/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](packages/dsh-session-groups/LICENSE)
 
@@ -29,21 +29,17 @@
 
 ## 安装
 
-要求：Node.js 22+、`pnpm`、DeepSeek Harness `0.1.1-rc.2`。
+要求：Node.js 22+、`pnpm`、DeepSeek Harness `0.1.5`。
 
-把预构建版本安装到 Web profile：
-
-```bash
-dsh plugin --profile web add https://github.com/wheam/dsh-session-groups/releases/download/v0.1.0/dsh-session-groups-0.1.0.tgz
-```
-
-安装后重启 `dsh web`，用户侧不需要其他配置。
-
-如果希望直接安装 GitHub 当前源码版本：
+把包含预构建运行文件的最新源码版本安装到 Web profile：
 
 ```bash
 dsh plugin --profile web add 'github:wheam/dsh-session-groups#path:packages/dsh-session-groups'
 ```
+
+安装后重启 `dsh web`。本插件会按首次搜索开启 DSH 自带的内存正文索引。
+
+当前源码按 `0.1.5-rc.2` SDK 构建，并在 CLI `0.1.5-rc.1`（其依赖解析到 `0.1.5-rc.2`）上验证。旧 `v0.1.0` 发布附件适用于 DSH `0.1.1-rc.2`，请勿用于新版。
 
 仓库已经提交预构建运行文件，因此 GitHub 安装不需要执行安装期构建脚本。
 
@@ -97,7 +93,7 @@ flowchart LR
 
 | 项目 | 状态 |
 | --- | --- |
-| 已验证 DSH 版本 | `0.1.1-rc.2` |
+| 已验证 DSH 版本 | `0.1.5` |
 | 客户端 | Web |
 | 运行时 | Node.js 22+ |
 | 模型体验 | 不变 |
@@ -132,7 +128,7 @@ pnpm run check
 dsh plugin --profile web add "link:$PWD/packages/dsh-session-groups"
 ```
 
-`packages/typert-protocol-shim` 只用于补齐 `0.1.1-rc.2` Typert generator 的 workspace 符号发现。发布运行产物仍引用官方 `@deepseek-ai/dsh-typert-protocol`。
+`packages/typert-protocol-shim` 只用于补齐 Typert generator 的 workspace 符号发现。发布运行产物仍引用官方 `@deepseek-ai/dsh-typert-protocol`。
 
 贡献说明见 [CONTRIBUTING.md](CONTRIBUTING.md)，私下报告安全漏洞的方法见 [SECURITY.md](SECURITY.md)。
 

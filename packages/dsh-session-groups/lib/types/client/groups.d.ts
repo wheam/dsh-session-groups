@@ -1,5 +1,9 @@
 /** Pure browser projections: project context and provider source stay independent. */
-import type { JobView, SessionId, SessionListState, SessionSummary, WorkspaceId, WorkspaceView } from '@deepseek-ai/dsh-client-runtime/client';
+import type { SessionListState, SessionSummary } from '@deepseek-ai/dsh-api-session-controller/client';
+import type { SessionJob as JobView } from '@deepseek-ai/dsh-api-session-controller/types';
+import type { SessionId } from '@deepseek-ai/dsh-session/types';
+import type { WorkspaceId, WorkspaceView } from '@deepseek-ai/dsh-api-workspace-controller/client';
+import type { SessionPendingInteractionSnapshot } from '@deepseek-ai/dsh-client-ui-session/client';
 import type { SessionGroupAssignment } from '../types.js';
 export type BrowseMode = 'project' | 'source';
 export type SessionAttention = 'waiting' | 'failed' | 'running' | 'completed' | 'idle';
@@ -22,6 +26,8 @@ export interface SourceContext {
 }
 export interface BrowserSession {
     readonly summary: SessionSummary;
+    readonly pendingInteraction?: string;
+    readonly agentPreset?: string;
     readonly project: ProjectContext;
     readonly source: SourceContext;
     /** Live work is independent from the row's highest-priority attention state. */
@@ -65,9 +71,9 @@ export declare function isPathWithin(path: string, parent: string): boolean;
 /** Resolve explicit Workspace accounting first, then the most specific path, then a read-only cwd group. */
 export declare function resolveProjectContext(session: SessionSummary, workspaces: readonly WorkspaceView[], explicitWorkspace?: WorkspaceView): ProjectContext;
 export declare function isSessionRunning(session: SessionSummary, jobs: readonly JobView[]): boolean;
-export declare function deriveSessionAttention(session: SessionSummary, jobs: readonly JobView[]): SessionAttention;
+export declare function deriveSessionAttention(session: SessionSummary, jobs: readonly JobView[], pendingInteraction?: string): SessionAttention;
 /** Derive all root-session rows once; every view is a non-mutating projection over these entries. */
-export declare function deriveBrowserSessions(list: SessionListState, workspaces: readonly WorkspaceView[], archivedSessionIds: readonly SessionId[], assignments: readonly SessionGroupAssignment[]): BrowserSession[];
+export declare function deriveBrowserSessions(list: SessionListState, workspaces: readonly WorkspaceView[], archivedSessionIds: readonly SessionId[], assignments: readonly SessionGroupAssignment[], pendingInteractions?: SessionPendingInteractionSnapshot): BrowserSession[];
 export declare function countStatuses(sessions: readonly BrowserSession[]): StatusCounts;
 export declare function groupBrowserSessions(entries: readonly BrowserSession[], workspaces: readonly WorkspaceView[], mode: BrowseMode): BrowserGroup[];
 /** Build either project-first or source-first groups without changing either underlying identity. */

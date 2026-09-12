@@ -1,5 +1,11 @@
 /** Browser half: mounts the typed Remote and shadows the stock Workspace browser through Slot priority. */
-import type { ClientContext, SessionId, WorkspaceId } from '@deepseek-ai/dsh-client-runtime/client'
+import type { Context as ClientContext } from '@deepseek-ai/cordis'
+import type { SessionId } from '@deepseek-ai/dsh-session/types'
+import type { WorkspaceId } from '@deepseek-ai/dsh-api-workspace-controller/client'
+import type {} from '@deepseek-ai/dsh-api-session-controller/client'
+import type {} from '@deepseek-ai/dsh-api-session-controller/remote'
+import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
+import type {} from '@deepseek-ai/dsh-client-ui-workspace/client'
 import type {} from '@deepseek-ai/dsh-api-gateway/client'
 import type {} from '@deepseek-ai/dsh-client-ui-sidebar/client'
 import groupsRemote from 'dsh-session-groups/remote'
@@ -7,7 +13,7 @@ import { SessionGroupsBrowser, type SessionGroupsBrowserInjected } from './brows
 import { SessionGroupsController, type SessionGroupsRemoteFace } from './controller.js'
 import { installStyles } from './styles.js'
 
-export const inject = ['slots', 'sessions', 'workspaces', 'remote']
+export const inject = ['slots', 'sessions', 'workspaces', 'uiWorkspace', 'remote']
 
 /** Mount the Remote projection, refresh controller, and priority-shadowed sidebar entry. */
 export async function apply(ctx: ClientContext): Promise<() => Promise<void>> {
@@ -27,7 +33,7 @@ export async function apply(ctx: ClientContext): Promise<() => Promise<void>> {
   const injected = (): SessionGroupsBrowserInjected => ({
     hooks: { sessionGroups: controller.source },
     refresh: () => controller.refresh(),
-    open: sessionId => { ctx.sessions.open(sessionId) },
+    open: sessionId => { ctx.uiWorkspace.openSession(sessionId) },
     openSubagent: address => { ctx.sessions.openSubagent(address) },
     refreshSubagents: sessionId => ctx.sessions.refreshSubagents(sessionId),
     setSubagentCatalogOpen: (sessionId, open) => { ctx.sessions.setSubagentCatalogOpen(sessionId, open) },
@@ -36,12 +42,15 @@ export async function apply(ctx: ClientContext): Promise<() => Promise<void>> {
       if (!result.ok) throw new Error(result.error.message)
       return result.value
     },
-    startSession: workspaceId => { ctx.workspaces.startSession(workspaceId) },
+    startSession: workspaceId => { ctx.uiWorkspace.startSession(workspaceId) },
     addWorkspace: async () => {
-      const path = await ctx.workspaces.pickDirectory()
+      const path = await ctx.uiWorkspace.pickDirectory()
       if (path !== null) await ctx.workspaces.create({ path })
     },
-    openPath: path => ctx.workspaces.openPath(path),
+    openPath: async path => {
+      const result = await ctx.remote.session.openWorkspacePath({ path })
+      if (!result.ok) throw new Error(result.error.message)
+    },
     renameSession: async (sessionId: SessionId, currentTitle: string) => {
       const title = window.prompt('新的会话名称', currentTitle)?.trim()
       if (title === undefined || title === '') return
@@ -50,11 +59,8 @@ export async function apply(ctx: ClientContext): Promise<() => Promise<void>> {
       const result = await session.rename(title)
       if (!result.ok) throw new Error(result.error.message)
     },
-    forkSession: async (sessionId: SessionId) => {
-      const child = await ctx.sessions.fork({ sessionId, increaseTitle: true })
-      ctx.sessions.open(child)
-    },
-    archiveSession: async (sessionId: SessionId) => { await ctx.workspaces.archiveSession(sessionId) },
+    forkSession: sessionId => ctx.uiWorkspace.forkSession(sessionId),
+    archiveSession: async (sessionId: SessionId) => { await ctx.uiWorkspace.archiveSession(sessionId) },
     moveWorkspace: (workspaceId, beforeWorkspaceId) => ctx.workspaces.insertBefore(workspaceId, beforeWorkspaceId),
     moveSession: async (workspaceId, sessionId, beforeSessionId) => {
       await ctx.workspaces.insertSessionBefore(workspaceId, sessionId, beforeSessionId)

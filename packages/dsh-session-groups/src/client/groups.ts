@@ -1,12 +1,9 @@
 /** Pure browser projections: project context and provider source stay independent. */
-import type {
-  JobView,
-  SessionId,
-  SessionListState,
-  SessionSummary,
-  WorkspaceId,
-  WorkspaceView,
-} from '@deepseek-ai/dsh-client-runtime/client'
+import type { SessionListState, SessionSummary } from '@deepseek-ai/dsh-api-session-controller/client'
+import type { SessionJob as JobView } from '@deepseek-ai/dsh-api-session-controller/types'
+import type { SessionId } from '@deepseek-ai/dsh-session/types'
+import type { WorkspaceId, WorkspaceView } from '@deepseek-ai/dsh-api-workspace-controller/client'
+import type { SessionPendingInteractionSnapshot } from '@deepseek-ai/dsh-client-ui-session/client'
 import type { SessionGroupAssignment } from '../types.js'
 import { resolveSourceFamily } from './source-icon-key.js'
 
@@ -34,6 +31,8 @@ export interface SourceContext {
 
 export interface BrowserSession {
   readonly summary: SessionSummary
+  readonly pendingInteraction?: string
+  readonly agentPreset?: string
   readonly project: ProjectContext
   readonly source: SourceContext
   /** Live work is independent from the row's highest-priority attention state. */
@@ -174,8 +173,8 @@ export function isSessionRunning(session: SessionSummary, jobs: readonly JobView
   return session.running || jobs.some(job => job.status === 'running' || job.status === 'stopping')
 }
 
-export function deriveSessionAttention(session: SessionSummary, jobs: readonly JobView[]): SessionAttention {
-  if (session.pendingInteraction !== undefined) return 'waiting'
+export function deriveSessionAttention(session: SessionSummary, jobs: readonly JobView[], pendingInteraction?: string): SessionAttention {
+  if (pendingInteraction !== undefined) return 'waiting'
   if (jobs.some(job => job.status === 'failed')) return 'failed'
   if (isSessionRunning(session, jobs)) return 'running'
   if (session.completed === true) return 'completed'
@@ -237,6 +236,7 @@ export function deriveBrowserSessions(
   workspaces: readonly WorkspaceView[],
   archivedSessionIds: readonly SessionId[],
   assignments: readonly SessionGroupAssignment[],
+  pendingInteractions: SessionPendingInteractionSnapshot = new Map(),
 ): BrowserSession[] {
   const archived = new Set(archivedSessionIds)
   const explicitWorkspaceBySession = new Map<SessionId, WorkspaceView>()
@@ -256,13 +256,17 @@ export function deriveBrowserSessions(
     .filter((session): session is SessionSummary => session !== undefined && visible(session, list.current))
     .map(summary => {
       const jobs = list.jobsBySession[summary.id] ?? []
+      const pendingInteraction = pendingInteractions.get(summary.id)?.kind
+      const preset = (summary.projectionValues as { agentPreset?: unknown } | undefined)?.agentPreset
       return {
         summary,
+        pendingInteraction,
+        agentPreset: typeof preset === 'string' ? preset : undefined,
         project: resolveProjectContext(summary, workspaces, explicitWorkspaceBySession.get(summary.id)),
         source: sources.get(summary.id) ?? UNATTRIBUTED_SOURCE,
         running: isSessionRunning(summary, jobs),
         unread: summary.completed === true,
-        attention: deriveSessionAttention(summary, jobs),
+        attention: deriveSessionAttention(summary, jobs, pendingInteraction),
         jobs,
         archived: archived.has(summary.id),
       }

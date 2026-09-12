@@ -1,12 +1,8 @@
 import { describe, expect, it, vi } from 'vitest'
-import type {
-  JobView,
-  SessionId,
-  SessionListState,
-  SessionSummary,
-  WorkspaceId,
-  WorkspaceView,
-} from '@deepseek-ai/dsh-client-runtime/client'
+import type { SessionListState, SessionSummary } from '@deepseek-ai/dsh-api-session-controller/client'
+import type { SessionJob as JobView } from '@deepseek-ai/dsh-api-session-controller/types'
+import type { SessionId } from '@deepseek-ai/dsh-session/types'
+import type { WorkspaceId, WorkspaceView } from '@deepseek-ai/dsh-api-workspace-controller/client'
 import type { SessionGroupAssignment, SessionGroupId } from '../src/types.js'
 import {
   countStatuses,
@@ -201,8 +197,16 @@ describe('project resolution', () => {
 })
 
 describe('session attention', () => {
+  it('reads the preset from the current Session projection', () => {
+    const entries = deriveBrowserSessions(
+      list(summary('s1', 1, { projectionValues: { agentPreset: 'standard' } })),
+      [], [], [],
+    )
+    expect(entries[0]?.agentPreset).toBe('standard')
+  })
+
   it('uses waiting, failed, running, completed, idle precedence', () => {
-    expect(deriveSessionAttention(summary('s1', 1, { pendingInteraction: 'approval', running: true }), [job('failed')])).toBe('waiting')
+    expect(deriveSessionAttention(summary('s1', 1, { running: true }), [job('failed')], 'approval')).toBe('waiting')
     expect(deriveSessionAttention(summary('s2', 1, { running: true }), [job('failed')])).toBe('failed')
     expect(deriveSessionAttention(summary('s3', 1, { completed: true }), [job('running')])).toBe('running')
     expect(deriveSessionAttention(summary('s4', 1, { completed: true }), [])).toBe('completed')
@@ -211,11 +215,14 @@ describe('session attention', () => {
 
   it('keeps running and unread as independent row signals', () => {
     const entries = deriveBrowserSessions(
-      list(summary('s1', 1, { completed: true }), summary('s2', 2, { pendingInteraction: 'question' })),
+      list(summary('s1', 1, { completed: true }), summary('s2', 2)),
       [],
       [],
       [],
+      new Map([[sid('s2'), { key: 'question-1', sessionId: sid('s2'), kind: 'question' }]]),
     )
+    expect(entries[1]?.attention).toBe('waiting')
+    expect(entries[1]?.pendingInteraction).toBe('question')
     expect(entries.map(entry => [entry.running, entry.unread])).toEqual([[false, true], [false, false]])
     expect(isSessionRunning(summary('s3', 3), [job('stopping')])).toBe(true)
     expect(deriveSessionAttention(summary('s3', 3), [job('failed'), job('running')])).toBe('failed')

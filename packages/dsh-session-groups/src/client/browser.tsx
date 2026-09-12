@@ -21,12 +21,12 @@ import {
   IconRefreshOutline14,
   IconTrashOutline16,
 } from '@deepseek-ai/dsh-client-ui-primitives'
-import type {
-  SessionId,
-  SessionSearchResultItem,
-  SubagentAddress,
-  WorkspaceId,
-} from '@deepseek-ai/dsh-client-runtime/client'
+import type { SessionSearchResultItem } from '@deepseek-ai/dsh-api-session-controller/client'
+import type { SessionId } from '@deepseek-ai/dsh-session/types'
+import type { SubagentAddress } from '@deepseek-ai/dsh-subagent/client'
+import type { WorkspaceId } from '@deepseek-ai/dsh-api-workspace-controller/client'
+import type {} from '@deepseek-ai/dsh-client-ui-session/client'
+import type {} from '@deepseek-ai/dsh-client-ui-workspace/client'
 import { sessionGroupsErrorMessage, type SessionGroupsClientSnapshot } from './controller.js'
 import {
   countStatuses,
@@ -118,7 +118,7 @@ const ATTENTION_COPY: Readonly<Record<SessionAttention, { label: string, short: 
 }
 
 function pendingLabel(entry: BrowserSession): string {
-  switch (entry.summary.pendingInteraction) {
+  switch (entry.pendingInteraction) {
     case 'approval': return '等待审批'
     case 'plan-review': return '等待计划审核'
     case 'question': return '等待回答问题'
@@ -154,7 +154,7 @@ function metadata(entry: BrowserSession): string {
     entry.summary.cwd === undefined ? undefined : `工作目录：${entry.summary.cwd}`,
     `来源：${sourceLabel(entry)}`,
     entry.source.kind === undefined ? undefined : `聊天类型：${sessionGroupKindLabel(entry.source.kind) ?? entry.source.kind}`,
-    entry.summary.agentPreset === undefined ? undefined : `Agent preset：${entry.summary.agentPreset}`,
+    entry.agentPreset === undefined ? undefined : `Agent preset：${entry.agentPreset}`,
     `阅读状态：${entry.unread ? '未读' : '已读'}`,
     `更新时间：${new Date(entry.summary.updatedAt).toLocaleString()}`,
   ]
@@ -165,7 +165,7 @@ function searchText(entry: BrowserSession): string {
   return [
     entry.summary.displayTitle,
     entry.summary.cwd,
-    entry.summary.agentPreset,
+    entry.agentPreset,
     entry.project.title,
     entry.project.path,
     entry.source.familyTitle,
@@ -248,6 +248,7 @@ export function SessionGroupsBrowser({
   wide,
   expandSidebar,
   useSessions,
+  useSessionPendingInteraction,
   useWorkspaces,
   useSessionGroups,
   refresh,
@@ -268,6 +269,7 @@ export function SessionGroupsBrowser({
   moveSession,
 }: BrowserProps) {
   const sessions = useSessions(value => value)
+  const pendingInteractions = useSessionPendingInteraction(value => value)
   const workspaces = useWorkspaces(value => value)
   const remote = useSessionGroups(value => value)
   const [preferences, setPreferences] = useState<BrowserPreferences>(() => {
@@ -377,7 +379,8 @@ export function SessionGroupsBrowser({
     workspaces.items,
     workspaces.archivedSessionIds,
     remote.assignments,
-  ), [sessions, workspaces.items, workspaces.archivedSessionIds, remote.assignments])
+    pendingInteractions,
+  ), [sessions, workspaces.items, workspaces.archivedSessionIds, remote.assignments, pendingInteractions])
 
   const activeEntries = useMemo(() => entries.filter(entry => !entry.archived), [entries])
   const quickEntries = useMemo(() => {

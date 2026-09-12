@@ -1,5 +1,8 @@
 import type { PropsRuntime, SnapshotSelectorHook } from '@deepseek-ai/dsh-client-ui-slots';
-import type { SessionId, SessionSearchResultItem, SubagentAddress, WorkspaceId } from '@deepseek-ai/dsh-client-runtime/client';
+import type { SessionSearchResultItem } from '@deepseek-ai/dsh-api-session-controller/client';
+import type { SessionId } from '@deepseek-ai/dsh-session/types';
+import type { SubagentAddress } from '@deepseek-ai/dsh-subagent/client';
+import type { WorkspaceId } from '@deepseek-ai/dsh-api-workspace-controller/client';
 import { type SessionGroupsClientSnapshot } from './controller.js';
 /** Business callbacks and the renderer-bound observable hook. */
 export interface SessionGroupsBrowserInjected {
@@ -30,5 +33,5 @@ type BrowserProps = PropsRuntime<'sidebar.workspaces'> & Omit<SessionGroupsBrows
     useSessionGroups: SnapshotSelectorHook<SessionGroupsClientSnapshot>;
 };
 /** Render the replacement browsing region. */
-export declare function SessionGroupsBrowser({ wide, expandSidebar, useSessions, useWorkspaces, useSessionGroups, refresh, open, openSubagent, refreshSubagents, setSubagentCatalogOpen, searchContent, startSession, addWorkspace, openPath, renameSession, forkSession, archiveSession, renameWorkspace, deleteWorkspace, moveWorkspace, moveSession, }: BrowserProps): import("react").JSX.Element;
+export declare function SessionGroupsBrowser({ wide, expandSidebar, useSessions, useSessionPendingInteraction, useWorkspaces, useSessionGroups, refresh, open, openSubagent, refreshSubagents, setSubagentCatalogOpen, searchContent, startSession, addWorkspace, openPath, renameSession, forkSession, archiveSession, renameWorkspace, deleteWorkspace, moveWorkspace, moveSession, }: BrowserProps): import("react").JSX.Element;
 export {};

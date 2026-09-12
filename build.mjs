@@ -67,7 +67,6 @@ const client = await build({
   external: [
     'react',
     'react/jsx-runtime',
-    '@deepseek-ai/dsh-client-runtime/client',
     '@deepseek-ai/dsh-client-ui-primitives',
   ],
 })

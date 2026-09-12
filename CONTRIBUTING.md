@@ -4,7 +4,7 @@ Thanks for helping improve `dsh-session-groups`.
 
 ## Before opening an issue
 
-- Confirm the problem on DeepSeek Harness `0.1.1-rc.2` when possible.
+- Confirm the problem on DeepSeek Harness `0.1.5-rc.1` (SDK `0.1.5-rc.2`) when possible.
 - Search existing issues for the same symptom.
 - Include the DSH version, operating system, installation source, and reproduction steps.
 - Do not post credentials, private conversation content, or Session data.

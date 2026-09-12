@@ -14835,8 +14835,8 @@ function resolveProjectContext(session, workspaces, explicitWorkspace) {
 function isSessionRunning(session, jobs) {
   return session.running || jobs.some((job) => job.status === "running" || job.status === "stopping");
 }
-function deriveSessionAttention(session, jobs) {
-  if (session.pendingInteraction !== void 0) return "waiting";
+function deriveSessionAttention(session, jobs, pendingInteraction) {
+  if (pendingInteraction !== void 0) return "waiting";
   if (jobs.some((job) => job.status === "failed")) return "failed";
   if (isSessionRunning(session, jobs)) return "running";
   if (session.completed === true) return "completed";
@@ -14882,7 +14882,7 @@ function warnWorkspaceConflict(sessionId, selected, conflicting) {
     `[dsh-session-groups] Session "${sessionId}" belongs to multiple Workspaces; using "${selected.title}" (${selected.workspaceId}) before "${conflicting.title}" (${conflicting.workspaceId}).`
   );
 }
-function deriveBrowserSessions(list, workspaces, archivedSessionIds, assignments) {
+function deriveBrowserSessions(list, workspaces, archivedSessionIds, assignments, pendingInteractions = /* @__PURE__ */ new Map()) {
   const archived = new Set(archivedSessionIds);
   const explicitWorkspaceBySession = /* @__PURE__ */ new Map();
   for (const workspace of workspaces) {
@@ -14898,13 +14898,17 @@ function deriveBrowserSessions(list, workspaces, archivedSessionIds, assignments
   const sources = sourceContexts(assignments);
   return list.ids.map((id) => list.byId[id]).filter((session) => session !== void 0 && visible(session, list.current)).map((summary) => {
     const jobs = list.jobsBySession[summary.id] ?? [];
+    const pendingInteraction = pendingInteractions.get(summary.id)?.kind;
+    const preset = summary.projectionValues?.agentPreset;
     return {
       summary,
+      pendingInteraction,
+      agentPreset: typeof preset === "string" ? preset : void 0,
       project: resolveProjectContext(summary, workspaces, explicitWorkspaceBySession.get(summary.id)),
       source: sources.get(summary.id) ?? UNATTRIBUTED_SOURCE,
       running: isSessionRunning(summary, jobs),
       unread: summary.completed === true,
-      attention: deriveSessionAttention(summary, jobs),
+      attention: deriveSessionAttention(summary, jobs, pendingInteraction),
       jobs,
       archived: archived.has(summary.id)
     };
@@ -15403,7 +15407,7 @@ var ATTENTION_COPY = {
   idle: { label: "\u7A7A\u95F2", short: "\u7A7A\u95F2" }
 };
 function pendingLabel(entry) {
-  switch (entry.summary.pendingInteraction) {
+  switch (entry.pendingInteraction) {
     case "approval":
       return "\u7B49\u5F85\u5BA1\u6279";
     case "plan-review":
@@ -15436,7 +15440,7 @@ function metadata(entry) {
     entry.summary.cwd === void 0 ? void 0 : `\u5DE5\u4F5C\u76EE\u5F55\uFF1A${entry.summary.cwd}`,
     `\u6765\u6E90\uFF1A${sourceLabel(entry)}`,
     entry.source.kind === void 0 ? void 0 : `\u804A\u5929\u7C7B\u578B\uFF1A${sessionGroupKindLabel(entry.source.kind) ?? entry.source.kind}`,
-    entry.summary.agentPreset === void 0 ? void 0 : `Agent preset\uFF1A${entry.summary.agentPreset}`,
+    entry.agentPreset === void 0 ? void 0 : `Agent preset\uFF1A${entry.agentPreset}`,
     `\u9605\u8BFB\u72B6\u6001\uFF1A${entry.unread ? "\u672A\u8BFB" : "\u5DF2\u8BFB"}`,
     `\u66F4\u65B0\u65F6\u95F4\uFF1A${new Date(entry.summary.updatedAt).toLocaleString()}`
   ];
@@ -15446,7 +15450,7 @@ function searchText(entry) {
   return [
     entry.summary.displayTitle,
     entry.summary.cwd,
-    entry.summary.agentPreset,
+    entry.agentPreset,
     entry.project.title,
     entry.project.path,
     entry.source.familyTitle,
@@ -15523,6 +15527,7 @@ function SessionGroupsBrowser({
   wide,
   expandSidebar,
   useSessions,
+  useSessionPendingInteraction,
   useWorkspaces,
   useSessionGroups,
   refresh,
@@ -15543,6 +15548,7 @@ function SessionGroupsBrowser({
   moveSession
 }) {
   const sessions = useSessions((value) => value);
+  const pendingInteractions = useSessionPendingInteraction((value) => value);
   const workspaces = useWorkspaces((value) => value);
   const remote = useSessionGroups((value) => value);
   const [preferences, setPreferences] = (0, import_react.useState)(() => {
@@ -15655,8 +15661,9 @@ function SessionGroupsBrowser({
     sessions,
     workspaces.items,
     workspaces.archivedSessionIds,
-    remote.assignments
-  ), [sessions, workspaces.items, workspaces.archivedSessionIds, remote.assignments]);
+    remote.assignments,
+    pendingInteractions
+  ), [sessions, workspaces.items, workspaces.archivedSessionIds, remote.assignments, pendingInteractions]);
   const activeEntries = (0, import_react.useMemo)(() => entries.filter((entry) => !entry.archived), [entries]);
   const quickEntries = (0, import_react.useMemo)(() => {
     if (surface === "archive") return entries.filter((entry) => entry.archived);
@@ -16468,7 +16475,7 @@ function installStyles() {
 }
 
 // packages/dsh-session-groups/src/client/index.tsx
-var inject = ["slots", "sessions", "workspaces", "remote"];
+var inject = ["slots", "sessions", "workspaces", "uiWorkspace", "remote"];
 async function apply(ctx) {
   const disposeRemote = await ctx.remote.$mount(typert_remote_client_default);
   const remote = ctx.reflect.get("remote.sessionGroups");
@@ -16482,7 +16489,7 @@ async function apply(ctx) {
     hooks: { sessionGroups: controller.source },
     refresh: () => controller.refresh(),
     open: (sessionId) => {
-      ctx.sessions.open(sessionId);
+      ctx.uiWorkspace.openSession(sessionId);
     },
     openSubagent: (address) => {
       ctx.sessions.openSubagent(address);
@@ -16497,13 +16504,16 @@ async function apply(ctx) {
       return result.value;
     },
     startSession: (workspaceId) => {
-      ctx.workspaces.startSession(workspaceId);
+      ctx.uiWorkspace.startSession(workspaceId);
     },
     addWorkspace: async () => {
-      const path = await ctx.workspaces.pickDirectory();
+      const path = await ctx.uiWorkspace.pickDirectory();
       if (path !== null) await ctx.workspaces.create({ path });
     },
-    openPath: (path) => ctx.workspaces.openPath(path),
+    openPath: async (path) => {
+      const result = await ctx.remote.session.openWorkspacePath({ path });
+      if (!result.ok) throw new Error(result.error.message);
+    },
     renameSession: async (sessionId, currentTitle) => {
       const title = window.prompt("\u65B0\u7684\u4F1A\u8BDD\u540D\u79F0", currentTitle)?.trim();
       if (title === void 0 || title === "") return;
@@ -16512,12 +16522,9 @@ async function apply(ctx) {
       const result = await session.rename(title);
       if (!result.ok) throw new Error(result.error.message);
     },
-    forkSession: async (sessionId) => {
-      const child = await ctx.sessions.fork({ sessionId, increaseTitle: true });
-      ctx.sessions.open(child);
-    },
+    forkSession: (sessionId) => ctx.uiWorkspace.forkSession(sessionId),
     archiveSession: async (sessionId) => {
-      await ctx.workspaces.archiveSession(sessionId);
+      await ctx.uiWorkspace.archiveSession(sessionId);
     },
     moveWorkspace: (workspaceId, beforeWorkspaceId) => ctx.workspaces.insertBefore(workspaceId, beforeWorkspaceId),
     moveSession: async (workspaceId, sessionId, beforeSessionId) => {
